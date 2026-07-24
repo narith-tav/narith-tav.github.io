@@ -1,0 +1,2011 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bank Training – Quiz de révision</title>
+<style>
+  :root {
+    --bg: #f4f3ef;
+    --card: #f7f7f5;
+    --card-white: #ffffff;
+    --border: #e6e4dd;
+    --text-primary: #111111;
+    --text-secondary: #555555;
+    --text-tertiary: #8a8a8d;
+    --accent: #185fa5;
+    --accent-dark: #0c447c;
+    --accent-bg: #e6f1fb;
+    --success: #1d9e75;
+    --success-bg: #e1f5ee;
+    --warning: #ff9800;
+    --warning-bg: #fff3e0;
+    --error: #c0392b;
+    --error-bg: #ffebee;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    padding: 14px 10px 80px 10px;
+    background: var(--bg);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    color: var(--text-primary);
+    display: flex;
+    justify-content: center;
+    font-size: 17px;
+  }
+  .wrap { max-width: 600px; width: 100%; }
+  @media (min-width: 640px) {
+    body { padding: 20px 16px 80px 16px; }
+  }
+
+  /* Header, style e-mail */
+  .avatar {
+    width: 36px; height: 36px; border-radius: 18px;
+    background: #000; color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; margin: 0 auto 10px auto;
+  }
+  h1 {
+    margin: 0 0 4px 0; text-align: center;
+    font-size: 24px; font-weight: 600; letter-spacing: -0.3px; color: #000;
+  }
+  .subtitle {
+    margin: 0 0 14px 0; text-align: center;
+    color: var(--text-secondary); font-size: 14px; font-weight: 500;
+  }
+  .meta {
+    margin: 0 0 14px 0; text-align: center;
+    color: var(--text-tertiary); font-size: 12px;
+  }
+
+  /* Daily streak banner on the category screen */
+  .daily-banner {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    background: linear-gradient(135deg, #fff3d6, #ffe3d6);
+    border-radius: 14px; padding: 9px 14px; margin-bottom: 10px;
+    font-size: 13px; font-weight: 700; color: #a35800;
+  }
+  .daily-banner .flame { font-size: 17px; }
+  .stat-strip {
+    display: flex; justify-content: center; gap: 18px; flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .stat-strip .stat { text-align: center; }
+  .stat-strip .stat-num { font-size: 17px; font-weight: 800; color: var(--text-primary); }
+  .stat-strip .stat-label { font-size: 10px; color: var(--text-tertiary); font-weight: 600; text-transform: uppercase; }
+
+  /* Category selection */
+  .cat-grid {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;
+    margin-bottom: 24px;
+  }
+  .cat-btn-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .cat-btn {
+    border: none; border-radius: 24px; color: #fff;
+    font-size: 16px; font-weight: 600;
+    padding: 14px 22px; cursor: pointer;
+    font-family: inherit;
+  }
+  .cat-btn:hover { opacity: 0.9; }
+  .cat-btn .cat-count {
+    font-weight: 400; opacity: 0.85; font-size: 14px;
+  }
+  .cat-all { background: #111111; }
+  .cat-record {
+    font-size: 11px; font-weight: 700; color: var(--text-tertiary);
+  }
+  .cat-record .star { color: #f0a500; }
+
+  .back-link {
+    display: block; text-align: center; margin: 0 0 18px 0;
+    font-size: 15px; color: var(--accent); cursor: pointer;
+    font-weight: 600; text-decoration: none;
+  }
+  .back-link:hover { text-decoration: underline; }
+
+  .current-cat {
+    text-align: center; margin: 0 0 18px 0;
+  }
+  .current-cat .pill {
+    display: inline-block; border-radius: 20px; padding: 9px 20px;
+    font-size: 15px; font-weight: 600; color: #fff;
+  }
+
+  /* Sticky live score bar */
+  .live-bar {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--bg); padding: 0 0 14px 0; margin-bottom: 6px;
+  }
+  .live-inner {
+    background: var(--card-white);
+    border: 0.5px solid var(--border);
+    border-radius: 18px;
+    padding: 14px 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  }
+  .live-top {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px;
+  }
+  .live-score-block { display: flex; align-items: baseline; gap: 6px; }
+  .live-score-number {
+    font-size: 30px; font-weight: 800; color: var(--text-primary);
+    line-height: 1; transition: color 0.2s ease;
+  }
+  .live-score-label { font-size: 13px; color: var(--text-tertiary); font-weight: 500; }
+  .live-right { display: flex; align-items: center; gap: 8px; }
+  .combo-badge {
+    display: none; align-items: center; gap: 4px;
+    background: linear-gradient(135deg, #ff9800, #ff5252);
+    color: #fff; font-weight: 700; font-size: 13px;
+    padding: 5px 12px; border-radius: 20px;
+    animation: pop 0.25s ease;
+  }
+  .combo-badge.show { display: inline-flex; }
+  @keyframes pop {
+    0% { transform: scale(0.7); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .streak-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--warning-bg); color: #a35800; font-weight: 700; font-size: 13px;
+    padding: 5px 12px; border-radius: 20px;
+  }
+  .progress-container {
+    width: 100%; background: var(--border); border-radius: 4px;
+    margin-top: 12px; height: 10px;
+  }
+  .progress-bar {
+    height: 100%; background: linear-gradient(90deg, var(--accent), #3fa7ff);
+    border-radius: 4px;
+    width: 0%; transition: width 0.35s ease;
+  }
+
+  .card {
+    background: var(--card);
+    border-radius: 18px;
+    padding: 20px 16px 18px 16px;
+    margin-bottom: 14px;
+    scroll-margin-top: 70px;
+  }
+  .card.correct-card { background: var(--success-bg); }
+  .card.incorrect-card { background: var(--error-bg); }
+
+  .card-top {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px; flex-wrap: wrap; gap: 6px;
+  }
+  .topic {
+    display: inline-block; font-size: 14px; font-weight: 600;
+    padding: 4px 12px; border-radius: 20px;
+  }
+  .topic[data-topic="Organisation LCL"] { background: #d6ebff; color: #0066cc; }
+  .topic[data-topic="Produits phares"] { background: #d9f5ea; color: #128a5e; }
+  .topic[data-topic="Bâle III"] { background: #ffe9d6; color: #cc6600; }
+  .topic[data-topic="DORA"] { background: #f2ddff; color: #800080; }
+  .topic[data-topic="LCB-FT"] { background: #d6fbf5; color: #00807a; }
+  .topic[data-topic="RGPD bancaire"] { background: #ffd9e6; color: #cc0055; }
+  .topic[data-topic="Data Factory LCL"] { background: #d6eef2; color: #1f6f8b; }
+  .topic[data-topic="Power BI & DAX"] { background: #fff3d6; color: #a37600; }
+  .topic[data-topic="SQL & Teradata"] { background: #ffe3d6; color: #d9480f; }
+  .topic[data-topic="Agile & Scrum"] { background: #e3e8f0; color: #4b6584; }
+  .topic[data-topic="LCL & le poste"] { background: #dce6ee; color: #1c3d5a; }
+  .topic[data-topic="Stratégie Data/IA Groupe"] { background: #ece1f7; color: #6a3fa0; }
+  .topic[data-topic="Parcours client bancaire"] { background: #d9f0f5; color: #1789a8; }
+  .topic[data-topic="KPIs bancaires"] { background: #f7e1ea; color: #a13d63; }
+
+  .qcount { font-size: 14px; color: var(--text-tertiary); }
+  .qtype {
+    font-size: 13px; color: var(--text-tertiary);
+    border: 0.5px solid var(--border); border-radius: 20px;
+    padding: 2px 10px; background: var(--card-white);
+  }
+  .question { font-size: 19px; font-weight: 700; margin: 0 0 8px 0; line-height: 1.45; }
+  .hint {
+    font-size: 15px; color: var(--text-tertiary); font-style: italic;
+    margin: 0 0 10px 0; display: none;
+  }
+
+  .center-row { display: flex; justify-content: center; }
+
+  .hint-btn {
+    border: none; border-radius: 20px; background: var(--warning-bg); color: #a35800;
+    font-size: 15px; font-weight: 600; padding: 10px 18px; cursor: pointer;
+    font-family: inherit; margin: 0 0 12px 0;
+  }
+  .hint-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* Feedback + explanation + context: positioned before the answer choices */
+  .feedback {
+    font-size: 15px; font-weight: 600; padding: 8px 14px;
+    border-radius: 20px; margin: 0 0 10px 0; display: none;
+    width: fit-content;
+  }
+  .feedback.correct { background: var(--success); color: #fff; display: inline-block; }
+  .feedback.incorrect { background: var(--error); color: #fff; display: inline-block; }
+  .explanation {
+    font-size: 16px; color: var(--text-secondary); line-height: 1.6;
+    margin: 0 0 10px 0; display: none;
+    background: var(--card-white); border-radius: 12px; padding: 14px 14px;
+  }
+  .context {
+    font-size: 14px; color: var(--text-tertiary); line-height: 1.55;
+    margin: 0 0 16px 0; display: none;
+    padding: 0 2px;
+    font-style: italic;
+  }
+  .context .label {
+    font-weight: 700; font-style: normal; text-transform: uppercase;
+    letter-spacing: 0.3px; margin-right: 4px;
+  }
+
+  /* QCM options: centered pill cluster */
+  .options {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
+    margin-bottom: 4px;
+  }
+  .option-btn {
+    font-family: inherit; font-size: 16px; font-weight: 600;
+    text-align: center; padding: 12px 18px;
+    border-radius: 20px; border: 1.5px solid #d8d6cd;
+    background: #fff; color: var(--text-primary);
+    cursor: pointer;
+  }
+  .option-btn:hover:not(:disabled) { background: #f0efe9; }
+  .option-btn:disabled { cursor: not-allowed; }
+  .option-btn.correct { background: var(--success); border-color: var(--success); color: #fff; }
+  .option-btn.incorrect { background: var(--error); border-color: var(--error); color: #fff; }
+  .option-btn.dim { opacity: 0.4; }
+
+  /* Fill-in: centered */
+  .fill-col {
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    margin-bottom: 4px;
+  }
+  .fill-input {
+    width: 100%; max-width: 280px;
+    font-family: inherit; font-size: 17px; text-align: center;
+    padding: 12px 14px; border-radius: 20px;
+    border: 1.5px solid #d8d6cd; background: #fff; color: var(--text-primary);
+  }
+  .fill-input:focus { outline: 2px solid var(--accent); }
+  .fill-input.correct { border-color: var(--success); background: var(--success-bg); }
+  .fill-input.incorrect { border-color: var(--error); background: var(--error-bg); }
+  .submit-btn {
+    border: none; border-radius: 20px; background: var(--accent); color: #fff;
+    font-size: 16px; font-weight: 600; padding: 12px 24px; cursor: pointer;
+    font-family: inherit;
+  }
+  .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .expected {
+    font-size: 15px; color: var(--text-secondary); text-align: center;
+  }
+
+  .summary {
+    background: var(--card-white);
+    border-radius: 18px;
+    padding: 30px 22px;
+    text-align: center;
+    display: none;
+  }
+  .score-ring-wrap { position: relative; width: 160px; height: 160px; margin: 4px auto 6px auto; }
+  .score-ring-wrap svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .score-ring-bg { fill: none; stroke: var(--border); stroke-width: 12; }
+  .score-ring-fg {
+    fill: none; stroke-width: 12; stroke-linecap: round;
+    stroke-dasharray: 339.3; stroke-dashoffset: 339.3;
+    transition: stroke-dashoffset 1s ease, stroke 0.3s ease;
+  }
+  .score-ring-center {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+  .score-ring-percent { font-size: 34px; font-weight: 800; color: var(--text-primary); line-height: 1; }
+  .score-ring-frac { font-size: 13px; color: var(--text-tertiary); font-weight: 600; margin-top: 2px; }
+  .tier-badge {
+    display: inline-block; font-size: 15px; font-weight: 700; padding: 6px 16px;
+    border-radius: 20px; margin: 10px 0 4px 0;
+  }
+  .record-badge {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700;
+    color: #a35800; background: var(--warning-bg); padding: 6px 14px; border-radius: 20px;
+    margin: 6px 0 4px 0;
+  }
+  .gamif-stats {
+    display: flex; justify-content: center; gap: 22px; flex-wrap: wrap;
+    margin: 18px 0 6px 0; padding: 14px 0; border-top: 0.5px solid var(--border);
+    border-bottom: 0.5px solid var(--border);
+  }
+  .gamif-stats .g-stat { text-align: center; }
+  .gamif-stats .g-num { font-size: 19px; font-weight: 800; color: var(--text-primary); }
+  .gamif-stats .g-label { font-size: 11px; color: var(--text-tertiary); font-weight: 600; text-transform: uppercase; }
+  .replay-hook {
+    font-size: 13px; color: var(--text-secondary); margin-top: 16px; line-height: 1.5;
+  }
+  .topic-row {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 16px; padding: 12px 0; border-top: 0.5px solid var(--border);
+    text-align: left;
+  }
+  .topic-row .bar-container {
+    width: 90px; height: 8px; background: var(--border);
+    border-radius: 5px; margin-left: 10px; flex-shrink: 0;
+  }
+  .topic-row .bar { height: 100%; border-radius: 5px; }
+  .summary-actions {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
+    margin-top: 22px;
+  }
+  .summary-actions button {
+    border: none; border-radius: 20px; font-size: 16px; font-weight: 600;
+    padding: 12px 20px; cursor: pointer; font-family: inherit;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-secondary { background: var(--bg); color: var(--text-primary); border: 1px solid var(--border) !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="avatar">🏦</div>
+  <h1>Quiz Banque</h1>
+  <p class="subtitle">11 catégories · Réglementation bancaire, organisation LCL et compétences du poste Data Analytics Engineering</p>
+
+  <div id="screen-category">
+    <div class="daily-banner" id="daily-banner" style="display:none"></div>
+    <div class="stat-strip" id="stat-strip"></div>
+    <div class="cat-grid" id="cat-grid"></div>
+  </div>
+
+  <div id="screen-quiz" style="display:none">
+    <div class="current-cat" id="current-cat"></div>
+    <a class="back-link" id="back-link">← Changer de catégorie</a>
+
+    <div class="live-bar">
+      <div class="live-inner">
+        <div class="live-top">
+          <div class="live-score-block">
+            <span class="live-score-number" id="correct-count">0</span>
+            <span class="live-score-label">/ <span id="total-count">0</span> bonnes réponses</span>
+          </div>
+          <div class="live-right">
+            <span class="combo-badge" id="combo-badge">🔥 <span id="combo-count">0</span></span>
+          </div>
+        </div>
+        <div class="progress-container">
+          <div class="progress-bar" id="progress"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="quiz"></div>
+    <div id="summary" class="summary"></div>
+  </div>
+</div>
+
+<script>
+const allQuestions = [
+  {
+    topic: "Organisation LCL", type: "qcm",
+    q: "Qui est le directeur général de LCL depuis janvier 2024 ?",
+    options: ["Serge Magdeleine", "Jérôme Grivet", "Philippe Brassac", "Xavier Musca"],
+    correct: 0,
+    explanation: "Serge Magdeleine est directeur général depuis janvier 2024. Jérôme Grivet est Président depuis avril 2025 (il est aussi directeur général délégué de Crédit Agricole SA).",
+    context: "LCL est l'héritier du Crédit Lyonnais, fondé en 1863 et racheté par le groupe Crédit Agricole en 2003 ; la marque a été renommée LCL en 2005. Repère utile en entretien : connaître le duo DG/Président montre que tu maîtrises la gouvernance actuelle, pas seulement l'historique de la marque.",
+    hint: "Le DG a un prénom commençant par 'S'."
+  },
+  {
+    topic: "Organisation LCL", type: "qcm",
+    q: "À quelle division du groupe Crédit Agricole LCL est-il rattaché ?",
+    options: ["Banques universelles de proximité", "Grandes clientèles", "Banque de financement et d'investissement", "Gestion d'actifs et assurances"],
+    correct: 0,
+    explanation: "La division Banques universelles de proximité, aux côtés de Crédit Agricole Italia.",
+    context: "Une 'banque universelle' combine sous un même toit la banque de détail, l'assurance et la gestion d'actifs, par opposition à une banque spécialisée. Cette organisation en grandes divisions (proximité, grandes clientèles, gestion d'actifs et assurances, BFI) est typique des grands groupes bancaires français comme BNP Paribas ou Société Générale.",
+    hint: "C'est une division axée sur les banques 'universelles'."
+  },
+  {
+    topic: "Organisation LCL", type: "qcm",
+    q: "Quelle filiale de LCL est spécialisée dans le financement des professions libérales ?",
+    options: ["Interfimo", "Angle Neuf", "Predica", "Amundi"],
+    correct: 0,
+    explanation: "Interfimo finance les professions libérales. Angle Neuf est spécialisée dans l'immobilier patrimonial neuf, aux côtés de LCL Banque privée pour la gestion de fortune.",
+    context: "Interfimo est historiquement liée au financement de l'installation des professions médicales et juridiques (rachats de cabinets, de patientèle). Ce type de filiale 'de niche' est fréquent dans les groupes bancaires pour capter une clientèle à fort potentiel dès le début de sa carrière.",
+    hint: "Le nom commence par 'I'."
+  },
+  {
+    topic: "Organisation LCL", type: "qcm",
+    q: "LCL est filiale à 100 % de quelle entité au sein du groupe Crédit Agricole ?",
+    options: ["Crédit Agricole S.A.", "BNP Paribas", "Société Générale", "Groupe BPCE"],
+    correct: 0,
+    explanation: "Crédit Agricole S.A. est la structure cotée qui coiffe les activités de banque de détail hors Caisses régionales, dont la division Banques universelles de proximité.",
+    context: "Fait notable pour comprendre la gouvernance du groupe : Crédit Agricole S.A. (CASA), bien que cotée en bourse, est elle-même majoritairement détenue par les Caisses régionales via la holding SAS Rue La Boétie — une structure mutualiste assez unique parmi les grandes banques françaises.",
+    hint: "C'est la maison mère cotée en bourse du groupe."
+  },
+  {
+    topic: "Produits phares", type: "qcm",
+    q: "Quelle offre LCL est fixe à 2 euros par mois ?",
+    options: ["LCL Essentiel", "LCL à la carte", "LCL Premium", "LCL Élite"],
+    correct: 0,
+    explanation: "LCL Essentiel est une offre d'entrée de gamme fixe à 2 euros par mois. LCL à la carte, dès 3,75 euros par mois, se module selon les services souscrits, avec des réductions si on en prend davantage.",
+    context: "Ce type d'offre d'entrée de gamme répond à la pression concurrentielle des banques en ligne et néobanques (Boursorama, Fortuneo, Revolut), qui proposent souvent des comptes gratuits ou low-cost. Les grandes banques traditionnelles s'en servent pour retenir une clientèle jeune ou peu équipée avant de proposer des offres plus complètes.",
+    hint: "L'autre offre est modulable, celle-ci est fixe."
+  },
+  {
+    topic: "Produits phares", type: "fill",
+    q: "Quel livret réglementé offre le meilleur taux net en 2026 pour les foyers éligibles ? (sigle)",
+    accepted: ["lep", "livret d'epargne populaire", "livret epargne populaire"],
+    explanation: "Le LEP (Livret d'épargne populaire), rémunéré à 2,5 % net en 2026, réservé aux foyers modestes.",
+    context: "Le LEP est soumis à des conditions de ressources (revenu fiscal de référence) et à un plafond de dépôt inférieur à celui du Livret A. Il est historiquement sous-souscrit par rapport au nombre de foyers éligibles, ce qui en fait un sujet régulier de communication pour les conseillers bancaires et les pouvoirs publics.",
+    hint: "C'est un livret pour les foyers modestes, en 3 lettres."
+  },
+  {
+    topic: "Produits phares", type: "qcm",
+    q: "Quel est le plafond du crédit FLEX chez LCL ?",
+    options: ["2 000 €", "5 000 €", "500 €", "10 000 €"],
+    correct: 0,
+    explanation: "Le crédit FLEX est un crédit instantané plafonné à 2 000 euros, remboursable en trois fois.",
+    context: "Ce format de micro-crédit instantané fait écho à la vague des solutions 'Buy Now, Pay Later' (Klarna, Alma) qui a poussé les banques traditionnelles à proposer leurs propres alternatives rapides, intégrées à l'espace client, plutôt que de laisser ce terrain aux fintechs.",
+    hint: "C'est un crédit 'instantané', remboursable en 3 fois."
+  },
+  {
+    topic: "Produits phares", type: "fill",
+    q: "Quel assureur du groupe Crédit Agricole porte le contrat LCL Vie ?",
+    accepted: ["predica", "prédica"],
+    explanation: "LCL Vie est un contrat multisupport assuré par Prédica (Crédit Agricole Assurances). L'adhésion est possible dès 50 euros de versement initial, ou 15 euros par mois en versements programmés.",
+    context: "Prédica est l'un des tout premiers assureurs-vie de France en encours. Elle fait partie de Crédit Agricole Assurances (CAA), qui regroupe aussi Pacifica (assurance dommages). Le distributeur (LCL) et l'assureur (Prédica) sont deux entités juridiques distinctes du même groupe, une architecture classique en bancassurance.",
+    hint: "L'assureur du groupe commence par 'Pré...'."
+  },
+  {
+    topic: "Produits phares", type: "qcm",
+    q: "À partir de quel montant de patrimoine financier peut-on accéder à un accompagnement structuré de LCL Banque Privée ?",
+    options: ["150 000 €", "50 000 €", "500 000 €", "1 000 000 €"],
+    correct: 0,
+    explanation: "Dès 150 000 euros d'avoirs en compte-titres, PEA ou PEA-PME. La gestion sous mandat est techniquement accessible dès 20 000 euros, mais sans rattachement à un pôle dédié.",
+    context: "Au-delà d'environ 1 million d'euros de patrimoine financier, la clientèle bascule généralement vers Indosuez Wealth Management, la structure du groupe Crédit Agricole dédiée aux clientèles fortunées et internationales, avec une architecture de gestion plus ouverte.",
+    hint: "Le seuil se situe entre 100 000 et 200 000 euros."
+  },
+  {
+    topic: "Bâle III", type: "qcm",
+    q: "Quel est le seuil plancher de CET1 sous Bâle III (part des actifs pondérés du risque) ?",
+    options: ["4,5 %", "8 %", "2 %", "10 %"],
+    correct: 0,
+    explanation: "CET1 = Common Equity Tier 1, le capital de meilleure qualité. Le plancher est de 4,5 % des actifs pondérés du risque (8 % tous fonds propres confondus, jusqu'à 13 % avec les coussins).",
+    context: "Bâle III a été négocié par le Comité de Bâle sur le contrôle bancaire à la suite de la crise financière de 2008, puis transposé en droit européen via les textes CRR/CRD. Au-delà du plancher réglementaire, les régulateurs ajoutent des 'coussins' de fonds propres (coussin de conservation, contracyclique, systémique) qui peuvent porter l'exigence totale jusqu'à 13 % environ pour les grandes banques.",
+    hint: "C'est le capital de 'meilleure qualité', seuil le plus bas des trois."
+  },
+  {
+    topic: "Bâle III", type: "qcm",
+    q: "Que mesure le LCR (Liquidity Coverage Ratio) ?",
+    options: [
+      "La capacité à couvrir 30 jours de sorties de trésorerie avec des actifs facilement cessibles",
+      "Le niveau de fonds propres par rapport aux risques",
+      "Le taux de couverture des prêts par des dépôts",
+      "Le ratio de levier bancaire"
+    ],
+    correct: 0,
+    explanation: "Il a été introduit car des banques solvables sur le papier se sont retrouvées incapables d'honorer leurs échéances du jour au lendemain en 2008.",
+    context: "Le LCR est complété par le NSFR (Net Stable Funding Ratio), qui mesure la stabilité du financement à plus long terme (au-delà d'un an). Ensemble, ils forment le volet 'liquidité' de Bâle III, distinct du volet 'solvabilité' porté par le CET1. Mnémotechnique fréquente : LCR = liquidité courte (30 jours), NSFR = financement stable (long terme).",
+    hint: "C'est un ratio de 'liquidité'."
+  },
+  {
+    topic: "DORA", type: "fill",
+    q: "Depuis quelle date DORA est-il en application ? (format JJ/MM/AAAA)",
+    accepted: ["17/01/2025", "17012025", "17-01-2025", "17 janvier 2025"],
+    explanation: "Depuis le 17 janvier 2025. Le conseil d'administration porte désormais la responsabilité du risque informatique, plus seulement la DSI.",
+    context: "DORA (Digital Operational Resilience Act) est un règlement européen qui s'inscrit dans le paquet 'finance numérique' de la Commission européenne, aux côtés de MiCA (règlement sur les crypto-actifs). Il s'applique directement dans tous les États membres, sans transposition nationale nécessaire, contrairement à une directive.",
+    hint: "La date commence par '17/01/'."
+  },
+  {
+    topic: "DORA", type: "qcm",
+    q: "Quelle échéance DORA impose-t-il pour remettre un registre des contrats avec les prestataires TIC ?",
+    options: ["31 mars 2026", "31 décembre 2025", "30 juin 2026", "17 janvier 2026"],
+    correct: 0,
+    explanation: "Les autres chantiers concrets imposés par DORA à une DSI bancaire : cartographier en continu les actifs informatiques critiques, et déclarer les incidents majeurs selon une procédure harmonisée.",
+    context: "Ce registre des prestataires TIC répond à une préoccupation majeure des régulateurs : le risque de concentration technologique, notamment vis-à-vis des grands fournisseurs de cloud (AWS, Microsoft Azure, Google Cloud). DORA prévoit d'ailleurs la désignation de 'prestataires TIC critiques' soumis à une supervision directe au niveau européen.",
+    hint: "C'est au premier trimestre 2026."
+  },
+  {
+    topic: "LCB-FT", type: "qcm",
+    q: "Que signifie le sigle LCB-FT ?",
+    options: [
+      "Lutte Contre le Blanchiment et le Financement du Terrorisme",
+      "Loi de Contrôle Bancaire et Fiscal Territorial",
+      "Ligue de Coopération Bancaire Franco-Tunisienne",
+      "Label de Conformité Bancaire et Financière"
+    ],
+    correct: 0,
+    explanation: "L'objectif : identifier les clients (KYC), détecter les opérations suspectes et les déclarer à Tracfin.",
+    context: "L'équivalent international du LCB-FT est souvent désigné AML/CFT (Anti-Money Laundering / Combating the Financing of Terrorism). Le cadre français s'appuie sur les recommandations du GAFI (Groupe d'Action Financière), l'organisme intergouvernemental qui fixe les standards mondiaux en la matière.",
+    hint: "Les deux mots clés sont 'blanchiment' et 'terrorisme'."
+  },
+  {
+    topic: "LCB-FT", type: "qcm",
+    q: "Que signifie KYC ?",
+    options: ["Know Your Customer", "Keep Your Credentials", "Know Your Compliance", "Key Yield Calculation"],
+    correct: 0,
+    explanation: "KYC = vérification de l'identité et du profil de risque du client. Cela s'applique dès l'entrée en relation d'affaires, puis en continu dans le cadre d'une vigilance constante.",
+    context: "Le KYC s'est décliné en plusieurs variantes selon le contexte : eKYC pour la vérification d'identité à distance (souvent avec reconnaissance faciale), et KYB (Know Your Business) pour la vérification des clients personnes morales, avec identification de leurs bénéficiaires effectifs.",
+    hint: "Littéralement 'connais ton client'."
+  },
+  {
+    topic: "LCB-FT", type: "qcm",
+    q: "Quel régulateur supervise le dispositif LCB-FT des banques françaises ?",
+    options: ["ACPR", "AMF", "CNIL", "Banque Centrale Européenne"],
+    correct: 0,
+    explanation: "L'ACPR (Autorité de contrôle prudentiel et de résolution) supervise le dispositif ; les déclarations de soupçon sont transmises à Tracfin.",
+    context: "L'ACPR est adossée à la Banque de France. D'ici 2027-2028, une nouvelle autorité européenne, l'AMLA (Anti-Money Laundering Authority, basée à Francfort), viendra superviser directement une quarantaine de grands groupes financiers transfrontaliers jugés à haut risque, tout en laissant l'ACPR compétente pour l'immense majorité des établissements français.",
+    hint: "Le régulateur bancaire français a un sigle de 4 lettres."
+  },
+  {
+    topic: "LCB-FT", type: "qcm",
+    q: "À partir de quel seuil de détention du capital une personne est-elle considérée comme bénéficiaire effectif ?",
+    options: ["Plus de 25 %", "Plus de 10 %", "Plus de 50 %", "Plus de 5 %"],
+    correct: 0,
+    explanation: "Le bénéficiaire effectif est la ou les personnes physiques qui détiennent plus de 25 % du capital d'une entité cliente, ou qui exercent sur elle un contrôle effectif.",
+    context: "En France, cette information est centralisée dans le registre des bénéficiaires effectifs, tenu au greffe du tribunal de commerce pour chaque société. Ce registre est un outil clé de lutte contre les sociétés-écrans utilisées pour dissimuler l'origine de fonds.",
+    hint: "Le seuil correspond à un quart du capital."
+  },
+  {
+    topic: "LCB-FT", type: "fill",
+    q: "Combien d'années une banque doit-elle conserver les documents KYC après la fin de la relation d'affaires ? (chiffre)",
+    accepted: ["5", "5 ans", "cinq", "cinq ans"],
+    explanation: "5 ans, conformément à l'article L.561-12 du Code monétaire et financier (même durée pour les données liées aux opérations, à compter de leur exécution).",
+    context: "Cette durée illustre la tension entre RGPD et obligations sectorielles : le principe RGPD est de ne conserver les données que le temps nécessaire, mais des textes spécifiques comme le Code monétaire et financier imposent des durées minimales incompressibles qui priment sur une suppression anticipée.",
+    hint: "C'est aussi la durée retenue pour les données d'opérations."
+  },
+  {
+    topic: "RGPD bancaire", type: "qcm",
+    q: "Que prévoit l'article 5.1.e du RGPD concernant la durée de conservation des données ?",
+    options: [
+      "Une conservation limitée à ce qui est nécessaire à la finalité du traitement, sans durée fixe imposée",
+      "Une durée maximale universelle de 5 ans",
+      "Une durée maximale universelle de 10 ans",
+      "Aucune limite tant que le client est actif"
+    ],
+    correct: 0,
+    explanation: "Le RGPD ne fixe pas de durée universelle : c'est à la banque de fixer une durée adaptée à chaque finalité de traitement.",
+    context: "Le RGPD (Règlement général sur la protection des données) est entré en application le 25 mai 2018 dans toute l'Union européenne. En France, c'est la CNIL qui contrôle son application et peut prononcer des sanctions ; ce principe est connu sous le nom de 'limitation de la conservation', l'un des grands principes fondateurs du texte.",
+    hint: "Le principe s'appelle la 'limitation de la conservation'."
+  },
+  {
+    topic: "RGPD bancaire", type: "qcm",
+    q: "Sur quelle base légale du RGPD reposent généralement les traitements liés à la LCB-FT ?",
+    options: ["L'obligation légale (art. 6.1.c)", "Le consentement", "L'intérêt légitime", "L'exécution du contrat"],
+    correct: 0,
+    explanation: "La banque est tenue par la loi de mettre en œuvre ces contrôles, indépendamment du consentement du client.",
+    context: "Le RGPD prévoit en tout six bases légales possibles pour justifier un traitement de données : le consentement, l'exécution d'un contrat, l'obligation légale, la sauvegarde des intérêts vitaux, la mission d'intérêt public et l'intérêt légitime. Bien connaître ces six bases est un classique des entretiens sur la conformité.",
+    hint: "Ce n'est pas le consentement : c'est une obligation qui s'impose à la banque."
+  },
+  {
+    topic: "RGPD bancaire", type: "qcm",
+    q: "Que doit devenir le cryptogramme visuel (CVV) d'une carte bancaire après une transaction ?",
+    options: [
+      "Il doit être supprimé immédiatement",
+      "Il peut être conservé chiffré pendant 13 mois",
+      "Il peut être conservé si le client donne son consentement",
+      "Il est archivé avec les données comptables pendant 10 ans"
+    ],
+    correct: 0,
+    explanation: "Le CVV doit être supprimé dès que le règlement de l'achat est finalisé : sa conservation, même chiffrée, est interdite.",
+    context: "Cette règle ne vient pas seulement du RGPD mais aussi de la norme sectorielle PCI-DSS (Payment Card Industry Data Security Standard), un standard international imposé par les réseaux de cartes (Visa, Mastercard...) à tout acteur qui manipule des données de paiement, banques comme commerçants.",
+    hint: "Ce sont les 3 chiffres au dos de la carte."
+  },
+  {
+    topic: "RGPD bancaire", type: "qcm",
+    q: "Que signifie DPO ?",
+    options: ["Délégué à la Protection des Données", "Directeur du Pilotage Opérationnel", "Direction des Produits et Offres", "Dispositif de Protection Ordinaire"],
+    correct: 0,
+    explanation: "Le DPO pilote la conformité RGPD : il tient le registre des traitements, contrôle les pratiques internes, conseille sur les analyses d'impact et alerte en cas de dérive.",
+    context: "La désignation d'un DPO est obligatoire pour les autorités publiques et pour toute organisation dont l'activité de base implique un suivi régulier et à grande échelle de données sensibles — ce qui couvre naturellement les banques. Le DPO peut être interne, ou mutualisé entre plusieurs entités d'un même groupe.",
+    hint: "C'est le pivot de la conformité data de l'établissement."
+  },
+  {
+    topic: "RGPD bancaire", type: "qcm",
+    q: "Que désigne le principe d'« accountability » exigé par le RGPD ?",
+    options: [
+      "La capacité à documenter et démontrer sa conformité (registre, traçabilité des accès)",
+      "L'obligation de publier ses résultats financiers",
+      "Le droit du client à supprimer ses données à tout moment",
+      "L'obligation de nommer un DPO dans toutes les entreprises"
+    ],
+    correct: 0,
+    explanation: "Concrètement : registre des traitements, journalisation des accès, preuve des mesures de sécurité mises en place.",
+    context: "L'accountability marque un changement de philosophie par rapport à l'ancienne loi Informatique et Libertés : avant 2018, certains traitements devaient être déclarés ou autorisés à l'avance par la CNIL. Le RGPD a basculé vers un contrôle a posteriori — l'organisme doit pouvoir prouver sa conformité à tout moment, plutôt que de demander une autorisation préalable.",
+    hint: "Le mot anglais évoque la 'responsabilité' démontrable, pas seulement le respect des règles."
+  },
+
+  // ===== Data Factory LCL =====
+  {
+    topic: "Data Factory LCL", type: "qcm",
+    q: "Au sein du Data Office LCL, quelle équipe alimente le dictionnaire de données et implémente les indicateurs qualité ?",
+    options: ["Data Management Office", "Data Factory", "Architectes Data", "Tribu IT Data"],
+    correct: 0,
+    explanation: "Le Data Management Office assure la gouvernance de la donnée : dictionnaire de données, data owners, contrôles qualité automatisés. La Data Factory, elle, développe des indicateurs sur son datalab pour les métiers.",
+    context: "Cette séparation entre 'gouvernance' (Data Management Office) et 'exécution/restitution' (Data Factory) est un schéma classique dans les grands groupes : une équipe pose les règles et la définition des données, une autre les exploite pour produire des tableaux de bord.",
+    hint: "C'est l'équipe qui pose les règles, pas celle qui restitue les indicateurs."
+  },
+  {
+    topic: "Data Factory LCL", type: "fill",
+    q: "Sur quelle technologie de base de données repose l'entrepôt de données gouverné de LCL ?",
+    accepted: ["teradata"],
+    explanation: "L'entrepôt de données gouverné de LCL est sur Teradata, avec un socle, une couche usage et des datamarts métier.",
+    context: "Teradata est un système historique très répandu dans les grands groupes bancaires et de distribution pour sa capacité à traiter de très gros volumes de données en parallèle (architecture MPP). Le connaître, même superficiellement, est un vrai plus pour un poste d'Analytics Engineer chez LCL.",
+    hint: "C'est aussi le nom d'une entreprise américaine spécialisée dans les entrepôts de données."
+  },
+  {
+    topic: "Data Factory LCL", type: "fill",
+    q: "Quel outil de data visualisation est l'outil retenu par LCL pour restituer les indicateurs de la Data Factory ?",
+    accepted: ["power bi", "powerbi"],
+    explanation: "La Data Factory restitue les indicateurs via des tableaux de bord Power BI, sur des workspaces gérés par une équipe IT dédiée. D'autres solutions existent mais sont proscrites pour de nouveaux cas d'usage.",
+    context: "Le fait que d'autres outils soient 'proscrits' pour de nouveaux usages est un signal important : LCL a fait un choix de standardisation, ce qui compte en entretien pour montrer que tu sais t'aligner sur les choix techniques déjà arbitrés plutôt que de proposer un outil différent.",
+    hint: "C'est l'outil dont la certification PL-300 valide la maîtrise."
+  },
+  {
+    topic: "Data Factory LCL", type: "qcm",
+    q: "Qui conçoit le modèle de données dans l'entrepôt avant son industrialisation, selon le cas d'usage LCL ?",
+    options: ["Les Architectes Data", "La Data Factory", "Le Data Management Office", "La Tribu IT Métier"],
+    correct: 0,
+    explanation: "Les Architectes Data ont une très bonne connaissance du patrimoine de données de l'entrepôt et conçoivent le modèle de données avant industrialisation ; ils peuvent aiguiller les Data Analysts dans le choix des tables.",
+    context: "En entretien, savoir distinguer le rôle de l'Architecte Data (modélisation, patrimoine) de celui du Data Analyst (analyse, restitution) montre que tu comprends la chaîne de valeur data et sauras solliciter la bonne personne au bon moment plutôt que de tout vouloir faire seul.",
+    hint: "Ce sont eux qui 'maîtrisent le patrimoine', pas forcément toutes les subtilités fonctionnelles."
+  },
+  {
+    topic: "Data Factory LCL", type: "qcm",
+    q: "Quelle entité, selon le schéma organisationnel du cas LCL, formalise le besoin data avec le métier et analyse la donnée ?",
+    options: ["La Data Factory", "Le Data Management Office", "Les Architectes Data", "La Tribu IT Métier"],
+    correct: 0,
+    explanation: "La Data Factory est le point de contact qui formalise le besoin avec les directions métier (comme la Direction Immobilière) et analyse la donnée avant de produire des indicateurs.",
+    context: "C'est précisément le rôle que tu occuperais : faire l'interface entre un métier qui exprime un besoin de façon informelle (souvent à l'oral) et une équipe technique qui a besoin d'exigences structurées.",
+    hint: "C'est ton futur rôle dans l'organigramme du cas d'usage."
+  },
+  {
+    topic: "Data Factory LCL", type: "qcm",
+    q: "Dans l'architecture décrite, qu'est-ce qu'un 'datamart' par rapport au socle de l'entrepôt de données ?",
+    options: [
+      "Une couche métier dérivée du socle, non mise en gouvernance par le Data Office",
+      "La couche brute où arrivent les données sources avant tout traitement",
+      "Un outil de visualisation utilisé par les métiers",
+      "Le registre des accès et permissions de l'entrepôt"
+    ],
+    correct: 0,
+    explanation: "L'entrepôt est décliné en socle, couche usage et datamarts métier ; ces datamarts ne sont pas mis en gouvernance par le Data Office, contrairement au socle.",
+    context: "Cette distinction entre données 'gouvernées' (socle) et 'non gouvernées' (datamarts, fichiers Excel) est un point clé à adresser dans ta présentation de mise en situation : elle conditionne la fiabilité et la traçabilité des données que tu utilises.",
+    hint: "C'est une couche 'métier', pas la couche brute du socle."
+  },
+  {
+    topic: "Data Factory LCL", type: "qcm",
+    q: "Quelles données la Direction Immobilière fournit-elle, selon le cas d'usage, sous format Excel ?",
+    options: ["Baux, superficies, coûts", "Effectifs par site", "Données démographiques INSEE", "Adresses normalisées des sites"],
+    correct: 0,
+    explanation: "La Direction immobilière fournit les baux, superficies et coûts des sites, sous format Excel, comme plusieurs autres contributeurs (Banque privée, Banque des entreprises).",
+    context: "Une grande partie de ta mission consistera à fiabiliser des données Excel non gouvernées pour les faire entrer dans un modèle de données structuré — un défi très classique en environnement Data Factory / Analytics Engineering.",
+    hint: "Ce sont des données propres à l'immobilier : loyers, m², dépenses."
+  },
+  {
+    topic: "Data Factory LCL", type: "qcm",
+    q: "Quelles données Marketing fournit-il pour le cas d'usage de cartographie immobilière ?",
+    options: [
+      "Données démographiques, base clients, géolocalisation des bâtiments",
+      "Baux, superficies et coûts des sites",
+      "Effectifs par site et type de marché servi",
+      "Adresses normalisées et codification des sites"
+    ],
+    correct: 0,
+    explanation: "Marketing fournit des données démographiques, une base clients et la géolocalisation des bâtiments, via un Datamart et des extractions Excel (dont des données externes de type INSEE).",
+    context: "Le fait que la même donnée démographique existe à la fois 'gouvernée' dans l'entrepôt (source INSEE) et 'non gouvernée' sous Excel illustre un vrai défi d'Analytics Engineer : choisir la bonne source de vérité et éviter les doublons/incohérences.",
+    hint: "C'est la direction qui fournit aussi les données 'externes' de type INSEE."
+  },
+  {
+    topic: "Data Factory LCL", type: "qcm",
+    q: "Sur quoi porte le moteur de scoring du 'dynamisme territorial' demandé par la Direction Immobilière ?",
+    options: [
+      "Démographie, évolution de la population sur 10 ans, patrimoine, tissu professionnel et entrepreneurial",
+      "Uniquement le chiffre d'affaires des agences",
+      "Le nombre de collaborateurs par agence",
+      "Le taux de vacance des locaux"
+    ],
+    correct: 0,
+    explanation: "L'outil de cartographie doit permettre de visualiser les sites du groupe et de comprendre leur positionnement par rapport au dynamisme local, basé sur un scoring : démographie, évolution de la population sur 10 ans, patrimoine, tissu professionnel et entrepreneurial.",
+    context: "Concevoir un moteur de scoring multi-critères de ce type suppose de bien définir la pondération de chaque critère et sa source — un sujet à aborder explicitement dans ta proposition de modèle de données.",
+    hint: "Il combine des critères démographiques et économiques, pas seulement financiers."
+  },
+  {
+    topic: "Data Factory LCL", type: "qcm",
+    q: "Quelles sont, selon l'offre d'emploi, les trois missions principales du Data & IA Office de LCL ?",
+    options: [
+      "Prioriser les projets Data et IA, superviser la gouvernance des données, accompagner la mise en conformité réglementaire",
+      "Développer des applications mobiles, gérer le support informatique, former les collaborateurs",
+      "Gérer la paie, le recrutement et la formation des data analysts",
+      "Vendre des produits d'épargne, gérer les crédits, superviser les agences"
+    ],
+    correct: 0,
+    explanation: "Le Data & IA Office de LCL a trois missions : prioriser les projets Data et IA selon la stratégie de l'entreprise, superviser la gouvernance des données, et accompagner les métiers dans leur mise en conformité réglementaire.",
+    context: "Cette dernière mission de 'mise en conformité réglementaire' fait le pont avec les sujets RGPD et LCB-FT déjà vus dans les autres catégories du quiz : la gouvernance data et la conformité réglementaire sont étroitement liées dans une banque.",
+    hint: "Une des trois missions concerne directement la conformité réglementaire."
+  },
+
+  // ===== Power BI & DAX =====
+  {
+    topic: "Power BI & DAX", type: "fill",
+    q: "Que signifie l'acronyme DAX, le langage de formules de Power BI ?",
+    accepted: ["data analysis expressions"],
+    explanation: "DAX = Data Analysis Expressions. C'est le langage utilisé pour créer des mesures, des colonnes calculées et des tables calculées dans Power BI.",
+    context: "DAX est aussi utilisé dans Power Pivot (Excel) et Analysis Services : le maîtriser est transférable au-delà de Power BI seul, ce qui est un vrai plus pour un poste orienté modélisation de données.",
+    hint: "Les 3 lettres sont les initiales des 3 premiers mots de l'expression complète."
+  },
+  {
+    topic: "Power BI & DAX", type: "fill",
+    q: "Quelle certification Microsoft, centrée sur Power BI, est recommandée dans l'offre LCL ?",
+    accepted: ["pl-300", "pl300"],
+    explanation: "La certification PL-300 (Microsoft Power BI Data Analyst) est recommandée dans l'offre, en complément d'une excellente pratique de Power BI (modélisation, DAX, performance).",
+    context: "Si tu ne l'as pas encore, mentionner en entretien que tu prévois de la passer (ou que tu es en train de la préparer) peut renforcer ta crédibilité technique, surtout si ton expérience Power BI est plus pratique que certifiée.",
+    hint: "Le code commence par 'PL' suivi d'un nombre à trois chiffres."
+  },
+  {
+    topic: "Power BI & DAX", type: "qcm",
+    q: "Quelle est la principale différence entre une mesure et une colonne calculée en DAX ?",
+    options: [
+      "La mesure est calculée à la volée selon le contexte de filtre, la colonne calculée est stockée physiquement dans le modèle",
+      "La mesure ne peut contenir que des sommes, la colonne calculée peut contenir toute formule",
+      "La colonne calculée est plus rapide car elle n'est jamais recalculée",
+      "Il n'y a aucune différence, ce sont deux noms pour la même chose"
+    ],
+    correct: 0,
+    explanation: "Une mesure est recalculée dynamiquement selon le contexte de filtre de la visualisation (donc pas stockée), alors qu'une colonne calculée est évaluée ligne par ligne à l'actualisation et stockée dans le modèle.",
+    context: "Ce choix a un impact direct sur la taille du modèle et la performance : abuser des colonnes calculées gonfle le fichier Power BI, alors que les mesures sont généralement recommandées dès que le calcul dépend du contexte d'analyse (par période, par site, etc.).",
+    hint: "L'une est stockée dans le modèle, l'autre non."
+  },
+  {
+    topic: "Power BI & DAX", type: "qcm",
+    q: "Que fait la fonction DAX CALCULATE ?",
+    options: [
+      "Elle modifie le contexte de filtre appliqué à une expression",
+      "Elle additionne toutes les colonnes numériques d'une table",
+      "Elle crée une nouvelle table à partir de deux tables existantes",
+      "Elle importe des données depuis une source externe"
+    ],
+    correct: 0,
+    explanation: "CALCULATE permet de modifier le contexte de filtre dans lequel une expression est évaluée : c'est l'une des fonctions les plus centrales et les plus puissantes du langage DAX.",
+    context: "CALCULATE est souvent qualifiée de fonction 'la plus importante' de DAX car presque toutes les mesures un peu avancées (comparaison à l'année précédente, part du total, etc.) reposent dessus.",
+    hint: "C'est la fonction la plus souvent citée comme 'la plus importante' de DAX."
+  },
+  {
+    topic: "Power BI & DAX", type: "qcm",
+    q: "Quel modèle de données est généralement recommandé dans Power BI pour la performance et la clarté des relations ?",
+    options: ["Un schéma en étoile (star schema)", "Une seule table plate contenant toutes les colonnes", "Un schéma en flocon inversé", "Un modèle sans aucune relation entre tables"],
+    correct: 0,
+    explanation: "Le schéma en étoile, avec une table de faits centrale reliée à des tables de dimension, est le modèle recommandé par Microsoft pour Power BI : il simplifie les relations et optimise les performances du moteur de calcul.",
+    context: "Ce principe rejoint directement l'un des points à traiter dans ta mise en situation LCL : ta proposition de modèle de données (entités, relations) devra probablement s'appuyer sur cette logique étoile pour rester lisible et performante dans Power BI.",
+    hint: "C'est un modèle avec une table centrale de 'faits' entourée de tables de 'dimensions'."
+  },
+  {
+    topic: "Power BI & DAX", type: "qcm",
+    q: "Dans un modèle en étoile, que contient typiquement une table de faits ?",
+    options: [
+      "Des mesures numériques et des clés vers les tables de dimension",
+      "Uniquement des attributs descriptifs comme un nom ou une catégorie",
+      "La liste des utilisateurs ayant accès au rapport",
+      "Le code source des mesures DAX"
+    ],
+    correct: 0,
+    explanation: "Une table de faits contient les mesures numériques (montants, quantités, effectifs...) et les clés étrangères pointant vers les tables de dimension qui les décrivent.",
+    context: "Pour le cas d'usage immobilier de LCL, la table de faits pourrait par exemple contenir des indicateurs par site (surface, coût, score de dynamisme), reliée à des dimensions comme le site, la direction métier, ou la période.",
+    hint: "C'est la table qui contient les chiffres, pas les descriptions."
+  },
+  {
+    topic: "Power BI & DAX", type: "qcm",
+    q: "Quelle est la différence principale entre le mode 'Import' et le mode 'DirectQuery' dans Power BI ?",
+    options: [
+      "En mode Import les données sont chargées en mémoire (rapide mais à rafraîchir), en DirectQuery les requêtes interrogent la source en direct (toujours à jour mais plus lent)",
+      "Le mode Import ne fonctionne qu'avec Excel, DirectQuery qu'avec Teradata",
+      "DirectQuery ne permet pas de créer de mesures DAX",
+      "Il n'y a pas de différence de performance entre les deux modes"
+    ],
+    correct: 0,
+    explanation: "En mode Import, les données sont copiées et compressées en mémoire, ce qui offre de très bonnes performances mais nécessite un rafraîchissement périodique. En DirectQuery, chaque interaction envoie une requête à la source, offrant des données toujours à jour mais avec une latence plus importante.",
+    context: "Le choix entre les deux modes est un vrai sujet d'architecture : pour un entrepôt Teradata avec de gros volumes, un compromis fréquent est le mode 'composite', mêlant Import pour certaines tables et DirectQuery pour d'autres.",
+    hint: "L'un stocke une copie des données, l'autre interroge la source à chaque clic."
+  },
+  {
+    topic: "Power BI & DAX", type: "qcm",
+    q: "À quoi sert un 'workspace' dans Power BI Service ?",
+    options: [
+      "À organiser, partager et collaborer sur des rapports et tableaux de bord entre collaborateurs",
+      "À stocker uniquement les fichiers Excel bruts avant leur import",
+      "À définir les droits d'accès à l'entrepôt Teradata",
+      "À écrire des requêtes SQL directement sur Teradata"
+    ],
+    correct: 0,
+    explanation: "Un workspace Power BI est un espace de travail dans le service en ligne, qui permet d'organiser des rapports, tableaux de bord et jeux de données, et de les partager avec d'autres utilisateurs ou applications.",
+    context: "Dans le cas LCL, les workspaces sont gérés par une équipe IT dédiée sur un tenant unique : un point à connaître si on te demande comment tu comptes déployer et partager ton futur rapport de cartographie immobilière.",
+    hint: "C'est un espace de partage et de collaboration, pas un outil de requêtage SQL."
+  },
+  {
+    topic: "Power BI & DAX", type: "qcm",
+    q: "Quel langage est utilisé par Power Query pour transformer les données avant leur chargement dans le modèle ?",
+    options: ["Le langage M", "DAX", "Python", "PL/SQL"],
+    correct: 0,
+    explanation: "Power Query utilise le langage M pour définir les étapes de transformation des données (nettoyage, jointures, changements de type) avant leur chargement dans le modèle Power BI.",
+    context: "DAX et M sont souvent confondus par les débutants : DAX sert à calculer (mesures, colonnes) une fois les données chargées, tandis que M sert à transformer les données en amont, dans l'étape ETL de Power Query.",
+    hint: "Ce n'est pas DAX : c'est le langage de la fenêtre 'Power Query'."
+  },
+  {
+    topic: "Power BI & DAX", type: "qcm",
+    q: "Pourquoi la 'dimension cartographique' mentionnée dans le cas LCL est-elle un point d'attention particulier pour un rapport Power BI ?",
+    options: [
+      "Parce qu'elle nécessite une visualisation géographique (carte) reposant sur des coordonnées ou adresses fiables, en plus des indicateurs classiques",
+      "Parce que Power BI ne peut pas afficher de cartes du tout",
+      "Parce qu'elle remplace complètement le besoin de modélisation de données",
+      "Parce qu'elle ne concerne que les données financières"
+    ],
+    correct: 0,
+    explanation: "Restituer une cartographie de sites suppose de disposer de coordonnées ou d'adresses normalisées fiables (référentiel), et de choisir une visualisation adaptée (carte à bulles, carte choroplèthe...) en plus des indicateurs de scoring classiques.",
+    context: "C'est explicitement l'un des 4 points à couvrir dans ta présentation ('votre vision de la restitution Power BI... gestion de la dimension cartographique') : anticiper les visuels de carte disponibles nativement (Azure Maps visual, Icon Map, ArcGIS) est un vrai plus.",
+    hint: "C'est le seul type de visualisation qui suppose des coordonnées ou adresses fiables."
+  },
+
+  // ===== SQL & Teradata =====
+  {
+    topic: "SQL & Teradata", type: "qcm",
+    q: "Que fait un LEFT JOIN en SQL par rapport à un INNER JOIN ?",
+    options: [
+      "Il conserve toutes les lignes de la table de gauche, avec NULL si aucune correspondance à droite",
+      "Il ne conserve que les lignes présentes dans les deux tables",
+      "Il fusionne les colonnes de deux tables sans condition de jointure",
+      "Il supprime les doublons entre les deux tables"
+    ],
+    correct: 0,
+    explanation: "Un LEFT JOIN conserve toutes les lignes de la table de gauche, en complétant avec des valeurs NULL quand il n'y a pas de correspondance dans la table de droite. Un INNER JOIN ne garde que les lignes ayant une correspondance dans les deux tables.",
+    context: "Ce type de jointure est très utile quand tu veux, par exemple, lister tous les sites immobiliers même ceux qui n'ont pas encore de score de dynamisme calculé, plutôt que de les faire disparaître silencieusement du résultat.",
+    hint: "Il garde tout ce qui vient de la table 'de gauche', même sans correspondance."
+  },
+  {
+    topic: "SQL & Teradata", type: "fill",
+    q: "Quelle clause SQL permet de filtrer les résultats après un GROUP BY, sur des valeurs agrégées ?",
+    accepted: ["having"],
+    explanation: "La clause HAVING filtre les groupes après l'agrégation (par exemple, ne garder que les sites dont le score moyen dépasse un seuil), alors que WHERE filtre les lignes avant l'agrégation.",
+    context: "Une question de ce type est un classique des entretiens techniques SQL : bien distinguer WHERE et HAVING montre que tu comprends l'ordre d'exécution logique d'une requête SQL (FROM, WHERE, GROUP BY, HAVING, SELECT, ORDER BY).",
+    hint: "Elle vient après le GROUP BY, contrairement à WHERE."
+  },
+  {
+    topic: "SQL & Teradata", type: "qcm",
+    q: "Quelle est la différence principale entre les clauses WHERE et HAVING ?",
+    options: [
+      "WHERE filtre les lignes avant l'agrégation, HAVING filtre les groupes après l'agrégation",
+      "WHERE et HAVING sont strictement identiques et interchangeables",
+      "HAVING ne peut être utilisé qu'avec des jointures",
+      "WHERE ne fonctionne que sur des colonnes numériques"
+    ],
+    correct: 0,
+    explanation: "WHERE s'applique ligne par ligne avant le GROUP BY, tandis que HAVING s'applique aux résultats agrégés, après le GROUP BY.",
+    context: "Utiliser WHERE là où il faudrait HAVING (ou l'inverse) est une erreur fréquente chez les profils moins expérimentés en SQL ; la repérer rapidement en entretien technique est un bon signal.",
+    hint: "L'un agit avant l'agrégation, l'autre après."
+  },
+  {
+    topic: "SQL & Teradata", type: "qcm",
+    q: "À quoi sert un index dans une base de données ?",
+    options: [
+      "À accélérer la recherche et le tri des données, au prix d'un coût en écriture et en stockage",
+      "À empêcher toute modification des données",
+      "À chiffrer automatiquement les colonnes sensibles",
+      "À dupliquer automatiquement les tables pour la sauvegarde"
+    ],
+    correct: 0,
+    explanation: "Un index est une structure de données qui accélère la recherche et le tri des lignes selon une ou plusieurs colonnes, mais qui ralentit légèrement les écritures (insert/update) et consomme de l'espace de stockage.",
+    context: "Sur un entrepôt de données volumineux comme celui de LCL sur Teradata, bien choisir ses index (ou 'primary index' côté Teradata) est un vrai enjeu de performance, surtout quand plusieurs directions métier interrogent les mêmes tables.",
+    hint: "Il accélère la lecture, mais a un coût à l'écriture."
+  },
+  {
+    topic: "SQL & Teradata", type: "qcm",
+    q: "Teradata est un système de gestion de base de données conçu principalement pour quel usage ?",
+    options: [
+      "Les entrepôts de données volumineux avec traitement massivement parallèle (MPP)",
+      "Les applications mobiles temps réel à faible volume",
+      "Le stockage de fichiers non structurés uniquement (images, vidéos)",
+      "La gestion des transactions bancaires en temps réel uniquement"
+    ],
+    correct: 0,
+    explanation: "Teradata est un système de gestion de base de données relationnelle conçu pour les entrepôts de données (data warehouses) à très grande échelle, grâce à une architecture massivement parallèle (MPP).",
+    context: "C'est cette capacité à traiter de gros volumes en parallèle qui explique pourquoi de grands groupes comme LCL, avec des millions de clients et des années d'historique, s'appuient sur ce type de technologie plutôt que sur une base transactionnelle classique.",
+    hint: "Le sigle qui décrit son architecture tient en 3 lettres : MPP."
+  },
+  {
+    topic: "SQL & Teradata", type: "fill",
+    q: "Que signifie le sigle MPP, qui décrit l'architecture de Teradata ?",
+    accepted: ["massively parallel processing"],
+    explanation: "MPP = Massively Parallel Processing : les traitements sont répartis simultanément sur de nombreuses unités de calcul (les AMPs chez Teradata), ce qui permet de traiter d'énormes volumes de données rapidement.",
+    context: "Cette architecture s'oppose au traitement 'SMP' (Symmetric Multi-Processing) d'une base de données classique, où toutes les requêtes passent par un seul serveur central : c'est cette différence qui justifie l'usage de Teradata pour un entrepôt de plusieurs millions de clients.",
+    hint: "Les 3 lettres décrivent un traitement réparti sur de nombreuses unités en même temps."
+  },
+  {
+    topic: "SQL & Teradata", type: "qcm",
+    q: "Dans l'architecture Teradata, à quoi sert la 'Primary Index' d'une table ?",
+    options: [
+      "Elle détermine comment les lignes de la table sont réparties entre les unités de traitement parallèle (AMPs)",
+      "Elle chiffre automatiquement les données sensibles de la table",
+      "Elle sert uniquement à trier l'affichage des résultats",
+      "Elle empêche toute suppression de ligne dans la table"
+    ],
+    correct: 0,
+    explanation: "La Primary Index détermine sur quel AMP (Access Module Processor) chaque ligne sera stockée, ce qui conditionne directement la répartition de charge et donc la performance des requêtes.",
+    context: "Un mauvais choix de Primary Index (par exemple une colonne peu variée) peut créer un déséquilibre de charge entre les AMPs, appelé 'skew', qui dégrade fortement les performances — un vrai sujet pour un futur Analytics Engineer travaillant sur Teradata.",
+    hint: "Elle détermine la répartition des données, pas leur affichage."
+  },
+  {
+    topic: "SQL & Teradata", type: "qcm",
+    q: "Que désigne un 'AMP' dans l'architecture Teradata ?",
+    options: [
+      "Une unité de traitement parallèle (Access Module Processor) qui gère une portion des données",
+      "Un type de jointure SQL spécifique à Teradata",
+      "Un langage de script propre à Teradata",
+      "Un outil de visualisation intégré à Teradata"
+    ],
+    correct: 0,
+    explanation: "Un AMP (Access Module Processor) est une unité de traitement qui gère le stockage et le traitement d'une portion des données, en parallèle des autres AMPs du système.",
+    context: "Comprendre le rôle des AMPs aide à expliquer pourquoi certaines requêtes mal conçues (jointures sur des colonnes non indexées, par exemple) peuvent forcer une redistribution massive de données entre AMPs et ralentir fortement l'exécution.",
+    hint: "C'est l'unité qui traite une portion des données, en parallèle des autres."
+  },
+  {
+    topic: "SQL & Teradata", type: "qcm",
+    q: "Quelle est la différence entre une vue (VIEW) SQL classique et une table matérialisée ?",
+    options: [
+      "La vue est recalculée à chaque exécution, la table matérialisée stocke physiquement le résultat",
+      "La vue est plus rapide car les données sont physiquement stockées",
+      "Une table matérialisée ne peut contenir aucune jointure",
+      "Il n'existe aucune différence entre les deux notions"
+    ],
+    correct: 0,
+    explanation: "Une vue est une requête enregistrée, exécutée à chaque appel sur les données actuelles ; une table matérialisée stocke physiquement le résultat de la requête, qu'il faut rafraîchir périodiquement, mais qui se lit beaucoup plus vite.",
+    context: "Ce choix est directement lié à ta future proposition de modèle de données : pour des indicateurs coûteux à recalculer (comme un score de dynamisme territorial), une table matérialisée ou un datamart pré-calculé est souvent préférable à une vue recalculée à chaque ouverture du rapport.",
+    hint: "L'une stocke un résultat physique, l'autre non."
+  },
+  {
+    topic: "SQL & Teradata", type: "qcm",
+    q: "Qu'est-ce qu'un schéma en étoile (star schema) dans un entrepôt de données ?",
+    options: [
+      "Un modèle avec une table de faits centrale reliée directement à plusieurs tables de dimension",
+      "Un modèle où toutes les tables sont reliées entre elles sans hiérarchie",
+      "Un modèle utilisé uniquement pour stocker des logs techniques",
+      "Un synonyme d'un schéma totalement dénormalisé en une seule table"
+    ],
+    correct: 0,
+    explanation: "Le schéma en étoile place une table de faits (les mesures) au centre, reliée directement à des tables de dimension (les axes d'analyse), sans relations indirectes entre les dimensions elles-mêmes.",
+    context: "C'est le même concept que celui évoqué côté Power BI (question précédente) : la modélisation en entrepôt de données et la modélisation dans l'outil de restitution suivent souvent la même logique, ce qui simplifie beaucoup le passage de l'un à l'autre.",
+    hint: "Son nom vient de sa forme : une table au centre, des dimensions autour, comme des branches d'étoile."
+  },
+
+  // ===== Agile & Scrum =====
+  {
+    topic: "Agile & Scrum", type: "fill",
+    q: "Que signifie MVP en gestion de produit, notion mentionnée comme non maîtrisée par le métier dans le cas LCL ?",
+    accepted: ["minimum viable product", "produit minimum viable"],
+    explanation: "MVP = Minimum Viable Product : une version minimale d'un produit, suffisante pour être testée et apporter de la valeur, avant d'y ajouter des fonctionnalités supplémentaires.",
+    context: "Le cas d'usage LCL précise explicitement que ces notions ne sont pas maîtrisées par la Direction Immobilière : une partie de ta valeur ajoutée sera donc aussi pédagogique, en expliquant simplement ces concepts sans jargon superflu.",
+    hint: "C'est un produit 'minimum' mais qui doit rester 'viable', donc utilisable."
+  },
+  {
+    topic: "Agile & Scrum", type: "qcm",
+    q: "Qu'est-ce qu'un 'Program Increment' (PI), tel qu'évoqué dans le cas LCL pour les équipes IT ?",
+    options: [
+      "Une période de planification et de livraison, souvent d'environ 3 mois, régulant la capacité des équipes IT",
+      "Un sprint Scrum classique de 2 semaines",
+      "Un indicateur de performance individuelle d'un développeur",
+      "Un type de contrat de prestation informatique"
+    ],
+    correct: 0,
+    explanation: "Dans le cas LCL, les équipes IT fonctionnent en PI (Program Increment) : les travaux sont priorisés et planifiés 3 mois à l'avance, ce qui limite fortement leur capacité à prendre de nouveaux sujets en cours de route.",
+    context: "Le PI est un concept du cadre SAFe (Scaled Agile Framework), utilisé pour synchroniser plusieurs équipes agiles à grande échelle. Comprendre cette contrainte de planification à 3 mois est essentiel pour anticiper les délais réels de mise en œuvre IT dans ta présentation.",
+    hint: "C'est une notion d'agilité 'à l'échelle', avec un horizon d'environ 3 mois."
+  },
+  {
+    topic: "Agile & Scrum", type: "qcm",
+    q: "Quelle est la durée la plus courante d'un sprint Scrum ?",
+    options: ["2 semaines", "1 jour", "6 mois", "3 mois"],
+    correct: 0,
+    explanation: "Un sprint dure généralement entre 1 et 4 semaines, la durée la plus courante en pratique étant 2 semaines.",
+    context: "Un sprint de 2 semaines permet un bon compromis entre la rapidité de feedback (montrer un résultat concret rapidement au métier) et le temps nécessaire pour livrer quelque chose de suffisamment abouti.",
+    hint: "C'est la durée la plus répandue dans les équipes Scrum, ni trop courte ni trop longue."
+  },
+  {
+    topic: "Agile & Scrum", type: "qcm",
+    q: "Qu'est-ce que le 'product backlog' en Scrum ?",
+    options: [
+      "Une liste priorisée de toutes les fonctionnalités et besoins à réaliser sur le produit",
+      "Le journal des bugs déjà corrigés",
+      "La documentation technique finale du produit",
+      "La liste des congés de l'équipe de développement"
+    ],
+    correct: 0,
+    explanation: "Le product backlog est la liste vivante et priorisée de tout ce qui pourrait être nécessaire au produit : fonctionnalités, corrections, améliorations techniques.",
+    context: "Pour ton projet de cartographie immobilière, le backlog pourrait par exemple prioriser d'abord un MVP avec les données déjà gouvernées (Teradata), puis, dans des itérations suivantes, l'intégration progressive des sources Excel plus complexes à fiabiliser.",
+    hint: "C'est une liste, pas un rôle ni un événement."
+  },
+  {
+    topic: "Agile & Scrum", type: "fill",
+    q: "Quel rôle Scrum est responsable de maximiser la valeur du produit et de prioriser le backlog ?",
+    accepted: ["product owner"],
+    explanation: "Le Product Owner est responsable de la vision produit et de la priorisation du backlog en fonction de la valeur apportée aux utilisateurs et à l'entreprise.",
+    context: "Dans le cas LCL, en l'absence d'un Product Owner côté métier formé à l'agilité, c'est souvent le Data Analyst/Analytics Engineer qui doit endosser une partie de ce rôle en aidant le métier à prioriser ses demandes.",
+    hint: "Littéralement, le 'propriétaire' du produit."
+  },
+  {
+    topic: "Agile & Scrum", type: "qcm",
+    q: "Quel est le rôle principal du Scrum Master dans une équipe Scrum ?",
+    options: [
+      "Faciliter l'application du cadre Scrum et aider l'équipe à lever les obstacles",
+      "Écrire lui-même l'intégralité du code de l'équipe",
+      "Décider seul des priorités du backlog produit",
+      "Représenter les clients finaux auprès de l'équipe"
+    ],
+    correct: 0,
+    explanation: "Le Scrum Master est un facilitateur : il veille à ce que le cadre Scrum soit bien appliqué, protège l'équipe des perturbations extérieures et aide à résoudre les blocages.",
+    context: "Ce rôle est parfois confondu avec celui de chef de projet traditionnel, alors qu'il n'a pas d'autorité hiérarchique sur l'équipe ni sur les priorités produit, contrairement au Product Owner.",
+    hint: "Il facilite, il ne décide pas des priorités produit."
+  },
+  {
+    topic: "Agile & Scrum", type: "qcm",
+    q: "Qu'est-ce qu'une 'sprint review' (ou démo) en Scrum ?",
+    options: [
+      "Une présentation de l'incrément réalisé aux parties prenantes, en fin de sprint",
+      "Une réunion interne à l'équipe pour discuter de son fonctionnement",
+      "Un document contractuel signé en début de projet",
+      "Un audit de sécurité du code produit"
+    ],
+    correct: 0,
+    explanation: "La sprint review est le moment, en fin de sprint, où l'équipe présente ce qui a été réalisé aux parties prenantes (métier, management...) et recueille leurs retours.",
+    context: "Pour un projet comme la cartographie immobilière, organiser des sprint reviews régulières avec la Direction Immobilière est un excellent moyen de garder son adhésion, même si elle n'est pas familière avec l'agilité — cela répond directement au 1er point demandé dans ta mise en situation.",
+    hint: "C'est un moment de présentation aux parties prenantes, pas une réunion interne d'équipe."
+  },
+  {
+    topic: "Agile & Scrum", type: "qcm",
+    q: "Que signifie 'prioriser par la valeur', notion citée dans le cas LCL comme non maîtrisée par le métier ?",
+    options: [
+      "Classer les besoins selon la valeur qu'ils apportent au métier plutôt que par ordre d'arrivée",
+      "Prioriser systématiquement les demandes du responsable hiérarchique le plus élevé",
+      "Traiter les demandes dans l'ordre chronologique de réception",
+      "Prioriser uniquement les tâches les plus rapides à réaliser"
+    ],
+    correct: 0,
+    explanation: "Prioriser par la valeur signifie choisir de traiter en premier ce qui apporte le plus de bénéfice au métier ou à l'entreprise, plutôt que de suivre l'ordre d'arrivée des demandes ou la pression du moment.",
+    context: "C'est un changement culturel important pour un métier habitué à exprimer ses besoins à l'oral au fil de l'eau : l'un des enjeux de ta mission sera justement d'introduire cette logique de priorisation sans braquer les interlocuteurs métier.",
+    hint: "Ce n'est pas l'ordre d'arrivée qui compte, mais l'impact."
+  },
+  {
+    topic: "Agile & Scrum", type: "qcm",
+    q: "Pourquoi une approche itérative est-elle particulièrement adaptée face à un métier qui ne maîtrise pas encore l'agilité, comme la Direction Immobilière dans le cas LCL ?",
+    options: [
+      "Elle permet de livrer rapidement des incréments concrets, d'obtenir du feedback et d'ajuster le besoin au fil de l'eau",
+      "Elle permet de ne jamais avoir à présenter de résultat avant la toute fin du projet",
+      "Elle élimine complètement le besoin de dialoguer avec le métier",
+      "Elle garantit qu'aucune modification de périmètre ne sera jamais nécessaire"
+    ],
+    correct: 0,
+    explanation: "L'approche itérative permet de montrer rapidement des résultats concrets (même partiels), de recueillir les réactions du métier et d'ajuster la suite du projet, plutôt que de découvrir un décalage avec le besoin réel seulement à la toute fin.",
+    context: "C'est directement l'axe n°2 attendu dans ta présentation de mise en situation : expliquer comment tu découpes le projet en incréments livrables et embarques le métier dans des cycles courts, malgré son inexpérience de l'agilité.",
+    hint: "Le mot-clé est 'feedback rapide', pas 'moins de contact avec le métier'."
+  },
+  {
+    topic: "Agile & Scrum", type: "qcm",
+    q: "Qu'est-ce qu'un 'Squad' dans une organisation Agile à l'échelle, comme celle décrite chez LCL ?",
+    options: [
+      "Une équipe pluridisciplinaire autonome, dédiée à un périmètre fonctionnel ou métier donné",
+      "Un outil de gestion de tickets comme Jira",
+      "Un synonyme strict de 'Sprint'",
+      "Un comité de direction validant les budgets IT"
+    ],
+    correct: 0,
+    explanation: "Un Squad est une équipe pluridisciplinaire et autonome, souvent alignée sur un périmètre métier ou fonctionnel précis (comme les 'squad IT métier' évoquées dans le cas LCL, qui travaillent avec les directions métier).",
+    context: "Ce terme vient du modèle organisationnel popularisé par Spotify, largement repris depuis par de nombreuses grandes entreprises, y compris dans la banque, pour organiser leurs équipes produit et data à grande échelle.",
+    hint: "C'est une équipe, organisée autour d'un périmètre, pas un outil ni un document."
+  },
+
+  // ===== LCL & le poste =====
+  {
+    topic: "LCL & le poste", type: "fill",
+    q: "Selon l'offre d'emploi 2026, combien de collaborateur·rices compte LCL ?",
+    accepted: ["16400", "16 400"],
+    explanation: "L'offre mentionne 16 400 collaborateur·rices, grâce auxquels LCL a été élu Service Client de l'Année 2026 dans la catégorie Banque de réseau pour les particuliers.",
+    context: "Ce chiffre est utile à situer par rapport aux ~6 millions de clients revendiqués : cela donne un ratio d'environ 1 collaborateur pour 370 clients, un ordre de grandeur qui peut servir de point de repère en entretien si on te demande de contextualiser l'échelle de la banque.",
+    hint: "Le nombre est autour de 16 000, à la centaine près."
+  },
+  {
+    topic: "LCL & le poste", type: "qcm",
+    q: "Combien de clients LCL revendique-t-il dans l'offre d'emploi 2026 ?",
+    options: ["Plus de 6 millions", "Plus de 1 million", "Plus de 20 millions", "Plus de 500 000"],
+    correct: 0,
+    explanation: "L'offre indique que LCL est un partenaire solide de plus de 6 millions de client·es, en tant que banque nationale urbaine filiale du groupe Crédit Agricole.",
+    context: "Ce volume de clients donne une idée du volume de données à traiter potentiellement dans tes futurs projets d'Analytics Engineering, notamment pour des indicateurs à l'échelle du réseau complet de LCL.",
+    hint: "C'est un ordre de grandeur proche de la population d'un grand pays européen de taille moyenne... en millions."
+  },
+  {
+    topic: "LCL & le poste", type: "qcm",
+    q: "Combien d'implantations commerciales LCL revendique-t-il dans l'offre d'emploi 2026 ?",
+    options: ["Plus de 1 400", "Plus de 100", "Plus de 10 000", "Plus de 500"],
+    correct: 0,
+    explanation: "L'offre mentionne plus de 1 400 implantations commerciales et 3 réseaux de marchés de clientèle.",
+    context: "C'est un chiffre à recouper avec les catégories de contributeurs data évoquées dans le cas d'usage (Distribution, Direction immobilière...) : chaque implantation est potentiellement une ligne dans le futur outil de cartographie que tu vas concevoir.",
+    hint: "C'est un nombre à quatre chiffres, entre 1 000 et 2 000."
+  },
+  {
+    topic: "LCL & le poste", type: "qcm",
+    q: "Quels sont les 3 réseaux de marchés de clientèle de LCL cités dans l'offre d'emploi ?",
+    options: [
+      "Banque de Proximité, Banque Privée, Banque des Entreprises / Institutionnels et Gestion de Fortune",
+      "Banque de Détail, Banque en Ligne, Banque Mobile",
+      "Marché des Particuliers, Marché des Jeunes, Marché des Seniors",
+      "Réseau France, Réseau Europe, Réseau International"
+    ],
+    correct: 0,
+    explanation: "L'offre cite trois réseaux de marchés de clientèle : Banque de Proximité, Banque Privée, et Banque des Entreprises, Institutionnels et Gestion de Fortune.",
+    context: "Ce sont les mêmes catégories qui apparaissent dans le cas d'usage de mise en situation comme contributeurs de données (Distribution = Banque de proximité, Banque privée, Banque des entreprises) : bien les connaître te permet de faire le lien direct entre l'offre et l'exercice pratique.",
+    hint: "L'un de ces trois réseaux regroupe aussi les 'Institutionnels et Gestion de Fortune'."
+  },
+  {
+    topic: "LCL & le poste", type: "qcm",
+    q: "De quelle direction dépend le Data & IA Office de LCL, selon l'offre d'emploi ?",
+    options: [
+      "La Direction Stratégie, accompagnement de la Transformation, Innovation",
+      "La Direction des Ressources Humaines",
+      "La Direction de la Conformité et des Risques",
+      "La Direction Commerciale Grand Public"
+    ],
+    correct: 0,
+    explanation: "Le Data & IA Office de LCL est rattaché à la Direction Stratégie, accompagnement de la Transformation, Innovation, qui anticipe à 3-5 ans les changements impactant les clients, marchés et usages.",
+    context: "Ce rattachement à une direction 'stratégie et transformation' plutôt qu'à une direction purement IT est un signal fort : la donnée est positionnée chez LCL comme un levier de transformation de l'entreprise, pas seulement comme un sujet technique.",
+    hint: "Le nom de la direction évoque à la fois la stratégie et l'innovation."
+  },
+  {
+    topic: "LCL & le poste", type: "fill",
+    q: "Quel type de contrat est proposé pour le poste Data Analytics Engineering H/F ?",
+    accepted: ["cdi"],
+    explanation: "Le poste est proposé en CDI, en tant que cadre, sans management d'équipe.",
+    context: "Le fait que le poste soit 'Cadre' et sans management est cohérent avec un profil expert individuel contributeur, centré sur la conception et la fiabilisation de modèles de données plutôt que sur le pilotage d'une équipe.",
+    hint: "C'est le type de contrat le plus stable et le plus courant en France, en trois lettres."
+  },
+  {
+    topic: "LCL & le poste", type: "qcm",
+    q: "Quel niveau d'études minimum est demandé pour ce poste ?",
+    options: ["Bac + 5 / M2 et plus", "Bac + 2 / BTS-DUT", "Bac + 3 / Licence", "Aucun niveau requis"],
+    correct: 0,
+    explanation: "L'offre demande un niveau Bac+5/M2 et plus, avec une spécialisation en école d'ingénieurs.",
+    context: "Ce niveau, combiné à 6-10 ans d'expérience demandés, correspond à un profil confirmé/senior plutôt qu'à un premier poste : bien le rappeler en entretien, notamment si tu as un parcours atypique, peut aider à valoriser ton expérience réelle sur les compétences demandées (SQL, Power BI, Agile) plutôt que sur le diplôme seul.",
+    hint: "C'est le niveau correspondant à un diplôme d'ingénieur ou un Master 2."
+  },
+  {
+    topic: "LCL & le poste", type: "qcm",
+    q: "Quel niveau d'expérience minimum est demandé pour ce poste ?",
+    options: ["6 à 10 ans", "0 à 2 ans", "2 à 3 ans", "Plus de 20 ans"],
+    correct: 0,
+    explanation: "L'offre demande un niveau d'expérience de 6 à 10 ans, avec une expérience confirmée en tant qu'Analytics Engineer, Data Analyst ou BI Engineer, idéalement dans le secteur bancaire.",
+    context: "Ce niveau d'expérience justifie l'attente d'autonomie forte exprimée dans l'offre (conduite de projets, animation d'ateliers avec le métier) : en entretien, mets en avant des exemples concrets où tu as porté un projet de bout en bout, pas seulement exécuté des tâches techniques.",
+    hint: "C'est une fourchette à deux chiffres, entre 5 et 10 ans."
+  },
+  {
+    topic: "LCL & le poste", type: "fill",
+    q: "Dans quelle ville est basé le poste Data Analytics Engineering H/F chez LCL ?",
+    accepted: ["villejuif"],
+    explanation: "Le poste est situé au 10 place Oscar Niemeyer, 94811 Villejuif Cedex, en Île-de-France, en mode de travail hybride.",
+    context: "Villejuif accueille plusieurs grands sièges du groupe Crédit Agricole ; le mode hybride mentionné dans l'offre est aussi un point à clarifier en entretien si tu as des contraintes de mobilité ou de télétravail.",
+    hint: "C'est une ville du Val-de-Marne, en Île-de-France."
+  },
+  {
+    topic: "LCL & le poste", type: "qcm",
+    q: "Parmi les outils listés dans l'offre, lequel n'est PAS mentionné comme outil du poste ?",
+    options: [
+      "Photoshop",
+      "Power BI, DAX",
+      "SQL, Teradata",
+      "Outils de gestion de projet Agile (Jira, Klaxoon)"
+    ],
+    correct: 0,
+    explanation: "L'offre liste comme outils informatiques : Power BI/DAX, SQL/Teradata, Git ou outils de versioning, et des outils de gestion de projet Agile comme Jira et Klaxoon. Photoshop n'est pas mentionné.",
+    context: "Klaxoon, moins connu que Jira, est un outil français de facilitation d'ateliers collaboratifs (souvent utilisé pour des ateliers d'idéation ou de cadrage à distance) : le mentionner en entretien si tu le connais déjà peut être un petit plus différenciant.",
+    hint: "C'est un outil de retouche d'image, sans rapport avec la data ou l'agilité."
+  },
+
+  // ===== Stratégie Data/IA Groupe =====
+  {
+    topic: "Stratégie Data/IA Groupe", type: "qcm",
+    q: "Combien Crédit Agricole prévoit-il d'investir dans l'IA sur la période 2026-2028 ?",
+    options: ["Près de 500 millions d'euros", "50 millions d'euros", "5 milliards d'euros", "1 milliard d'euros"],
+    correct: 0,
+    explanation: "Crédit Agricole investira près de 500 millions d'euros sur trois ans (2026-2028) pour accélérer le déploiement de l'IA à l'échelle du Groupe.",
+    context: "Ce montant s'inscrit dans un budget informatique Groupe d'environ 5,7 milliards d'euros par an : il ne représente donc qu'une fraction, mais dédiée spécifiquement à l'accélération de l'IA.",
+    hint: "C'est un montant à trois chiffres suivis de 'millions'."
+  },
+  {
+    topic: "Stratégie Data/IA Groupe", type: "fill",
+    q: "Quel est le nom de la structure dédiée créée par Crédit Agricole pour opérer les socles technologiques IA du Groupe ?",
+    accepted: ["entreprise ia", "l'entreprise ia"],
+    explanation: "Le Groupe a annoncé la création d'une « Entreprise IA » dédiée, qui développe, opère et distribue les socles technologiques IA communs à toutes les entités.",
+    context: "Une part du budget (150 millions d'euros) est allouée spécifiquement à la création de cette entité, qui doit employer environ 150 personnes et devenir opérationnelle en 2026.",
+    hint: "Le nom est très simple : deux mots, 'Entreprise' + le sigle du domaine concerné."
+  },
+  {
+    topic: "Stratégie Data/IA Groupe", type: "qcm",
+    q: "Comment s'appelle le dispositif visant à embarquer l'ensemble des collaborateurs dans la transformation IA du Groupe ?",
+    options: ["AI For All", "Data Academy", "IA Booster", "Digital First"],
+    correct: 0,
+    explanation: "Le Groupe a lancé une démarche baptisée « AI For All », décrite comme itérative et transparente, pour associer les collaborateurs à la transformation IA plutôt que de la leur imposer.",
+    context: "Cette approche illustre une tension classique dans les grands groupes : industrialiser rapidement une technologie tout en évitant que les équipes la perçoivent comme imposée d'en haut — un sujet que tu pourrais retrouver concrètement dans ton futur poste avec la Direction Immobilière.",
+    hint: "Le nom est en anglais et insiste sur le mot 'tous'."
+  },
+  {
+    topic: "Stratégie Data/IA Groupe", type: "qcm",
+    q: "Sur quel plan stratégique du Groupe s'appuie la nouvelle « Data Marketplace » annoncée par Crédit Agricole ?",
+    options: ["ACT 2028", "Horizon 2025", "NExt 2030", "Ambition 2027"],
+    correct: 0,
+    explanation: "La Data Marketplace, destinée à fluidifier le partage de données entre entités du Groupe, est annoncée dans le cadre du plan stratégique ACT 2028.",
+    context: "Une Data Marketplace à l'échelle Groupe pourrait à terme faciliter l'accès de la Data Factory LCL à des données déjà gouvernées par d'autres entités (Crédit Agricole Italia, CACIB...), un sujet à garder en tête si on t'interroge sur la mutualisation des données.",
+    hint: "C'est le nom du plan stratégique du groupe déjà en cours."
+  },
+  {
+    topic: "Stratégie Data/IA Groupe", type: "qcm",
+    q: "Quels acteurs de l'IA Crédit Agricole a-t-il cités comme partenaires technologiques (juin 2026) ?",
+    options: [
+      "Mistral AI et Anthropic, parmi d'autres acteurs européens et américains",
+      "Uniquement des start-up chinoises",
+      "Uniquement Microsoft et Google",
+      "Aucun partenaire externe, tout est développé en interne"
+    ],
+    correct: 0,
+    explanation: "Le directeur de la transformation technologique de Crédit Agricole SA a cité Mistral AI et Anthropic comme partenaires, aux côtés d'autres acteurs européens et américains, tout en affichant une préférence pour les solutions européennes.",
+    context: "Le choix explicite de Mistral AI (français) illustre la priorité donnée à la souveraineté technologique européenne, en cohérence avec le positionnement 'AI For All' et l'investissement dans des capacités de calcul européennes.",
+    hint: "L'un des deux partenaires cités est une start-up française spécialisée dans les grands modèles de langage."
+  },
+  {
+    topic: "Stratégie Data/IA Groupe", type: "qcm",
+    q: "Quel principe motive la préférence de Crédit Agricole pour des solutions technologiques européennes dans sa stratégie IA ?",
+    options: [
+      "La souveraineté numérique et la réduction des dépendances technologiques",
+      "Le coût, moins cher que les solutions américaines",
+      "L'absence de réglementation européenne sur l'IA",
+      "Une obligation légale de n'utiliser que des technologies françaises"
+    ],
+    correct: 0,
+    explanation: "Le Groupe met en avant un objectif de souveraineté numérique : investir dans des solutions de pointe tout en limitant ses dépendances technologiques et en favorisant le développement de technologies européennes.",
+    context: "Cette approche s'inscrit dans un mouvement plus large en Europe (cloud souverain, réglementation IA) où les grandes institutions financières cherchent à sécuriser leurs choix technologiques face à la concentration des capacités IA chez quelques acteurs extra-européens.",
+    hint: "Le mot-clé revient souvent dans les communiqués du Groupe : 'souveraineté'."
+  },
+  {
+    topic: "Stratégie Data/IA Groupe", type: "qcm",
+    q: "Sur quelle structure informatique du Groupe s'appuie l'« Entreprise IA » pour répartir les traitements selon leur sensibilité ?",
+    options: ["CA-GIP", "LCL Banque Privée", "Crédit Agricole Assurances", "Amundi"],
+    correct: 0,
+    explanation: "L'« Entreprise IA » s'appuie sur CA-GIP (la structure informatique du Groupe) pour répartir les charges de calcul entre cloud privé Groupe, partenaires européens et autres solutions, selon la sensibilité des usages.",
+    context: "CA-GIP (Crédit Agricole Group Infrastructure Platform) est l'entité qui mutualise l'infrastructure informatique de plusieurs entités du Groupe, dont LCL : la connaître montre que tu situes bien les différents acteurs IT internes.",
+    hint: "Le sigle contient les initiales du Groupe suivies de 'GIP'."
+  },
+  {
+    topic: "Stratégie Data/IA Groupe", type: "qcm",
+    q: "Quels types de cas d'usage sont mentionnés comme prioritaires dans le déploiement de l'IA chez Crédit Agricole ?",
+    options: [
+      "Agents avancés de relation client, automatisation de processus, outils collaboratifs",
+      "Uniquement le trading haute fréquence",
+      "Uniquement la détection de fraude",
+      "Uniquement la génération d'images publicitaires"
+    ],
+    correct: 0,
+    explanation: "Les cas d'usage couverts par la nouvelle Entreprise IA vont des agents avancés de relation client à l'automatisation de processus, en passant par les outils collaboratifs.",
+    context: "Ces 'agents avancés de relation client' rejoignent directement les enjeux de ton futur poste : concevoir des indicateurs et des outils qui appuient une relation client plus personnalisée, en cohérence avec la stratégie IA du Groupe.",
+    hint: "Un des cas d'usage concerne directement le contact avec le client final."
+  },
+  {
+    topic: "Stratégie Data/IA Groupe", type: "qcm",
+    q: "Dès quelle année le Groupe Crédit Agricole avait-il déjà structuré une démarche d'industrialisation de l'IA avec des cas d'usage priorisés ?",
+    options: ["2024", "2018", "2021", "2026"],
+    correct: 0,
+    explanation: "Dès 2024, le Groupe avait déjà structuré une démarche d'industrialisation de l'IA avec 36 cas d'usage priorisés dans six domaines métiers, avant d'annoncer en 2026 ce plan d'investissement de 500 millions d'euros pour passer à l'échelle.",
+    context: "Ce chiffre de '36 cas d'usage dans six domaines métiers' est un bon exemple à citer en entretien pour montrer que la démarche IA de Crédit Agricole n'est pas nouvelle, mais entre dans une phase d'industrialisation à plus grande échelle.",
+    hint: "C'est deux ans avant l'annonce du plan à 500 millions d'euros."
+  },
+  {
+    topic: "Stratégie Data/IA Groupe", type: "qcm",
+    q: "Quels sont les 4 principes mis en avant par Crédit Agricole pour un déploiement 'maîtrisé' de l'IA ?",
+    options: [
+      "Personnalisation de la relation client, complémentarité humain/IA, encadrement éthique, autonomie technologique",
+      "Rapidité, coût minimal, confidentialité totale, absence de contrôle humain",
+      "Automatisation intégrale, suppression des postes, centralisation, secret total",
+      "Externalisation complète à des prestataires américains"
+    ],
+    correct: 0,
+    explanation: "Le Groupe revendique une stratégie de déploiement 'maîtrisée' reposant sur quatre principes : la personnalisation de la relation client, la complémentarité entre l'humain et l'IA, un encadrement éthique et la recherche d'autonomie technologique.",
+    context: "Le principe de 'complémentarité humain/IA' rejoint directement un discours que tu pourras tenir en entretien : ton rôle de Data Analyst/Analytics Engineer consiste justement à transformer la donnée en décision utile pour l'humain, pas à le remplacer.",
+    hint: "Aucun des 4 principes ne consiste à 'remplacer l'humain'."
+  },
+
+  // ===== Parcours client bancaire =====
+  {
+    topic: "Parcours client bancaire", type: "qcm",
+    q: "Dans un parcours d'ouverture de compte bancaire, à quelle étape intervient généralement le contrôle KYC/LCB-FT ?",
+    options: [
+      "Dès l'entrée en relation, avant toute ouverture effective du compte",
+      "Uniquement après la clôture du compte",
+      "Seulement si le client dépasse 10 000 € de dépôt",
+      "Jamais pour les particuliers, seulement pour les entreprises"
+    ],
+    correct: 0,
+    explanation: "Le contrôle KYC/LCB-FT intervient dès l'entrée en relation, avant l'ouverture effective du compte : vérification d'identité, justificatif de domicile, origine des fonds.",
+    context: "C'est un point de friction bien identifié dans les parcours d'ouverture de compte digitaux : la vérification d'identité à distance (souvent avec un selfie ou une pièce d'identité scannée) est l'étape où le taux d'abandon est historiquement le plus élevé.",
+    hint: "C'est la même notion que celle vue dans la catégorie LCB-FT du quiz."
+  },
+  {
+    topic: "Parcours client bancaire", type: "qcm",
+    q: "Quel est un point de friction fréquent dans un parcours digital d'ouverture de compte bancaire ?",
+    options: [
+      "La vérification d'identité à distance (upload de pièce d'identité, selfie), source d'abandons",
+      "Le choix de la couleur de la carte bancaire",
+      "Le nombre de succursales physiques disponibles",
+      "La lecture des mentions légales en fin de parcours"
+    ],
+    correct: 0,
+    explanation: "La vérification d'identité à distance est un point de friction classique : mauvaise qualité de photo, document refusé, processus perçu comme long ou intrusif entraînent des abandons.",
+    context: "Documenter précisément ce type de friction (avec la donnée associée : taux d'abandon par étape, temps moyen passé, causes de rejet KYC) est exactement le type d'analyse qu'on pourrait te demander de construire côté Data Analytics.",
+    hint: "C'est l'étape qui a le taux d'abandon le plus élevé selon la plupart des études sur l'onboarding bancaire."
+  },
+  {
+    topic: "Parcours client bancaire", type: "qcm",
+    q: "Dans un parcours de crédit immobilier, qu'est-ce que le 'scoring' du dossier client ?",
+    options: [
+      "Une évaluation automatisée du risque de crédit du client à partir de ses données financières",
+      "Le montant total du crédit demandé",
+      "Le taux d'intérêt fixé arbitrairement par le conseiller",
+      "La durée du prêt choisie par le client"
+    ],
+    correct: 0,
+    explanation: "Le scoring est une évaluation automatisée (souvent statistique ou basée sur des règles) du risque de crédit d'un client, à partir de données comme ses revenus, son taux d'endettement, son historique bancaire.",
+    context: "Le scoring illustre un cas d'usage typique où la donnée alimente directement une décision métier à fort enjeu (accorder ou refuser un crédit) : comprendre ce mécanisme aide à situer où l'IA/le scoring s'insère dans le parcours, en complément — pas en remplacement — de la décision du conseiller.",
+    hint: "C'est une évaluation automatisée, pas une décision humaine directe."
+  },
+  {
+    topic: "Parcours client bancaire", type: "qcm",
+    q: "Qu'est-ce que le 'taux d'endettement' pris en compte dans un dossier de crédit immobilier ?",
+    options: [
+      "La part des revenus du foyer consacrée au remboursement de crédits",
+      "Le taux d'intérêt du crédit immobilier",
+      "Le pourcentage d'apport personnel du client",
+      "Le taux de la taxe foncière du bien acheté"
+    ],
+    correct: 0,
+    explanation: "Le taux d'endettement mesure la part des revenus mensuels du foyer consacrée au remboursement de l'ensemble de ses crédits ; en France, il est encadré autour de 35 % maximum par le Haut Conseil de Stabilité Financière.",
+    context: "Ce plafond (avec quelques marges de flexibilité laissées aux banques) est un point réglementaire directement lié au parcours de crédit immobilier ; le connaître aide à comprendre pourquoi certains dossiers sont refusés malgré un projet solide.",
+    hint: "C'est un ratio, exprimé en pourcentage des revenus."
+  },
+  {
+    topic: "Parcours client bancaire", type: "qcm",
+    q: "Quel document central formalise l'offre de prêt immobilier et déclenche un délai de réflexion obligatoire pour l'emprunteur ?",
+    options: ["L'offre de prêt", "Le compromis de vente", "L'acte authentique", "Le relevé d'identité bancaire (RIB)"],
+    correct: 0,
+    explanation: "L'offre de prêt émise par la banque déclenche un délai de réflexion obligatoire d'au moins 10 jours avant que l'emprunteur puisse l'accepter.",
+    context: "Ce délai réglementaire est un point de friction structurel du parcours crédit immobilier : il ralentit mécaniquement le 'time-to-yes' perçu par le client, même quand le dossier est déjà validé côté banque — utile à expliquer si le métier demande pourquoi un parcours prend autant de temps.",
+    hint: "C'est un document, pas un délai en lui-même."
+  },
+  {
+    topic: "Parcours client bancaire", type: "qcm",
+    q: "Quelle donnée est typiquement collectée lors de l'étape de recueil du besoin dans un parcours de crédit immobilier ?",
+    options: [
+      "Montant du projet, apport personnel, revenus et situation professionnelle",
+      "Uniquement l'adresse email du client",
+      "Uniquement le nom de l'agence préférée",
+      "Le mot de passe de l'espace client"
+    ],
+    correct: 0,
+    explanation: "Cette étape de recueil du besoin collecte typiquement le montant du projet, l'apport personnel disponible, les revenus et la situation professionnelle du client, base du futur scoring.",
+    context: "C'est un bon exemple pour un schéma de parcours client : chaque étape peut être associée à la donnée collectée, à l'acteur qui la traite, et au risque de friction ou d'abandon associé — la structure même attendue dans l'exercice 'schématiser un parcours client'.",
+    hint: "Ce sont des données nécessaires pour calculer plus tard un scoring de risque."
+  },
+  {
+    topic: "Parcours client bancaire", type: "qcm",
+    q: "Qu'est-ce que le 'time-to-yes' dans un parcours de crédit ?",
+    options: [
+      "Le délai entre la demande du client et la réponse de principe de la banque",
+      "Le délai entre la signature de l'acte et le déblocage des fonds",
+      "Le taux d'acceptation des dossiers de crédit",
+      "Le délai de remboursement anticipé du crédit"
+    ],
+    correct: 0,
+    explanation: "Le 'time-to-yes' désigne le délai entre le dépôt de la demande de crédit par le client et l'obtention d'une réponse de principe (accord ou refus) de la banque.",
+    context: "C'est un indicateur de plus en plus suivi par les banques traditionnelles, sous la pression des acteurs 100 % digitaux qui promettent des réponses de principe en quelques minutes : un bon exemple de KPI de parcours client à connaître pour ton futur poste.",
+    hint: "L'expression anglaise contient le mot 'yes' (oui)."
+  },
+  {
+    topic: "Parcours client bancaire", type: "qcm",
+    q: "Pourquoi la multiplication des canaux (agence, application mobile, téléphone) peut-elle créer une friction dans un parcours client bancaire ?",
+    options: [
+      "Parce que le client doit parfois répéter les mêmes informations ou vivre une expérience incohérente d'un canal à l'autre",
+      "Parce que les banques n'ont légalement le droit d'utiliser qu'un seul canal",
+      "Parce que les applications mobiles sont interdites pour les crédits immobiliers",
+      "Parce que cela n'a aucun impact sur l'expérience client"
+    ],
+    correct: 0,
+    explanation: "Sans une vision unifiée du client (données partagées entre canaux), le client peut devoir répéter des informations déjà données ailleurs, ou vivre un parcours incohérent entre agence, appli et téléphone.",
+    context: "C'est exactement le type de problème qu'une bonne gouvernance de la donnée (dictionnaire de données, référentiel client unique) cherche à résoudre : un client, une vue à 360°, quel que soit le canal utilisé.",
+    hint: "Le problème vient d'un manque de partage de données entre les canaux, pas d'une interdiction légale."
+  },
+  {
+    topic: "Parcours client bancaire", type: "qcm",
+    q: "Dans un schéma de parcours client, qu'appelle-t-on un 'point de contact' (touchpoint) ?",
+    options: [
+      "Toute interaction du client avec la banque, physique ou digitale, à une étape donnée",
+      "Uniquement le moment de la signature du contrat",
+      "Le numéro de téléphone du service client",
+      "Le nom du conseiller attitré du client"
+    ],
+    correct: 0,
+    explanation: "Un point de contact (touchpoint) est toute interaction du client avec la banque à un moment donné du parcours : visite en agence, appel, notification push, email, échange en visio...",
+    context: "Cartographier tous les points de contact d'un parcours (avec la donnée générée à chacun) est la première étape avant de repérer les frictions — exactement la méthode attendue pour schématiser un parcours client d'ouverture de compte ou de crédit immobilier.",
+    hint: "Le mot vient de l'anglais 'touch' (toucher) + 'point'."
+  },
+  {
+    topic: "Parcours client bancaire", type: "qcm",
+    q: "Quelle donnée un score de risque de crédit immobilier ne prend-il en principe jamais en compte, pour des raisons réglementaires ?",
+    options: [
+      "L'origine ethnique, la religion ou les opinions politiques du client",
+      "Les revenus du foyer",
+      "L'apport personnel disponible",
+      "L'historique de remboursement du client"
+    ],
+    correct: 0,
+    explanation: "Les données dites 'sensibles' (origine ethnique, religion, opinions politiques, santé...) sont, en France et en Europe, encadrées strictement par le RGPD et ne peuvent en principe pas être utilisées comme critère de décision automatisée.",
+    context: "Ce point fait le lien direct avec la catégorie RGPD bancaire du quiz : au-delà des règles générales de conservation et de consentement, le RGPD encadre aussi spécifiquement les catégories de données 'sensibles' qui ne peuvent pas servir de critère de décision automatisée.",
+    hint: "Ce sont des données classées comme 'sensibles' par le RGPD, pas des données financières."
+  },
+
+  // ===== KPIs bancaires =====
+  {
+    topic: "KPIs bancaires", type: "fill",
+    q: "Que signifie le sigle PNB, indicateur clé de la performance d'une banque ?",
+    accepted: ["produit net bancaire"],
+    explanation: "PNB = Produit Net Bancaire. C'est l'équivalent du chiffre d'affaires pour une banque : il regroupe les marges d'intérêt, les commissions et d'autres revenus liés à l'activité bancaire.",
+    context: "Le PNB est LE chiffre le plus suivi en communication financière bancaire, bien avant le 'chiffre d'affaires' utilisé dans les autres secteurs : le connaître et savoir l'expliquer simplement est un vrai basique à maîtriser avant un entretien dans une banque.",
+    hint: "Les 3 lettres sont les initiales de 'Produit', 'Net' et 'Bancaire'."
+  },
+  {
+    topic: "KPIs bancaires", type: "qcm",
+    q: "Que mesure le 'coefficient d'exploitation' d'une banque ?",
+    options: [
+      "Le rapport entre les charges d'exploitation et le produit net bancaire (efficacité opérationnelle)",
+      "Le taux d'intérêt moyen appliqué aux crédits",
+      "La part de marché de la banque sur son territoire",
+      "Le nombre d'agences ouvertes par an"
+    ],
+    correct: 0,
+    explanation: "Le coefficient d'exploitation rapporte les charges d'exploitation (frais de personnel, charges générales...) au PNB. Plus il est bas, plus la banque est efficace opérationnellement.",
+    context: "Un coefficient d'exploitation autour de 60 % est considéré comme un bon niveau pour une banque de détail ; le suivre dans le temps permet de mesurer si des investissements comme la Data Factory ou l'IA génèrent des gains d'efficacité réels.",
+    hint: "Plus ce chiffre est bas, plus la banque est jugée efficace."
+  },
+  {
+    topic: "KPIs bancaires", type: "qcm",
+    q: "Que désigne le 'taux d'attrition' (ou churn) en banque de détail ?",
+    options: [
+      "La proportion de clients qui quittent la banque sur une période donnée",
+      "Le taux de défaut de paiement sur les crédits",
+      "Le taux de croissance du nombre de clients",
+      "Le taux de satisfaction client mesuré par enquête"
+    ],
+    correct: 0,
+    explanation: "Le taux d'attrition (ou churn) mesure la proportion de clients qui quittent la banque (clôture de tous leurs comptes) sur une période donnée, généralement une année.",
+    context: "Réduire l'attrition est un enjeu direct pour la Direction Immobilière du cas LCL : mieux positionner les agences selon le dynamisme local vise justement, entre autres, à limiter le risque de perte de clients par manque de présence pertinente sur le territoire.",
+    hint: "Le mot vient de l'anglais 'churn' (barattage), qui évoque un renouvellement/une perte de clients."
+  },
+  {
+    topic: "KPIs bancaires", type: "fill",
+    q: "Que signifie le sigle NPS, indicateur de recommandation client largement utilisé en banque ?",
+    accepted: ["net promoter score"],
+    explanation: "NPS = Net Promoter Score. Il mesure la probabilité qu'un client recommande sa banque, sur une échelle de 0 à 10, en distinguant promoteurs, passifs et détracteurs.",
+    context: "Le NPS est souvent utilisé comme indicateur de pilotage transverse (pas seulement en marketing) : LCL, comme beaucoup de banques, communique régulièrement sur son classement en satisfaction client (cf. 'Service Client de l'Année' mentionné dans l'offre d'emploi).",
+    hint: "Les 3 lettres évoquent un score de 'promoteurs nets'."
+  },
+  {
+    topic: "KPIs bancaires", type: "qcm",
+    q: "Que mesure le CET1 (déjà vu dans la catégorie Bâle III) par rapport aux autres KPIs bancaires ?",
+    options: [
+      "La solidité financière (fonds propres) de la banque, pas sa performance commerciale",
+      "Le nombre de nouveaux clients acquis dans l'année",
+      "Le taux de satisfaction des clients",
+      "Le montant total des crédits immobiliers accordés"
+    ],
+    correct: 0,
+    explanation: "Le CET1 est un ratio de solvabilité (fonds propres de meilleure qualité rapportés aux actifs pondérés du risque), à ne pas confondre avec les indicateurs de performance commerciale comme le PNB ou l'attrition.",
+    context: "Une bonne pratique en entretien est justement de savoir classer les KPIs par familles : solidité financière (CET1, LCR), performance commerciale (PNB, coefficient d'exploitation), et expérience client (NPS, attrition) — plutôt que de tout mélanger.",
+    hint: "Ce n'est pas un KPI commercial, c'est un ratio de solidité financière déjà vu ailleurs dans ce quiz."
+  },
+  {
+    topic: "KPIs bancaires", type: "qcm",
+    q: "Qu'est-ce que le 'coût du risque' pour une banque ?",
+    options: [
+      "La charge comptable liée aux provisions pour créances douteuses ou impayées",
+      "Le coût des primes d'assurance de la banque elle-même",
+      "Le budget consacré à la cybersécurité",
+      "Le coût de la conformité réglementaire (RGPD, LCB-FT)"
+    ],
+    correct: 0,
+    explanation: "Le coût du risque correspond aux provisions comptables passées par la banque pour couvrir des pertes probables sur ses crédits (clients en défaut ou en retard de paiement).",
+    context: "Le coût du risque est particulièrement suivi en période de tensions économiques : une hausse peut signaler une dégradation de la qualité du portefeuille de crédits, un signal parfois croisé avec des données socio-économiques comme celles utilisées dans le scoring de dynamisme territorial du cas LCL.",
+    hint: "C'est une charge comptable liée aux impayés, pas un coût de conformité."
+  },
+  {
+    topic: "KPIs bancaires", type: "qcm",
+    q: "Que mesure le 'taux d'équipement' d'un client en banque de détail ?",
+    options: [
+      "Le nombre de produits/services bancaires détenus par un même client",
+      "Le nombre d'appareils connectés utilisés pour se connecter à sa banque",
+      "Le taux d'équipement informatique des agences",
+      "Le pourcentage de clients utilisant l'application mobile"
+    ],
+    correct: 0,
+    explanation: "Le taux d'équipement mesure combien de produits différents (compte courant, carte, épargne, assurance, crédit...) un même client détient auprès de sa banque.",
+    context: "Augmenter le taux d'équipement (vendre plusieurs produits à un même client) est historiquement une stratégie clé de rentabilité en banque de détail, moins coûteuse que d'acquérir un nouveau client.",
+    hint: "Ça mesure des produits bancaires détenus, pas des appareils électroniques."
+  },
+  {
+    topic: "KPIs bancaires", type: "qcm",
+    q: "Qu'est-ce que le 'coût d'acquisition client' (CAC) ?",
+    options: [
+      "Le coût moyen dépensé par la banque pour acquérir un nouveau client",
+      "Les frais facturés au client à l'ouverture de son compte",
+      "Le coût du crédit accordé à un nouveau client",
+      "Le salaire moyen d'un chargé de clientèle"
+    ],
+    correct: 0,
+    explanation: "Le coût d'acquisition client (CAC) est le coût moyen (marketing, commercial...) dépensé par la banque pour acquérir un nouveau client.",
+    context: "Comparer le CAC à la valeur générée par un client sur toute sa relation avec la banque (souvent appelée 'valeur vie client') est un raisonnement classique pour arbitrer les investissements marketing ou commerciaux.",
+    hint: "C'est un coût supporté par la banque, pas par le client."
+  },
+  {
+    topic: "KPIs bancaires", type: "fill",
+    q: "Comment appelle-t-on, en anglais, la valeur totale qu'un client est censé générer pour la banque sur toute la durée de la relation ?",
+    accepted: ["customer lifetime value", "lifetime value", "clv"],
+    explanation: "La Customer Lifetime Value (CLV ou LTV) estime la valeur totale qu'un client génère pour l'entreprise pendant toute la durée de sa relation avec elle.",
+    context: "Mettre en regard la CLV et le coût d'acquisition (CAC) permet de juger si un investissement commercial est rentable à long terme, un raisonnement transposable au choix d'implantation d'agences dans le cas de la Direction Immobilière.",
+    hint: "Trois mots en anglais, souvent abrégés en 'CLV' ou 'LTV'."
+  },
+  {
+    topic: "KPIs bancaires", type: "qcm",
+    q: "Que mesure un indice de satisfaction comme le CSAT, parfois utilisé en complément du NPS ?",
+    options: [
+      "La satisfaction du client vis-à-vis d'une interaction ou d'un service précis, à un instant donné",
+      "La solidité financière globale de la banque",
+      "Le nombre de réclamations reçues sur un an",
+      "Le taux d'attrition des clients"
+    ],
+    correct: 0,
+    explanation: "Le CSAT (Customer Satisfaction Score) mesure la satisfaction du client vis-à-vis d'une interaction précise (un appel, une visite en agence, une démarche en ligne), contrairement au NPS qui mesure une propension globale à recommander la marque.",
+    context: "NPS et CSAT sont souvent confondus : le NPS donne une mesure globale et orientée 'recommandation', le CSAT donne une mesure ponctuelle et orientée 'satisfaction immédiate' — les deux sont complémentaires dans le pilotage de l'expérience client.",
+    hint: "Contrairement au NPS, il porte sur une interaction précise, pas sur une recommandation globale."
+  }
+];
+
+const topicColors = {
+  "Organisation LCL": "#0066cc",
+  "Produits phares": "#128a5e",
+  "Bâle III": "#cc6600",
+  "DORA": "#800080",
+  "LCB-FT": "#00807a",
+  "RGPD bancaire": "#cc0055",
+  "Data Factory LCL": "#1f6f8b",
+  "Power BI & DAX": "#c48f00",
+  "SQL & Teradata": "#d9480f",
+  "Agile & Scrum": "#4b6584",
+  "LCL & le poste": "#1c3d5a",
+  "Stratégie Data/IA Groupe": "#6a3fa0",
+  "Parcours client bancaire": "#1789a8",
+  "KPIs bancaires": "#a13d63"
+};
+
+function normalize(str) {
+  return str
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[’']/g, "'")
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
+function shuffleArray(arr) {
+  return arr.slice().sort(() => Math.random() - 0.5);
+}
+
+// ===== Gamification : persistance locale =====
+function getBestScores() {
+  try { return JSON.parse(localStorage.getItem("quiz_bestScores")) || {}; }
+  catch { return {}; }
+}
+function saveBestScoreIfHigher(key, correct, total) {
+  const scores = getBestScores();
+  const prevPercent = scores[key] ? (scores[key].correct / scores[key].total) * 100 : -1;
+  const newPercent = (correct / total) * 100;
+  const isNewRecord = newPercent > prevPercent;
+  if (isNewRecord) {
+    scores[key] = { correct, total };
+    localStorage.setItem("quiz_bestScores", JSON.stringify(scores));
+  }
+  return isNewRecord;
+}
+function getBestScoreFor(key) {
+  const scores = getBestScores();
+  return scores[key] || null;
+}
+
+function updateDailyStreak() {
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const last = localStorage.getItem("quiz_lastPlayedDate");
+  let streak = parseInt(localStorage.getItem("quiz_streakDays")) || 0;
+  if (last === todayStr) {
+    return streak;
+  }
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  streak = (last === yesterday) ? streak + 1 : 1;
+  localStorage.setItem("quiz_lastPlayedDate", todayStr);
+  localStorage.setItem("quiz_streakDays", streak);
+  return streak;
+}
+function getStreakDays() {
+  return parseInt(localStorage.getItem("quiz_streakDays")) || 0;
+}
+
+function getTotalAnswered() {
+  return parseInt(localStorage.getItem("quiz_totalAnswered")) || 0;
+}
+function addToTotalAnswered(n) {
+  const total = getTotalAnswered() + n;
+  localStorage.setItem("quiz_totalAnswered", total);
+  return total;
+}
+
+function getBestCombo() {
+  return parseInt(localStorage.getItem("quiz_bestCombo")) || 0;
+}
+function setBestComboIfHigher(n) {
+  const best = getBestCombo();
+  if (n > best) {
+    localStorage.setItem("quiz_bestCombo", n);
+    return true;
+  }
+  return false;
+}
+
+let currentCombo = 0;
+let sessionBestCombo = 0;
+
+let questions = [];   // sous-ensemble de allQuestions actuellement joué
+let results = [];
+let currentCategoryKey = "__ALL__";
+
+const screenCategory = document.getElementById("screen-category");
+const screenQuiz = document.getElementById("screen-quiz");
+const quizEl = document.getElementById("quiz");
+const summaryEl = document.getElementById("summary");
+
+function buildCategoryScreen() {
+  const topics = [...new Set(allQuestions.map(q => q.topic))];
+  const grid = document.getElementById("cat-grid");
+
+  const streak = getStreakDays();
+  const banner = document.getElementById("daily-banner");
+  if (banner) {
+    if (streak > 0) {
+      banner.style.display = "flex";
+      banner.innerHTML = `<span class="flame">🔥</span> ${streak} jour${streak > 1 ? "s" : ""} d'affilée — reviens demain pour continuer ta série !`;
+    } else {
+      banner.style.display = "none";
+    }
+  }
+
+  const totalAnswered = getTotalAnswered();
+  const bestCombo = getBestCombo();
+  const statsStrip = document.getElementById("stat-strip");
+  if (statsStrip) {
+    statsStrip.innerHTML = `
+      <div class="stat"><div class="stat-num">${totalAnswered}</div><div class="stat-label">Questions répondues</div></div>
+      <div class="stat"><div class="stat-num">${bestCombo}</div><div class="stat-label">Meilleur combo</div></div>
+    `;
+  }
+
+  const allBest = getBestScoreFor("__ALL__");
+  const allRecordHtml = allBest ? `<span class="cat-record">⭐ Record : ${allBest.correct}/${allBest.total}</span>` : "";
+  const allBtn = `
+    <div class="cat-btn-wrap">
+      <button class="cat-btn cat-all" data-topic="__ALL__">Toutes les catégories <span class="cat-count">(${allQuestions.length})</span></button>
+      ${allRecordHtml}
+    </div>
+  `;
+  const topicBtns = topics.map(t => {
+    const count = allQuestions.filter(q => q.topic === t).length;
+    const best = getBestScoreFor(t);
+    const recordHtml = best ? `<span class="cat-record"><span class="star">⭐</span> Record : ${best.correct}/${best.total}</span>` : "";
+    return `
+      <div class="cat-btn-wrap">
+        <button class="cat-btn" data-topic="${t}" style="background:${topicColors[t]}">${t} <span class="cat-count">(${count})</span></button>
+        ${recordHtml}
+      </div>
+    `;
+  }).join("");
+  grid.innerHTML = allBtn + topicBtns;
+
+  grid.querySelectorAll(".cat-btn").forEach(btn => {
+    btn.addEventListener("click", () => startQuiz(btn.dataset.topic));
+  });
+}
+
+function startQuiz(topicKey) {
+  questions = topicKey === "__ALL__"
+    ? shuffleArray(allQuestions)
+    : shuffleArray(allQuestions.filter(q => q.topic === topicKey));
+
+  updateDailyStreak();
+  currentCategoryKey = topicKey;
+
+  const currentCatEl = document.getElementById("current-cat");
+  if (topicKey === "__ALL__") {
+    currentCatEl.innerHTML = `<span class="pill" style="background:#111111">Toutes les catégories</span>`;
+  } else {
+    currentCatEl.innerHTML = `<span class="pill" style="background:${topicColors[topicKey]}">${topicKey}</span>`;
+  }
+
+  screenCategory.style.display = "none";
+  screenQuiz.style.display = "block";
+  document.getElementById("total-count").textContent = questions.length;
+  renderAll();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+document.getElementById("back-link").addEventListener("click", () => {
+  screenQuiz.style.display = "none";
+  screenCategory.style.display = "block";
+  buildCategoryScreen();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+function cardHtml(item, idx) {
+  const typeLabel = item.type === "qcm" ? "QCM" : "À compléter";
+  let bodyHtml = "";
+  if (item.type === "qcm") {
+    const order = shuffleArray(item.options.map((_, i) => i));
+    bodyHtml = `
+      <div class="options" id="options-${idx}">
+        ${order.map(oidx => `
+          <button class="option-btn" data-qidx="${idx}" data-oidx="${oidx}">${item.options[oidx]}</button>
+        `).join("")}
+      </div>
+    `;
+  } else {
+    bodyHtml = `
+      <div class="fill-col">
+        <input type="text" class="fill-input" id="fill-${idx}" placeholder="Ta réponse..." autocomplete="off">
+        <button class="submit-btn" id="submit-${idx}" data-qidx="${idx}">Valider</button>
+      </div>
+    `;
+  }
+  return `
+    <div class="card" id="card-${idx}">
+      <div class="card-top">
+        <span class="topic" data-topic="${item.topic}">${item.topic}</span>
+        <span class="qcount">Question ${idx + 1}/${questions.length}</span>
+        <span class="qtype">${typeLabel}</span>
+      </div>
+      <p class="question">${item.q}</p>
+      <p class="hint" id="hint-${idx}">💡 ${item.hint}</p>
+      <div class="center-row">
+        <button class="hint-btn" id="hint-btn-${idx}">Voir l'indice</button>
+      </div>
+      <p class="feedback" id="feedback-${idx}"></p>
+      <p class="explanation" id="explanation-${idx}">${item.explanation}</p>
+      <p class="context" id="context-${idx}"><span class="label">Contexte</span>${item.context}</p>
+      ${bodyHtml}
+    </div>
+  `;
+}
+
+function renderAll() {
+  results = new Array(questions.length).fill(null);
+  currentCombo = 0;
+  sessionBestCombo = 0;
+  quizEl.innerHTML = questions.map((item, idx) => cardHtml(item, idx)).join("");
+  summaryEl.style.display = "none";
+  quizEl.style.display = "block";
+
+  questions.forEach((item, idx) => {
+    document.getElementById(`hint-btn-${idx}`).addEventListener("click", () => {
+      document.getElementById(`hint-${idx}`).style.display = "block";
+      document.getElementById(`hint-btn-${idx}`).disabled = true;
+    });
+
+    if (item.type === "qcm") {
+      document.querySelectorAll(`#options-${idx} .option-btn`).forEach(btn => {
+        btn.addEventListener("click", () => {
+          if (results[idx] !== null) return;
+          const oidx = parseInt(btn.dataset.oidx);
+          submitQcm(idx, oidx);
+        });
+      });
+    } else {
+      const input = document.getElementById(`fill-${idx}`);
+      const submitBtn = document.getElementById(`submit-${idx}`);
+      submitBtn.addEventListener("click", () => {
+        if (results[idx] !== null) return;
+        submitFill(idx);
+      });
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && results[idx] === null) submitFill(idx);
+      });
+    }
+  });
+
+  updateLiveBar();
+}
+
+function submitQcm(idx, oidx) {
+  const item = questions[idx];
+  const isCorrect = oidx === item.correct;
+  document.querySelectorAll(`#options-${idx} .option-btn`).forEach((btn) => {
+    const bIdx = parseInt(btn.dataset.oidx);
+    btn.disabled = true;
+    if (bIdx === item.correct) btn.classList.add("correct");
+    else if (bIdx === oidx) btn.classList.add("incorrect");
+    else btn.classList.add("dim");
+  });
+  finishAnswer(idx, isCorrect);
+}
+
+function submitFill(idx) {
+  const item = questions[idx];
+  const input = document.getElementById(`fill-${idx}`);
+  const val = normalize(input.value);
+  const isCorrect = val.length > 0 && item.accepted.some(a => normalize(a) === val);
+  input.disabled = true;
+  input.classList.add(isCorrect ? "correct" : "incorrect");
+  document.getElementById(`submit-${idx}`).disabled = true;
+  if (!isCorrect) {
+    input.insertAdjacentHTML("afterend", `<span class="expected">Réponse attendue : <strong>${item.accepted[0]}</strong></span>`);
+  }
+  finishAnswer(idx, isCorrect);
+}
+
+function finishAnswer(idx, isCorrect) {
+  results[idx] = isCorrect;
+  const feedback = document.getElementById(`feedback-${idx}`);
+  feedback.classList.add(isCorrect ? "correct" : "incorrect");
+  feedback.textContent = isCorrect ? "Bonne réponse ✅" : "Pas tout à fait ❌";
+  document.getElementById(`explanation-${idx}`).style.display = "block";
+  document.getElementById(`context-${idx}`).style.display = "block";
+  document.getElementById(`hint-btn-${idx}`).style.display = "none";
+  document.getElementById(`card-${idx}`).classList.add(isCorrect ? "correct-card" : "incorrect-card");
+
+  addToTotalAnswered(1);
+  if (isCorrect) {
+    currentCombo++;
+    if (currentCombo > sessionBestCombo) sessionBestCombo = currentCombo;
+    setBestComboIfHigher(currentCombo);
+  } else {
+    currentCombo = 0;
+  }
+
+  updateLiveBar();
+  if (results.every(r => r !== null)) {
+    showSummary();
+  }
+}
+
+function updateLiveBar() {
+  const answeredCount = results.filter(r => r !== null).length;
+  const correctCount = results.filter(r => r === true).length;
+  document.getElementById("correct-count").textContent = correctCount;
+  document.getElementById("progress").style.width = `${(answeredCount / questions.length) * 100}%`;
+
+  const comboBadge = document.getElementById("combo-badge");
+  const comboCount = document.getElementById("combo-count");
+  if (currentCombo >= 2) {
+    comboCount.textContent = currentCombo;
+    comboBadge.classList.remove("show");
+    void comboBadge.offsetWidth; // relance l'animation
+    comboBadge.classList.add("show");
+  } else {
+    comboBadge.classList.remove("show");
+  }
+}
+
+function showSummary() {
+  const total = results.filter(r => r === true).length;
+  const percent = Math.round((total / questions.length) * 100);
+  const byTopic = {};
+  questions.forEach((q, idx) => {
+    byTopic[q.topic] = byTopic[q.topic] || { ok: 0, tot: 0 };
+    byTopic[q.topic].tot += 1;
+    byTopic[q.topic].ok += results[idx] ? 1 : 0;
+  });
+
+  const rows = Object.entries(byTopic).map(([t, v]) => {
+    const p = (v.ok / v.tot) * 100;
+    return `
+      <div class="topic-row">
+        <span>${t}</span>
+        <span>${v.ok}/${v.tot}</span>
+        <div class="bar-container">
+          <div class="bar" style="width: ${p}%; background: ${topicColors[t]};"></div>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  // Palier de niveau selon le score
+  let tier, tierColor, tierEmoji;
+  if (percent === 100) { tier = "Sans faute !"; tierColor = "#1d9e75"; tierEmoji = "🏆"; }
+  else if (percent >= 80) { tier = "Excellent"; tierColor = "#1d9e75"; tierEmoji = "🌟"; }
+  else if (percent >= 50) { tier = "Bien joué"; tierColor = "#185fa5"; tierEmoji = "👍"; }
+  else { tier = "En progression"; tierColor = "#ff9800"; tierEmoji = "💪"; }
+
+  // Record personnel (par catégorie jouée)
+  const isNewRecord = saveBestScoreIfHigher(currentCategoryKey, total, questions.length);
+  const isNewComboRecord = setBestComboIfHigher(sessionBestCombo);
+  const totalAnswered = getTotalAnswered();
+  const streak = getStreakDays();
+
+  summaryEl.style.display = "block";
+  summaryEl.innerHTML = `
+    <p style="font-size:13px;color:var(--text-tertiary);margin:0 0 8px 0;font-weight:600;">Score final</p>
+    <div class="score-ring-wrap">
+      <svg viewBox="0 0 120 120">
+        <circle class="score-ring-bg" cx="60" cy="60" r="54"></circle>
+        <circle class="score-ring-fg" id="score-ring-fg" cx="60" cy="60" r="54" style="stroke:${tierColor}"></circle>
+      </svg>
+      <div class="score-ring-center">
+        <span class="score-ring-percent">${percent}%</span>
+        <span class="score-ring-frac">${total}/${questions.length}</span>
+      </div>
+    </div>
+    <div>
+      <span class="tier-badge" style="background:${tierColor}20; color:${tierColor}">${tierEmoji} ${tier}</span>
+    </div>
+    ${isNewRecord ? `<div><span class="record-badge">🏅 Nouveau record sur cette catégorie !</span></div>` : ""}
+    ${isNewComboRecord && sessionBestCombo >= 2 ? `<div><span class="record-badge">🔥 Nouveau record de combo : ${sessionBestCombo} !</span></div>` : ""}
+
+    <div class="gamif-stats">
+      <div class="g-stat"><div class="g-num">🔥 ${streak}</div><div class="g-label">Jours d'affilée</div></div>
+      <div class="g-stat"><div class="g-num">${sessionBestCombo}</div><div class="g-label">Meilleur combo</div></div>
+      <div class="g-stat"><div class="g-num">${totalAnswered}</div><div class="g-label">Questions au total</div></div>
+    </div>
+
+    <div style="text-align:left;">
+      <p style="font-size:14px;color:var(--text-secondary);margin:14px 0 6px 0;">Répartition par thème</p>
+      ${rows}
+    </div>
+    <div class="summary-actions">
+      <button class="btn-primary" id="restart">Recommencer</button>
+      <button class="btn-secondary" id="shuffle">Mélanger et recommencer</button>
+      <button class="btn-secondary" id="change-cat">Changer de catégorie</button>
+    </div>
+    <p class="replay-hook">🔥 Reviens demain pour garder ta série, ou tente une autre catégorie pour décrocher un nouveau record !</p>
+  `;
+  summaryEl.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  // Anime l'anneau de score après insertion dans le DOM
+  requestAnimationFrame(() => {
+    const circumference = 339.3;
+    const offset = circumference * (1 - percent / 100);
+    document.getElementById("score-ring-fg").style.strokeDashoffset = offset;
+  });
+
+  document.getElementById("restart").addEventListener("click", () => {
+    renderAll();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+  document.getElementById("shuffle").addEventListener("click", () => {
+    questions = shuffleArray(questions);
+    renderAll();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+  document.getElementById("change-cat").addEventListener("click", () => {
+    screenQuiz.style.display = "none";
+    screenCategory.style.display = "block";
+    buildCategoryScreen();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+}
+
+// Initialize
+buildCategoryScreen();
+</script>
+</body>
+</html>
