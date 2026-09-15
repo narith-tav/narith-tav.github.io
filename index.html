@@ -1,16 +1,43 @@
 <!DOCTYPE html>
-  <html lang="en">
-  <head>
-  <meta charset="UTF-8">
-  <title>Narith Tav</title>
-  </head>
-  <body>
-  <h1>Narith Tav</h1>
-  <ul>
-  <li><a href="about.html">About</a></li>
-  <li><a href="1984.html">1984 (extract of my writing)</a></li>
-  <li><a href="bank.html">quiz bank</a></li>
-    <li><a href="maths.html">quiz maths</a></li>
-</ul>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Narith Tav</title>
+</head>
+<body>
+<h1>Narith Tav</h1>
+<ul id="file-list"></ul>
+
+<script>
+const OWNER = "narith-tav";
+const REPO = "narith-tav.github.io";
+
+function toDisplayName(filename) {
+  return filename
+    .replace(/\.html$/, "")
+    .replace(/[-_]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/`)
+  .then(res => res.json())
+  .then(files => {
+    const list = document.getElementById("file-list");
+    files
+      .filter(f => f.type === "file" && f.name.endsWith(".html") && f.name !== "index.html")
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .forEach(f => {
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.href = f.name;
+        a.textContent = toDisplayName(f.name);
+        li.appendChild(a);
+        list.appendChild(li);
+      });
+  })
+  .catch(err => console.error("Erreur GitHub API :", err));
+</script>
 </body>
 </html>
+
