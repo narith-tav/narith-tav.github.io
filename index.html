@@ -75,10 +75,14 @@
 
   .subgroup-title {
     text-align: center;
-    font-size: 12px;
+    display: block;
+    margin: 20px auto 14px auto;
+    font-size: 22px;
     font-weight: 700;
-    color: var(--text-tertiary);
-    margin: 18px 0 10px 0;
+    color: #fff;
+    border-radius: 24px;
+    padding: 10px 26px;
+    width: fit-content;
   }
 
   #loading {
@@ -109,8 +113,13 @@ const ICONS = {
   "bank": "🏦",
   "maths": "📐",
   "chimie": "🧪",
-  "quiz": "📝"
+  "quiz": "📝",
+  "terminale": "🎓",
+  "3eme": "📗",
+  "3ème": "📗"
 };
+
+const LEVEL_PALETTE = ["#185fa5", "#1d9e75", "#a35800", "#8b1e3f"];
 
 function toDisplayName(name) {
   return name
@@ -160,6 +169,7 @@ fetch(`https://api.github.com/repos/${OWNER}/${REPO}`)
     });
 
     let colorIndex = 0;
+    let levelIndex = 0;
 
     function renderGrid(files, parent) {
       const grid = document.createElement("div");
@@ -185,8 +195,13 @@ fetch(`https://api.github.com/repos/${OWNER}/${REPO}`)
       section.className = "group";
 
       const title = document.createElement("p");
-      title.className = isTopLevel ? "group-title" : "subgroup-title";
-      title.textContent = toDisplayName(folderName);
+      if (isTopLevel) {
+        title.className = "group-title";
+      } else {
+        title.className = "subgroup-title";
+        title.style.background = LEVEL_PALETTE[levelIndex++ % LEVEL_PALETTE.length];
+      }
+      title.textContent = isTopLevel ? toDisplayName(folderName) : `${iconFor(folderName)} ${toDisplayName(folderName)}`;
       section.appendChild(title);
 
       if (node.files.length > 0) {
