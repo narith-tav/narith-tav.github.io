@@ -35,51 +35,52 @@ fetch(`https://api.github.com/repos/${OWNER}/${REPO}`)
       .filter(item => item.type === "blob" && item.path.endsWith(".html") && item.path !== "index.html")
       .sort((a, b) => a.path.localeCompare(b.path));
 
-    // Regroupe les fichiers par dossier ("" = racine)
-    const groups = {};
+    // Construit un arbre { files: [...], children: { nom: { files, children } } }
+    const root = { files: [], children: {} };
     htmlFiles.forEach(item => {
       const parts = item.path.split("/");
       const filename = parts.pop();
-      const folder = parts.join("/"); // "" si à la racine
-      if (!groups[folder]) groups[folder] = [];
-      groups[folder].push({ path: item.path, filename });
-    });
-
-    const folderNames = Object.keys(groups).filter(f => f !== "").sort();
-
-    // 1. Fichiers à la racine : liste simple à puces
-    (groups[""] || []).forEach(({ path, filename }) => {
-      const li = document.createElement("li");
-      const a = document.createElement("a");
-      a.href = path;
-      a.textContent = toDisplayName(filename);
-      li.appendChild(a);
-      list.appendChild(li);
-    });
-
-    // 2. Chaque répertoire : titre numéroté, puis sous-liste indentée à puces
-    folderNames.forEach((folder, index) => {
-      const folderLi = document.createElement("li");
-      folderLi.style.listStyle = "none";
-      folderLi.style.marginTop = "0.8em";
-
-      const heading = document.createElement("strong");
-      heading.textContent = `${index + 1}. ${toDisplayName(folder.replace(/\//g, " / "))}`;
-      folderLi.appendChild(heading);
-
-      const subList = document.createElement("ul");
-      groups[folder].forEach(({ path, filename }) => {
-        const li = document.createElement("li");
-        const a = document.createElement("a");
-        a.href = path;
-        a.textContent = toDisplayName(filename);
-        li.appendChild(a);
-        subList.appendChild(li);
+      let node = root;
+      parts.forEach(folderName => {
+        if (!node.children[folderName]) {
+          node.children[folderName] = { files: [], children: {} };
+        }
+        node = node.children[folderName];
       });
-      folderLi.appendChild(subList);
-
-      list.appendChild(folderLi);
+      node.files.push({ path: item.path, filename });
     });
+
+    function renderNode(node, container, depth) {
+      // Fichiers de ce niveau : liste à puces
+      node.files
+        .sort((a, b) => a.filename.localeCompare(b.filename))
+        .forEach(({ path, filename }) => {
+          const li = document.createElement("li");
+          const a = document.createElement("a");
+          a.href = path;
+          a.textContent = toDisplayName(filename);
+          li.appendChild(a);
+          container.appendChild(li);
+        });
+
+      // Sous-répertoires : titre en gras + sous-liste indentée (bullets et retrait gérés nativement par l'imbrication de <ul>)
+      Object.keys(node.children).sort().forEach((folderName) => {
+        const folderLi = document.createElement("li");
+        folderLi.style.marginTop = depth === 0 ? "0.8em" : "0.4em";
+
+        const heading = document.createElement("strong");
+        heading.textContent = toDisplayName(folderName);
+        folderLi.appendChild(heading);
+
+        const subList = document.createElement("ul");
+        renderNode(node.children[folderName], subList, depth + 1);
+        folderLi.appendChild(subList);
+
+        container.appendChild(folderLi);
+      });
+    }
+
+    renderNode(root, list, 0);
   })
   .catch(err => console.error("Erreur GitHub API :", err));
 </script>
