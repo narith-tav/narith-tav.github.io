@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quiz Maths 6e</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f3ef;
+    --card: #f7f7f5;
+    --card-white: #ffffff;
+    --math-font: 'STIX Two Text', Cambria, Georgia, 'Times New Roman', serif;
+    --border: #e6e4dd;
+    --text-primary: #111111;
+    --text-secondary: #555555;
+    --text-tertiary: #8a8a8d;
+    --accent: #185fa5;
+    --accent-dark: #0c447c;
+    --accent-bg: #e6f1fb;
+    --success: #1d9e75;
+    --success-bg: #e1f5ee;
+    --warning: #ff9800;
+    --warning-bg: #fff3e0;
+    --error: #c0392b;
+    --error-bg: #ffebee;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    padding: 14px 10px 80px 10px;
+    background: var(--bg);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    color: var(--text-primary);
+    display: flex;
+    justify-content: center;
+    font-size: 17px;
+  }
+  .wrap { max-width: 600px; width: 100%; }
+  @media (min-width: 640px) {
+    body { padding: 20px 16px 80px 16px; }
+  }
+
+  /* Header */
+  .avatar {
+    width: 36px; height: 36px; border-radius: 18px;
+    background: #000; color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; margin: 0 auto 10px auto;
+  }
+  h1 {
+    margin: 0 0 4px 0; text-align: center;
+    font-size: 24px; font-weight: 600; letter-spacing: -0.3px; color: #000;
+  }
+  .subtitle {
+    margin: 0 0 14px 0; text-align: center;
+    color: var(--text-secondary); font-size: 14px; font-weight: 500;
+  }
+  .meta {
+    margin: 0 0 14px 0; text-align: center;
+    color: var(--text-tertiary); font-size: 12px;
+  }
+
+  /* Daily streak banner */
+  .daily-banner {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    background: linear-gradient(135deg, #fff3d6, #ffe3d6);
+    border-radius: 14px; padding: 9px 14px; margin-bottom: 10px;
+    font-size: 13px; font-weight: 700; color: #a35800;
+  }
+  .daily-banner .flame { font-size: 17px; }
+  .stat-strip {
+    display: flex; justify-content: center; gap: 18px; flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .stat-strip .stat { text-align: center; }
+  .stat-strip .stat-num { font-size: 17px; font-weight: 800; color: var(--text-primary); }
+  .stat-strip .stat-label { font-size: 10px; color: var(--text-tertiary); font-weight: 600; text-transform: uppercase; }
+
+  /* Category selection */
+  .cat-grid {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;
+    margin-bottom: 24px;
+  }
+  .cat-btn-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; max-width: 220px; }
+  .cat-btn {
+    border: none; border-radius: 24px; color: #fff;
+    font-size: 16px; font-weight: 600;
+    padding: 14px 22px; cursor: pointer;
+    font-family: inherit;
+  }
+  .cat-btn:hover { opacity: 0.9; }
+  .cat-btn .cat-count {
+    font-weight: 400; opacity: 0.85; font-size: 14px;
+  }
+  .cat-all { background: #111111; }
+  .cat-week {
+    font-size: 11px; font-weight: 600; color: var(--text-tertiary);
+    text-align: center;
+  }
+  .cat-record {
+    font-size: 11px; font-weight: 700; color: var(--text-tertiary);
+  }
+  .cat-record .star { color: #f0a500; }
+
+  .back-link {
+    display: block; text-align: center; margin: 0 0 18px 0;
+    font-size: 15px; color: var(--accent); cursor: pointer;
+    font-weight: 600; text-decoration: none;
+  }
+  .back-link:hover { text-decoration: underline; }
+
+  .current-cat {
+    text-align: center; margin: 0 0 18px 0;
+  }
+  .current-cat .pill {
+    display: inline-block; border-radius: 20px; padding: 9px 20px;
+    font-size: 15px; font-weight: 600; color: #fff;
+  }
+
+  /* Sticky live score bar */
+  .live-bar {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--bg); padding: 0 0 14px 0; margin-bottom: 6px;
+  }
+  .live-inner {
+    background: var(--card-white);
+    border: 0.5px solid var(--border);
+    border-radius: 18px;
+    padding: 14px 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  }
+  .live-top {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px;
+  }
+  .live-score-block { display: flex; align-items: baseline; gap: 6px; }
+  .live-score-number {
+    font-size: 30px; font-weight: 800; color: var(--text-primary);
+    line-height: 1; transition: color 0.2s ease;
+  }
+  .live-score-label { font-size: 13px; color: var(--text-tertiary); font-weight: 500; }
+  .live-right { display: flex; align-items: center; gap: 8px; }
+  .combo-badge {
+    display: none; align-items: center; gap: 4px;
+    background: linear-gradient(135deg, #ff9800, #ff5252);
+    color: #fff; font-weight: 700; font-size: 13px;
+    padding: 5px 12px; border-radius: 20px;
+    animation: pop 0.25s ease;
+  }
+  .combo-badge.show { display: inline-flex; }
+  @keyframes pop {
+    0% { transform: scale(0.7); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .progress-container {
+    width: 100%; background: var(--border); border-radius: 4px;
+    margin-top: 12px; height: 10px;
+  }
+  .progress-bar {
+    height: 100%; background: linear-gradient(90deg, var(--accent), #3fa7ff);
+    border-radius: 4px;
+    width: 0%; transition: width 0.35s ease;
+  }
+
+  .card {
+    background: var(--card);
+    border-radius: 18px;
+    padding: 20px 16px 18px 16px;
+    margin-bottom: 14px;
+    scroll-margin-top: 70px;
+  }
+  .card.correct-card { background: var(--success-bg); }
+  .card.incorrect-card { background: var(--error-bg); }
+
+  .card-top {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px; flex-wrap: wrap; gap: 6px;
+  }
+  .topic {
+    display: inline-block; font-size: 14px; font-weight: 600;
+    padding: 4px 12px; border-radius: 20px;
+  }
+  .topic[data-topic="Nombres décimaux"] { background: #d6ebff; color: #0066cc; }
+  .topic[data-topic="Les quatre opérations"] { background: #d9f5ea; color: #128a5e; }
+  .topic[data-topic="Fractions"] { background: #ffe9d6; color: #cc6600; }
+  .topic[data-topic="Périmètres et aires"] { background: #f2ddff; color: #800080; }
+  .topic[data-topic="Géométrie : figures et symétrie"] { background: #d6fbf5; color: #00807a; }
+  .topic[data-topic="Proportionnalité"] { background: #ffd9e6; color: #cc0055; }
+
+  .qcount { font-size: 14px; color: var(--text-tertiary); }
+  .qtype {
+    font-size: 13px; color: var(--text-tertiary);
+    border: 0.5px solid var(--border); border-radius: 20px;
+    padding: 2px 10px; background: var(--card-white);
+  }
+  .question { font-size: 18px; font-weight: 400; margin: 0 0 8px 0; line-height: 1.5; font-family: var(--math-font); }
+  .question strong { font-weight: 700; }
+  .formula-line {
+    display: block; text-align: center; font-size: 1.15em; font-weight: 600;
+    margin: 10px 0; color: var(--text-primary);
+  }
+  sub, sup { font-size: 0.7em; }
+  .rad { display: inline-flex; align-items: flex-start; white-space: nowrap; }
+  .rad-sym { font-size: 1.15em; line-height: 1; transform: translateY(1px) scaleY(1.05); margin-right: 1px; }
+  .rad-bar { border-top: 1.5px solid currentColor; padding: 1px 2px 0 2px; }
+  .question sub, .option-btn sub, .explanation sub, .context sub, .hint sub { font-style: italic; }
+  .hint {
+    font-size: 15px; color: var(--text-tertiary); font-style: italic;
+    margin: 0 0 10px 0; display: none;
+    font-family: var(--math-font);
+  }
+
+  .center-row { display: flex; justify-content: center; margin-top: 12px; }
+
+  .hint-btn {
+    border: none; border-radius: 20px; background: var(--warning-bg); color: #a35800;
+    font-size: 15px; font-weight: 600; padding: 10px 18px; cursor: pointer;
+    font-family: inherit; margin: 0 0 12px 0;
+  }
+  .hint-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* Feedback + explanation + context: positioned before the answer choices */
+  /* Réponse : encadré bleu, même structure que l'astuce */
+  .reponse-box {
+    background: #e6f1fb; border: 1px solid #bcdcf5; border-radius: 14px;
+    margin: 0 0 12px 0; overflow: hidden; display: none;
+  }
+  .reponse-head {
+    background: #cfe6fa; padding: 10px 16px;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    font-weight: 800; font-size: 14px; text-transform: uppercase;
+    letter-spacing: 0.4px; color: #0c447c;
+  }
+  .reponse-body {
+    padding: 14px 16px; font-size: 16px; color: #0c447c; line-height: 1.6;
+    font-family: var(--math-font);
+    text-align: center;
+  }
+
+  /* Astuce : variante D, style "callout" documentation */
+  .context-box {
+    background: #fff8e8; border: 1px solid #f0d896; border-radius: 14px;
+    margin: 0 0 14px 0; overflow: hidden; display: none;
+  }
+  .context-head {
+    background: #ffe9b8; padding: 10px 16px;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    font-weight: 800; font-size: 14px; text-transform: uppercase;
+    letter-spacing: 0.4px; color: #7a4a00;
+  }
+  .context-body {
+    padding: 14px 16px; font-size: 16px; color: #5c3d00; line-height: 1.6;
+    font-family: var(--math-font);
+    text-align: center;
+  }
+
+  /* QCM options: centered pill cluster */
+  .options {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
+    margin-bottom: 4px;
+  }
+  .option-btn {
+    font-family: var(--math-font); font-size: 16px; font-weight: 600;
+    text-align: center; padding: 12px 18px;
+    border-radius: 20px; border: 1.5px solid #d8d6cd;
+    background: #fff; color: var(--text-primary);
+    cursor: pointer;
+  }
+  .option-btn:hover:not(:disabled) { background: #f0efe9; }
+  .option-btn:disabled { cursor: not-allowed; }
+  .option-btn.correct { background: var(--success); border-color: var(--success); color: #fff; }
+  .option-btn.incorrect { background: var(--error); border-color: var(--error); color: #fff; }
+  .option-btn.dim { opacity: 0.4; }
+
+  /* Fill-in: centered */
+  .fill-col {
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    margin-bottom: 4px;
+  }
+  .fill-input {
+    width: 100%; max-width: 280px;
+    font-family: var(--math-font); font-size: 18px; text-align: center;
+    padding: 12px 14px; border-radius: 20px;
+    border: 1.5px solid #d8d6cd; background: #fff; color: var(--text-primary);
+  }
+  .fill-input:focus { outline: 2px solid var(--accent); }
+  .fill-input.correct { border-color: var(--success); background: var(--success-bg); }
+  .fill-input.incorrect { border-color: var(--error); background: var(--error-bg); }
+  .submit-btn {
+    border: none; border-radius: 20px; background: var(--accent); color: #fff;
+    font-size: 16px; font-weight: 600; padding: 12px 24px; cursor: pointer;
+    font-family: inherit;
+  }
+  .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .expected {
+    font-size: 15px; color: var(--text-secondary); text-align: center;
+    font-family: var(--math-font);
+  }
+
+  .summary {
+    background: var(--card-white);
+    border-radius: 18px;
+    padding: 30px 22px;
+    text-align: center;
+    display: none;
+  }
+  .score-ring-wrap { position: relative; width: 160px; height: 160px; margin: 4px auto 6px auto; }
+  .score-ring-wrap svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .score-ring-bg { fill: none; stroke: var(--border); stroke-width: 12; }
+  .score-ring-fg {
+    fill: none; stroke-width: 12; stroke-linecap: round;
+    stroke-dasharray: 339.3; stroke-dashoffset: 339.3;
+    transition: stroke-dashoffset 1s ease, stroke 0.3s ease;
+  }
+  .score-ring-center {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+  .score-ring-percent { font-size: 34px; font-weight: 800; color: var(--text-primary); line-height: 1; }
+  .score-ring-frac { font-size: 13px; color: var(--text-tertiary); font-weight: 600; margin-top: 2px; }
+  .tier-badge {
+    display: inline-block; font-size: 15px; font-weight: 700; padding: 6px 16px;
+    border-radius: 20px; margin: 10px 0 4px 0;
+  }
+  .record-badge {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700;
+    color: #a35800; background: var(--warning-bg); padding: 6px 14px; border-radius: 20px;
+    margin: 6px 0 4px 0;
+  }
+  .gamif-stats {
+    display: flex; justify-content: center; gap: 22px; flex-wrap: wrap;
+    margin: 18px 0 6px 0; padding: 14px 0; border-top: 0.5px solid var(--border);
+    border-bottom: 0.5px solid var(--border);
+  }
+  .gamif-stats .g-stat { text-align: center; }
+  .gamif-stats .g-num { font-size: 19px; font-weight: 800; color: var(--text-primary); }
+  .gamif-stats .g-label { font-size: 11px; color: var(--text-tertiary); font-weight: 600; text-transform: uppercase; }
+  .replay-hook {
+    font-size: 13px; color: var(--text-secondary); margin-top: 16px; line-height: 1.5;
+  }
+  .topic-row {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 16px; padding: 12px 0; border-top: 0.5px solid var(--border);
+    text-align: left;
+  }
+  .topic-row .bar-container {
+    width: 90px; height: 8px; background: var(--border);
+    border-radius: 5px; margin-left: 10px; flex-shrink: 0;
+  }
+  .topic-row .bar { height: 100%; border-radius: 5px; }
+  .summary-actions {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
+    margin-top: 22px;
+  }
+  .summary-actions button {
+    border: none; border-radius: 20px; font-size: 16px; font-weight: 600;
+    padding: 12px 20px; cursor: pointer; font-family: inherit;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-secondary { background: var(--bg); color: var(--text-primary); border: 1px solid var(--border) !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="avatar">✏️</div>
+  <h1>Quiz Maths 6e</h1>
+  <p class="subtitle">6 catégories · Programme de 6e</p>
+
+  <div id="screen-category">
+    <div class="daily-banner" id="daily-banner" style="display:none"></div>
+    <div class="stat-strip" id="stat-strip"></div>
+    <div class="cat-grid" id="cat-grid"></div>
+  </div>
+
+  <div id="screen-quiz" style="display:none">
+    <div class="current-cat" id="current-cat"></div>
+    <a class="back-link" id="back-link">← Changer de catégorie</a>
+
+    <div class="live-bar">
+      <div class="live-inner">
+        <div class="live-top">
+          <div class="live-score-block">
+            <span class="live-score-number" id="correct-count">0</span>
+            <span class="live-score-label">/ <span id="total-count">0</span> bonnes réponses</span>
+          </div>
+          <div class="live-right">
+            <span class="combo-badge" id="combo-badge">🔥 <span id="combo-count">0</span></span>
+          </div>
+        </div>
+        <div class="progress-container">
+          <div class="progress-bar" id="progress"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="quiz"></div>
+    <div id="summary" class="summary"></div>
+  </div>
+</div>
+
+<script>
+const allQuestions = [
+  // ===== Nombres décimaux =====
+  {
+    topic: "Nombres décimaux", type: "qcm",
+    q: `Quel est le plus grand nombre parmi ces quatre ?`,
+    options: ["5,8", "5,25", "5,08", "5,2"],
+    correct: 0,
+    explanation: "5,8 est le plus grand car son premier chiffre après la virgule (8) est plus grand que celui des autres nombres.",
+    context: "Pour comparer des nombres décimaux, on compare d'abord la partie entière, puis les chiffres après la virgule un par un.",
+    hint: "Compare d'abord les chiffres juste après la virgule."
+  },
+  {
+    topic: "Nombres décimaux", type: "qcm",
+    q: `Comment s'écrit en chiffres le nombre « douze virgule cinq » ?`,
+    options: ["12,5", "120,5", "12,05", "1,25"],
+    correct: 0,
+    explanation: "« Douze virgule cinq » s'écrit 12,5.",
+    context: "La partie avant la virgule est la partie entière, celle après est la partie décimale.",
+    hint: "« Douze » avant la virgule, « cinq » juste après."
+  },
+  {
+    topic: "Nombres décimaux", type: "qcm",
+    q: `Range ces nombres du plus petit au plus grand : 3,4 ; 3,04 ; 3,45 ; 3,1`,
+    options: ["3,04 < 3,1 < 3,4 < 3,45", "3,4 < 3,04 < 3,1 < 3,45", "3,04 < 3,4 < 3,1 < 3,45", "3,45 < 3,4 < 3,1 < 3,04"],
+    correct: 0,
+    explanation: "En comparant chiffre par chiffre après la virgule : 3,04 < 3,1 < 3,4 < 3,45.",
+    context: "Attention : 3,04 semble « petit » à cause du zéro, mais il est bien plus petit que 3,1 et 3,4, pas juste à cause du nombre de chiffres.",
+    hint: "Ne te laisse pas piéger par le nombre de chiffres après la virgule."
+  },
+  {
+    topic: "Nombres décimaux", type: "qcm",
+    q: `Arrondis 7,68 à l'unité près.`,
+    options: ["8", "7", "7,7", "7,68"],
+    correct: 0,
+    explanation: "7,68 est plus proche de 8 que de 7 (0,68 est supérieur à 0,5), donc on arrondit à 8.",
+    context: "Pour arrondir à l'unité, on regarde le premier chiffre après la virgule : s'il est ≥5, on arrondit au-dessus.",
+    hint: "Regarde si 0,68 est plus proche de 0 ou de 1."
+  },
+  {
+    topic: "Nombres décimaux", type: "qcm",
+    q: `Quelle est la valeur du chiffre 4 dans le nombre 25,47 ?`,
+    options: ["4 dixièmes", "4 centièmes", "4 unités", "4 dizaines"],
+    correct: 0,
+    explanation: "Dans 25,47, le chiffre 4 est juste après la virgule : il représente les dixièmes.",
+    context: "Après la virgule, l'ordre des positions est : dixièmes, centièmes, millièmes...",
+    hint: "C'est le premier chiffre après la virgule."
+  },
+  {
+    topic: "Nombres décimaux", type: "fill",
+    q: `Écris en chiffres le nombre « trente-six virgule sept » (utilise une virgule)`,
+    accepted: ["36,7", "36.7"],
+    explanation: "« Trente-six virgule sept » s'écrit 36,7.",
+    context: "En France, on utilise la virgule pour séparer la partie entière de la partie décimale.",
+    hint: "36 avant la virgule, 7 après."
+  },
+  {
+    topic: "Nombres décimaux", type: "qcm",
+    q: `Quel est le nombre juste avant 8 sur une droite graduée avec un pas de 0,1 ?`,
+    options: ["7,9", "7,99", "8,1", "7,1"],
+    correct: 0,
+    explanation: "Avec un pas de 0,1, le nombre juste avant 8 est 7,9 (8 - 0,1 = 7,9).",
+    context: "Sur une droite graduée avec un pas de 0,1, chaque graduation avance ou recule de 0,1.",
+    hint: "Calcule 8 - 0,1."
+  },
+  {
+    topic: "Nombres décimaux", type: "fill",
+    q: `Calcule 3,2 + 1,5 (réponds avec une virgule)`,
+    accepted: ["4,7", "4.7"],
+    explanation: "3,2 + 1,5 = 4,7.",
+    context: "Pour additionner des nombres décimaux, on aligne bien les virgules avant de faire le calcul.",
+    hint: "Aligne les virgules avant d'additionner."
+  },
+  // ===== Les quatre opérations =====
+  {
+    topic: "Les quatre opérations", type: "qcm",
+    q: `Combien font 347 + 258 ?`,
+    options: ["605", "595", "615", "505"],
+    correct: 0,
+    explanation: "347 + 258 = 605.",
+    context: "Pense à poser l'addition en colonnes si le calcul mental est difficile.",
+    hint: "Pose l'opération en colonnes si besoin."
+  },
+  {
+    topic: "Les quatre opérations", type: "qcm",
+    q: `Combien font 502 - 178 ?`,
+    options: ["324", "334", "314", "424"],
+    correct: 0,
+    explanation: "502 - 178 = 324.",
+    context: "N'oublie pas les retenues lors de la soustraction en colonnes.",
+    hint: "Pose la soustraction en colonnes en faisant attention aux retenues."
+  },
+  {
+    topic: "Les quatre opérations", type: "qcm",
+    q: `Combien font 24 × 7 ?`,
+    options: ["168", "158", "178", "148"],
+    correct: 0,
+    explanation: "24 × 7 = 168.",
+    context: "Tu peux décomposer : 20×7=140 et 4×7=28, puis 140+28=168.",
+    hint: "Décompose 24 en 20 + 4."
+  },
+  {
+    topic: "Les quatre opérations", type: "qcm",
+    q: `Combien font 144 ÷ 12 ?`,
+    options: ["12", "14", "11", "13"],
+    correct: 0,
+    explanation: "144 ÷ 12 = 12, car 12 × 12 = 144.",
+    context: "Pense à la table de multiplication de 12 pour retrouver ce résultat.",
+    hint: "Quel nombre multiplié par 12 donne 144 ?"
+  },
+  {
+    topic: "Les quatre opérations", type: "qcm",
+    q: `Quel est le résultat de 8 × 6 + 4 ?`,
+    options: ["52", "80", "56", "44"],
+    correct: 0,
+    explanation: "On effectue d'abord la multiplication (8×6=48), puis l'addition (48+4=52).",
+    context: "Règle de priorité : la multiplication et la division sont prioritaires sur l'addition et la soustraction.",
+    hint: "Fais d'abord la multiplication, puis l'addition."
+  },
+  {
+    topic: "Les quatre opérations", type: "qcm",
+    q: `Quel est le résultat de (5 + 3) × 2 ?`,
+    options: ["16", "11", "13", "10"],
+    correct: 0,
+    explanation: "Les parenthèses sont prioritaires : on calcule d'abord 5+3=8, puis 8×2=16.",
+    context: "Les parenthèses indiquent toujours le calcul à faire en premier.",
+    hint: "Calcule d'abord ce qui est entre parenthèses."
+  },
+  {
+    topic: "Les quatre opérations", type: "fill",
+    q: `Calcule 9 × 9 (réponds par un nombre)`,
+    accepted: ["81"],
+    explanation: "9 × 9 = 81.",
+    context: "C'est une table de multiplication essentielle à connaître par cœur.",
+    hint: "Pense à ta table de 9."
+  },
+  {
+    topic: "Les quatre opérations", type: "fill",
+    q: `Calcule 630 ÷ 9 (réponds par un nombre)`,
+    accepted: ["70"],
+    explanation: "630 ÷ 9 = 70, car 9 × 70 = 630.",
+    context: "Tu peux d'abord diviser 63 par 9 (=7), puis ajouter le zéro.",
+    hint: "63 ÷ 9 = 7, que se passe-t-il si tu ajoutes un zéro ?"
+  },
+  // ===== Fractions =====
+  {
+    topic: "Fractions", type: "qcm",
+    q: `Que représente la fraction 3/4 ?`,
+    options: ["3 parts sur 4 parts égales", "4 parts sur 3", "3 fois 4", "4 divisé par 3, plusieurs fois"],
+    correct: 0,
+    explanation: "3/4 signifie qu'on partage un tout en 4 parts égales et qu'on en prend 3.",
+    context: "Le nombre du bas (dénominateur) indique en combien de parts égales on partage ; celui du haut (numérateur) indique combien de parts on prend.",
+    hint: "Le nombre du bas indique le nombre total de parts égales."
+  },
+  {
+    topic: "Fractions", type: "qcm",
+    q: `Quelle fraction représente la moitié d'un tout ?`,
+    options: ["1/2", "2/1", "1/4", "2/2"],
+    correct: 0,
+    explanation: "La moitié d'un tout se note 1/2 : on partage en 2 parts égales et on en prend 1.",
+    context: "1/2, 1/3, 1/4... sont des fractions très courantes à bien connaître.",
+    hint: "« Moitié » veut dire qu'on partage en 2."
+  },
+  {
+    topic: "Fractions", type: "qcm",
+    q: `Parmi ces fractions, laquelle est égale à 1 (un tout entier) ?`,
+    options: ["5/5", "5/1", "1/5", "2/5"],
+    correct: 0,
+    explanation: "Une fraction où le numérateur est égal au dénominateur représente un tout entier : 5/5 = 1.",
+    context: "Quand on prend toutes les parts d'un partage, on obtient le tout entier.",
+    hint: "Que se passe-t-il quand le numérateur et le dénominateur sont identiques ?"
+  },
+  {
+    topic: "Fractions", type: "qcm",
+    q: `Quelle fraction est la plus grande : 1/2 ou 1/4 ?`,
+    options: ["1/2", "1/4", "Elles sont égales", "Impossible à dire"],
+    correct: 0,
+    explanation: "Plus le dénominateur est petit, plus chaque part est grande : 1/2 est donc plus grand que 1/4.",
+    context: "Avec les fractions, un dénominateur plus petit donne des parts plus grandes !",
+    hint: "Pense à une pizza coupée en 2 parts, puis en 4 parts : où les parts sont-elles plus grandes ?"
+  },
+  {
+    topic: "Fractions", type: "qcm",
+    q: `Combien vaut la moitié de 10 ?`,
+    options: ["5", "2", "20", "10"],
+    correct: 0,
+    explanation: "La moitié de 10 est 5, car 10 ÷ 2 = 5.",
+    context: "Prendre la moitié revient à diviser par 2.",
+    hint: "Divise 10 par 2."
+  },
+  {
+    topic: "Fractions", type: "qcm",
+    q: `Combien vaut le quart de 20 ?`,
+    options: ["5", "4", "10", "15"],
+    correct: 0,
+    explanation: "Le quart de 20 est 5, car 20 ÷ 4 = 5.",
+    context: "Prendre le quart revient à diviser par 4.",
+    hint: "Divise 20 par 4."
+  },
+  {
+    topic: "Fractions", type: "fill",
+    q: `Combien vaut le tiers de 12 ? (réponds par un nombre)`,
+    accepted: ["4"],
+    explanation: "Le tiers de 12 est 4, car 12 ÷ 3 = 4.",
+    context: "Prendre le tiers revient à diviser par 3.",
+    hint: "Divise 12 par 3."
+  },
+  {
+    topic: "Fractions", type: "fill",
+    q: `Combien vaut 3/4 de 8 ? (réponds par un nombre)`,
+    accepted: ["6"],
+    explanation: "8 ÷ 4 = 2 (un quart), puis 2 × 3 = 6 (trois quarts).",
+    context: "Pour prendre 3/4 d'un nombre, on divise d'abord par 4, puis on multiplie par 3.",
+    hint: "Trouve d'abord un quart de 8, puis multiplie par 3."
+  },
+  // ===== Périmètres et aires =====
+  {
+    topic: "Périmètres et aires", type: "qcm",
+    q: `Un rectangle mesure 5 cm de long et 3 cm de large. Quel est son périmètre ?`,
+    options: ["16 cm", "15 cm", "8 cm", "30 cm"],
+    correct: 0,
+    explanation: "Périmètre = (longueur + largeur) × 2 = (5 + 3) × 2 = 16 cm.",
+    context: "Le périmètre d'un rectangle correspond à la longueur totale de son contour.",
+    hint: "Additionne longueur et largeur, puis multiplie par 2."
+  },
+  {
+    topic: "Périmètres et aires", type: "qcm",
+    q: `Un carré a un côté de 6 cm. Quel est son périmètre ?`,
+    options: ["24 cm", "36 cm", "12 cm", "6 cm"],
+    correct: 0,
+    explanation: "Un carré a 4 côtés égaux : périmètre = 6 × 4 = 24 cm.",
+    context: "Pour un carré, il suffit de multiplier la longueur d'un côté par 4.",
+    hint: "Multiplie 6 par 4 (le carré a 4 côtés égaux)."
+  },
+  {
+    topic: "Périmètres et aires", type: "qcm",
+    q: `Un rectangle mesure 7 cm de long et 4 cm de large. Quelle est son aire ?`,
+    options: ["28 cm²", "22 cm²", "11 cm²", "14 cm²"],
+    correct: 0,
+    explanation: "Aire = longueur × largeur = 7 × 4 = 28 cm².",
+    context: "L'aire d'un rectangle se calcule en multipliant sa longueur par sa largeur.",
+    hint: "Multiplie longueur et largeur."
+  },
+  {
+    topic: "Périmètres et aires", type: "qcm",
+    q: `Un carré a un côté de 5 cm. Quelle est son aire ?`,
+    options: ["25 cm²", "20 cm²", "10 cm²", "15 cm²"],
+    correct: 0,
+    explanation: "Aire = côté × côté = 5 × 5 = 25 cm².",
+    context: "Pour un carré, l'aire est le côté multiplié par lui-même (le côté au carré).",
+    hint: "Multiplie 5 par lui-même."
+  },
+  {
+    topic: "Périmètres et aires", type: "qcm",
+    q: `Comment calcule-t-on le périmètre d'un rectangle ?`,
+    options: ["(Longueur + largeur) × 2", "Longueur × largeur", "Longueur + largeur", "Longueur × 2"],
+    correct: 0,
+    explanation: "Le périmètre d'un rectangle est égal à (longueur + largeur) × 2, car il y a deux longueurs et deux largeurs.",
+    context: "Un rectangle a 4 côtés : 2 longueurs et 2 largeurs identiques.",
+    hint: "Pense aux 4 côtés du rectangle : 2 longueurs et 2 largeurs."
+  },
+  {
+    topic: "Périmètres et aires", type: "qcm",
+    q: `Comment calcule-t-on l'aire d'un rectangle ?`,
+    options: ["Longueur × largeur", "(Longueur + largeur) × 2", "Longueur + largeur", "Longueur ÷ largeur"],
+    correct: 0,
+    explanation: "L'aire d'un rectangle s'obtient en multipliant sa longueur par sa largeur.",
+    context: "Ne confonds pas l'aire (surface, en cm²) et le périmètre (contour, en cm).",
+    hint: "L'aire se calcule avec une multiplication, pas une addition."
+  },
+  {
+    topic: "Périmètres et aires", type: "fill",
+    q: `Un rectangle a une longueur de 9 cm et une largeur de 2 cm. Calcule son périmètre (réponds par un nombre, en cm)`,
+    accepted: ["22"],
+    explanation: "Périmètre = (9 + 2) × 2 = 22 cm.",
+    context: "N'oublie pas de multiplier par 2 à la fin, pour compter les deux longueurs et les deux largeurs.",
+    hint: "(9 + 2) × 2 = ?"
+  },
+  {
+    topic: "Périmètres et aires", type: "fill",
+    q: `Un carré a un côté de 8 cm. Calcule son aire (réponds par un nombre, en cm²)`,
+    accepted: ["64"],
+    explanation: "Aire = 8 × 8 = 64 cm².",
+    context: "Pour un carré, l'aire est toujours le côté multiplié par lui-même.",
+    hint: "8 × 8 = ?"
+  },
+  // ===== Géométrie : figures et symétrie =====
+  {
+    topic: "Géométrie : figures et symétrie", type: "qcm",
+    q: `Combien de côtés a un triangle ?`,
+    options: ["3", "4", "5", "6"],
+    correct: 0,
+    explanation: "Un triangle a toujours 3 côtés (et 3 sommets, 3 angles).",
+    context: "Le préfixe « tri » signifie trois, comme dans triangle.",
+    hint: "Le mot « triangle » contient un indice sur le nombre de côtés."
+  },
+  {
+    topic: "Géométrie : figures et symétrie", type: "qcm",
+    q: `Combien de côtés a un rectangle ?`,
+    options: ["4", "3", "5", "6"],
+    correct: 0,
+    explanation: "Un rectangle a 4 côtés : 2 longueurs et 2 largeurs.",
+    context: "Un rectangle possède aussi 4 angles droits.",
+    hint: "Compte les côtés opposés deux à deux."
+  },
+  {
+    topic: "Géométrie : figures et symétrie", type: "qcm",
+    q: `Comment appelle-t-on un triangle qui a un angle droit ?`,
+    options: ["Un triangle rectangle", "Un triangle isocèle", "Un triangle équilatéral", "Un triangle obtus"],
+    correct: 0,
+    explanation: "Un triangle possédant un angle droit (90°) s'appelle un triangle rectangle.",
+    context: "Ne confonds pas « triangle rectangle » (avec un angle droit) et « rectangle » (la figure à 4 côtés).",
+    hint: "Le nom de ce triangle rappelle un angle bien précis : 90°."
+  },
+  {
+    topic: "Géométrie : figures et symétrie", type: "qcm",
+    q: `Comment appelle-t-on un triangle dont les trois côtés ont la même longueur ?`,
+    options: ["Un triangle équilatéral", "Un triangle rectangle", "Un triangle isocèle", "Un triangle scalène"],
+    correct: 0,
+    explanation: "Un triangle équilatéral a ses trois côtés de même longueur (et ses trois angles égaux à 60°).",
+    context: "Un triangle isocèle, lui, a seulement deux côtés de même longueur.",
+    hint: "« Équi » veut dire égal : tous les côtés sont égaux."
+  },
+  {
+    topic: "Géométrie : figures et symétrie", type: "qcm",
+    q: `Qu'est-ce qu'un axe de symétrie ?`,
+    options: ["Une droite qui partage une figure en deux parties superposables par pliage", "Une droite qui coupe une figure en deux parties différentes", "Un point au centre d'une figure", "Une droite parallèle aux côtés"],
+    correct: 0,
+    explanation: "Un axe de symétrie est une droite le long de laquelle on peut plier la figure pour que les deux moitiés se superposent parfaitement.",
+    context: "Si tu plies le long de l'axe de symétrie, les deux parties de la figure doivent coïncider exactement.",
+    hint: "Pense à un pliage : les deux parties doivent se superposer exactement."
+  },
+  {
+    topic: "Géométrie : figures et symétrie", type: "qcm",
+    q: `Combien d'axes de symétrie possède un carré ?`,
+    options: ["4", "1", "2", "0"],
+    correct: 0,
+    explanation: "Un carré a 4 axes de symétrie : les deux diagonales et les deux médiatrices des côtés.",
+    context: "Un rectangle (non carré), lui, n'a que 2 axes de symétrie.",
+    hint: "Pense aux diagonales ET aux lignes qui passent par les milieux des côtés."
+  },
+  {
+    topic: "Géométrie : figures et symétrie", type: "qcm",
+    q: `Combien d'axes de symétrie possède un cercle ?`,
+    options: ["Une infinité", "0", "1", "4"],
+    correct: 0,
+    explanation: "Un cercle possède une infinité d'axes de symétrie : chaque diamètre en est un.",
+    context: "N'importe quelle droite passant par le centre du cercle est un axe de symétrie.",
+    hint: "Pense à toutes les droites qui passent par le centre du cercle."
+  },
+  {
+    topic: "Géométrie : figures et symétrie", type: "qcm",
+    q: `Quel est le nom d'une figure à 4 côtés dont tous les côtés ont la même longueur et tous les angles sont droits ?`,
+    options: ["Un carré", "Un rectangle", "Un losange", "Un trapèze"],
+    correct: 0,
+    explanation: "Un carré a 4 côtés égaux ET 4 angles droits : c'est un cas particulier à la fois de rectangle et de losange.",
+    context: "Un losange a 4 côtés égaux mais pas forcément d'angles droits ; un rectangle a des angles droits mais pas forcément des côtés égaux.",
+    hint: "Cette figure combine les deux propriétés : côtés égaux ET angles droits."
+  },
+  // ===== Proportionnalité =====
+  {
+    topic: "Proportionnalité", type: "qcm",
+    q: `Un paquet de 4 gâteaux coûte 2 €. Combien coûtent 8 gâteaux, au même prix unitaire ?`,
+    options: ["4 €", "6 €", "8 €", "2 €"],
+    correct: 0,
+    explanation: "8 gâteaux, c'est deux fois plus que 4 gâteaux, donc le prix double aussi : 2 € × 2 = 4 €.",
+    context: "Dans une situation de proportionnalité, si la quantité double, le prix double aussi.",
+    hint: "8 gâteaux, c'est combien de fois plus que 4 gâteaux ?"
+  },
+  {
+    topic: "Proportionnalité", type: "qcm",
+    q: `Une recette pour 4 personnes utilise 200 g de farine. Combien faut-il de farine pour 8 personnes ?`,
+    options: ["400 g", "200 g", "600 g", "100 g"],
+    correct: 0,
+    explanation: "8 personnes, c'est deux fois plus que 4 personnes, donc il faut deux fois plus de farine : 200 × 2 = 400 g.",
+    context: "C'est le même principe que pour le prix des gâteaux : on double la quantité de personnes, on double les ingrédients.",
+    hint: "8 personnes, c'est combien de fois plus que 4 personnes ?"
+  },
+  {
+    topic: "Proportionnalité", type: "qcm",
+    q: `Si 3 stylos coûtent 6 €, combien coûte 1 stylo ?`,
+    options: ["2 €", "3 €", "6 €", "18 €"],
+    correct: 0,
+    explanation: "Le prix d'un stylo est 6 ÷ 3 = 2 €.",
+    context: "Pour trouver le prix d'une seule unité, on divise le prix total par le nombre d'objets.",
+    hint: "Divise 6 € par 3 stylos."
+  },
+  {
+    topic: "Proportionnalité", type: "qcm",
+    q: `Un tableau de proportionnalité a en ligne du haut : 2, 4, 6 et en ligne du bas : 5, 10, ? Quel est le nombre manquant ?`,
+    options: ["15", "12", "10", "20"],
+    correct: 0,
+    explanation: "Le coefficient de proportionnalité est 5 ÷ 2 = 2,5, donc 6 × 2,5 = 15.",
+    context: "Dans un tableau de proportionnalité, on multiplie toujours par le même coefficient pour passer de la ligne du haut à celle du bas.",
+    hint: "Trouve d'abord le coefficient entre 2 et 5, puis applique-le à 6."
+  },
+  {
+    topic: "Proportionnalité", type: "qcm",
+    q: `Pour savoir si un tableau est un tableau de proportionnalité, on vérifie que...`,
+    options: ["Tous les rapports (colonne du bas ÷ colonne du haut) sont égaux", "Toutes les colonnes ont la même somme", "Les nombres augmentent toujours", "Les nombres sont tous entiers"],
+    correct: 0,
+    explanation: "Un tableau est proportionnel si le rapport entre les deux lignes est constant, c'est-à-dire toujours le même coefficient.",
+    context: "Ce coefficient constant s'appelle le coefficient de proportionnalité.",
+    hint: "Calcule le rapport (bas ÷ haut) pour chaque colonne et compare-les."
+  },
+  {
+    topic: "Proportionnalité", type: "qcm",
+    q: `Une voiture roule à vitesse constante et parcourt 90 km en 1 heure. Combien de km parcourt-elle en 3 heures ?`,
+    options: ["270 km", "180 km", "90 km", "360 km"],
+    correct: 0,
+    explanation: "En 3 heures, la voiture parcourt 3 fois plus de distance : 90 × 3 = 270 km.",
+    context: "À vitesse constante, la distance parcourue est proportionnelle au temps de trajet.",
+    hint: "3 heures, c'est 3 fois 1 heure : multiplie la distance par 3."
+  },
+  {
+    topic: "Proportionnalité", type: "fill",
+    q: `Une recette pour 2 personnes utilise 100 g de sucre. Combien de grammes de sucre faut-il pour 6 personnes ? (réponds par un nombre)`,
+    accepted: ["300"],
+    explanation: "6 personnes, c'est trois fois plus que 2 personnes, donc il faut 100 × 3 = 300 g de sucre.",
+    context: "6 personnes, c'est combien de fois plus que 2 personnes ?",
+    hint: "Trouve le facteur multiplicatif entre 2 et 6 personnes."
+  },
+  {
+    topic: "Proportionnalité", type: "fill",
+    q: `Un tableau de proportionnalité a en haut 3 et en bas 12 (coefficient 4). Quel nombre correspond à 5 en haut ? (réponds par un nombre)`,
+    accepted: ["20"],
+    explanation: "Le coefficient est 4, donc 5 × 4 = 20.",
+    context: "Une fois le coefficient de proportionnalité trouvé, on l'applique à n'importe quel nombre de la ligne du haut.",
+    hint: "Multiplie 5 par le coefficient 4."
+  },
+];
+
+const topicColors = {
+  "Nombres décimaux": "#0066cc",
+  "Les quatre opérations": "#128a5e",
+  "Fractions": "#cc6600",
+  "Périmètres et aires": "#800080",
+  "Géométrie : figures et symétrie": "#00807a",
+  "Proportionnalité": "#cc0055"
+};
+
+const topicWeeks = {
+  "Nombres décimaux": "Lire, comparer, arrondir",
+  "Les quatre opérations": "+, -, ×, ÷ et priorités",
+  "Fractions": "Comprendre et calculer",
+  "Périmètres et aires": "Rectangle et carré",
+  "Géométrie : figures et symétrie": "Triangles, symétrie axiale",
+  "Proportionnalité": "Tableaux et problèmes"
+};
+
+function normalize(str) {
+  return str
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[’']/g, "'")
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
+function shuffleArray(arr) {
+  return arr.slice().sort(() => Math.random() - 0.5);
+}
+
+// ===== Gamification : persistance locale =====
+function getBestScores() {
+  try { return JSON.parse(localStorage.getItem("maths6equiz_bestScores")) || {}; }
+  catch { return {}; }
+}
+function saveBestScoreIfHigher(key, correct, total) {
+  const scores = getBestScores();
+  const prevPercent = scores[key] ? (scores[key].correct / scores[key].total) * 100 : -1;
+  const newPercent = (correct / total) * 100;
+  const isNewRecord = newPercent > prevPercent;
+  if (isNewRecord) {
+    scores[key] = { correct, total };
+    localStorage.setItem("maths6equiz_bestScores", JSON.stringify(scores));
+  }
+  return isNewRecord;
+}
+function getBestScoreFor(key) {
+  const scores = getBestScores();
+  return scores[key] || null;
+}
+
+function updateDailyStreak() {
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const last = localStorage.getItem("maths6equiz_lastPlayedDate");
+  let streak = parseInt(localStorage.getItem("maths6equiz_streakDays")) || 0;
+  if (last === todayStr) {
+    return streak;
+  }
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  streak = (last === yesterday) ? streak + 1 : 1;
+  localStorage.setItem("maths6equiz_lastPlayedDate", todayStr);
+  localStorage.setItem("maths6equiz_streakDays", streak);
+  return streak;
+}
+function getStreakDays() {
+  return parseInt(localStorage.getItem("maths6equiz_streakDays")) || 0;
+}
+
+function getTotalAnswered() {
+  return parseInt(localStorage.getItem("maths6equiz_totalAnswered")) || 0;
+}
+function addToTotalAnswered(n) {
+  const total = getTotalAnswered() + n;
+  localStorage.setItem("maths6equiz_totalAnswered", total);
+  return total;
+}
+
+function getBestCombo() {
+  return parseInt(localStorage.getItem("maths6equiz_bestCombo")) || 0;
+}
+function setBestComboIfHigher(n) {
+  const best = getBestCombo();
+  if (n > best) {
+    localStorage.setItem("maths6equiz_bestCombo", n);
+    return true;
+  }
+  return false;
+}
+
+let currentCombo = 0;
+let sessionBestCombo = 0;
+
+let questions = [];
+let results = [];
+let currentCategoryKey = "__ALL__";
+
+const screenCategory = document.getElementById("screen-category");
+const screenQuiz = document.getElementById("screen-quiz");
+const quizEl = document.getElementById("quiz");
+const summaryEl = document.getElementById("summary");
+
+function buildCategoryScreen() {
+  const CATEGORY_ORDER = [
+    "Nombres décimaux",
+    "Les quatre opérations",
+    "Fractions",
+    "Périmètres et aires",
+    "Géométrie : figures et symétrie",
+    "Proportionnalité"
+  ];
+  const allTopics = [...new Set(allQuestions.map(q => q.topic))];
+  const topics = CATEGORY_ORDER.filter(t => allTopics.includes(t))
+    .concat(allTopics.filter(t => !CATEGORY_ORDER.includes(t)));
+  const grid = document.getElementById("cat-grid");
+
+  const streak = getStreakDays();
+  const banner = document.getElementById("daily-banner");
+  if (banner) {
+    if (streak > 0) {
+      banner.style.display = "flex";
+      banner.innerHTML = `<span class="flame">🔥</span> ${streak} jour${streak > 1 ? "s" : ""} d'affilée — reviens demain pour continuer ta série !`;
+    } else {
+      banner.style.display = "none";
+    }
+  }
+
+  const totalAnswered = getTotalAnswered();
+  const bestCombo = getBestCombo();
+  const statsStrip = document.getElementById("stat-strip");
+  if (statsStrip) {
+    statsStrip.innerHTML = `
+      <div class="stat"><div class="stat-num">${totalAnswered}</div><div class="stat-label">Questions répondues</div></div>
+      <div class="stat"><div class="stat-num">${bestCombo}</div><div class="stat-label">Meilleur combo</div></div>
+    `;
+  }
+
+  const allBest = getBestScoreFor("__ALL__");
+  const allRecordHtml = allBest ? `<span class="cat-record">⭐ Record : ${allBest.correct}/${allBest.total}</span>` : "";
+  const allBtn = `
+    <div class="cat-btn-wrap">
+      <button class="cat-btn cat-all" data-topic="__ALL__">Toutes les catégories <span class="cat-count">(${allQuestions.length})</span></button>
+      <span class="cat-week">Mini bac / révision globale</span>
+      ${allRecordHtml}
+    </div>
+  `;
+  const topicBtns = topics.map(t => {
+    const count = allQuestions.filter(q => q.topic === t).length;
+    const best = getBestScoreFor(t);
+    const recordHtml = best ? `<span class="cat-record"><span class="star">⭐</span> Record : ${best.correct}/${best.total}</span>` : "";
+    return `
+      <div class="cat-btn-wrap">
+        <button class="cat-btn" data-topic="${t}" style="background:${topicColors[t]}">${t} <span class="cat-count">(${count})</span></button>
+        <span class="cat-week">${topicWeeks[t] || ""}</span>
+        ${recordHtml}
+      </div>
+    `;
+  }).join("");
+  grid.innerHTML = allBtn + topicBtns;
+
+  grid.querySelectorAll(".cat-btn").forEach(btn => {
+    btn.addEventListener("click", () => startQuiz(btn.dataset.topic));
+  });
+}
+
+const NO_SHUFFLE_TOPICS = [];
+
+function startQuiz(topicKey) {
+  if (topicKey === "__ALL__") {
+    questions = shuffleArray(allQuestions);
+  } else if (NO_SHUFFLE_TOPICS.includes(topicKey)) {
+    questions = allQuestions.filter(q => q.topic === topicKey);
+  } else {
+    questions = shuffleArray(allQuestions.filter(q => q.topic === topicKey));
+  }
+
+  updateDailyStreak();
+  currentCategoryKey = topicKey;
+
+  const currentCatEl = document.getElementById("current-cat");
+  if (topicKey === "__ALL__") {
+    currentCatEl.innerHTML = `<span class="pill" style="background:#111111">Toutes les catégories</span>`;
+  } else {
+    currentCatEl.innerHTML = `<span class="pill" style="background:${topicColors[topicKey]}">${topicKey}</span>`;
+  }
+
+  screenCategory.style.display = "none";
+  screenQuiz.style.display = "block";
+  document.getElementById("total-count").textContent = questions.length;
+  renderAll();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+document.getElementById("back-link").addEventListener("click", () => {
+  screenQuiz.style.display = "none";
+  screenCategory.style.display = "block";
+  buildCategoryScreen();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+function cardHtml(item, idx) {
+  const typeLabel = item.type === "qcm" ? "QCM" : "À compléter";
+  let bodyHtml = "";
+  if (item.type === "qcm") {
+    const order = shuffleArray(item.options.map((_, i) => i));
+    bodyHtml = `
+      <div class="options" id="options-${idx}">
+        ${order.map(oidx => `
+          <button class="option-btn" data-qidx="${idx}" data-oidx="${oidx}">${item.options[oidx]}</button>
+        `).join("")}
+      </div>
+    `;
+  } else {
+    bodyHtml = `
+      <div class="fill-col">
+        <input type="text" class="fill-input" id="fill-${idx}" placeholder="Ta réponse..." autocomplete="off">
+        <button class="submit-btn" id="submit-${idx}" data-qidx="${idx}">Valider</button>
+      </div>
+    `;
+  }
+  return `
+    <div class="card" id="card-${idx}">
+      <div class="card-top">
+        <span class="topic" data-topic="${item.topic}">${item.topic}</span>
+        <span class="qcount">Question ${idx + 1}/${questions.length}</span>
+        <span class="qtype">${typeLabel}</span>
+      </div>
+      <p class="question">${item.q}</p>
+      ${bodyHtml}
+      <div class="center-row">
+        <button class="hint-btn" id="hint-btn-${idx}">Voir l'indice</button>
+      </div>
+      <p class="hint" id="hint-${idx}">💡 ${item.hint}</p>
+      <div class="reponse-box" id="explanation-${idx}">
+        <div class="reponse-head">✅ Réponse</div>
+        <div class="reponse-body">${item.explanation}</div>
+      </div>
+      <div class="context-box" id="context-${idx}">
+        <div class="context-head">💡 Astuce</div>
+        <div class="context-body">${item.context}</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderAll() {
+  results = new Array(questions.length).fill(null);
+  currentCombo = 0;
+  sessionBestCombo = 0;
+  quizEl.innerHTML = questions.map((item, idx) => cardHtml(item, idx)).join("");
+  summaryEl.style.display = "none";
+  quizEl.style.display = "block";
+
+  questions.forEach((item, idx) => {
+    document.getElementById(`hint-btn-${idx}`).addEventListener("click", () => {
+      document.getElementById(`hint-${idx}`).style.display = "block";
+      document.getElementById(`hint-btn-${idx}`).disabled = true;
+    });
+
+    if (item.type === "qcm") {
+      document.querySelectorAll(`#options-${idx} .option-btn`).forEach(btn => {
+        btn.addEventListener("click", () => {
+          if (results[idx] !== null) return;
+          const oidx = parseInt(btn.dataset.oidx);
+          submitQcm(idx, oidx);
+        });
+      });
+    } else {
+      const input = document.getElementById(`fill-${idx}`);
+      const submitBtn = document.getElementById(`submit-${idx}`);
+      submitBtn.addEventListener("click", () => {
+        if (results[idx] !== null) return;
+        submitFill(idx);
+      });
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && results[idx] === null) submitFill(idx);
+      });
+    }
+  });
+
+  updateLiveBar();
+}
+
+function submitQcm(idx, oidx) {
+  const item = questions[idx];
+  const isCorrect = oidx === item.correct;
+  document.querySelectorAll(`#options-${idx} .option-btn`).forEach((btn) => {
+    const bIdx = parseInt(btn.dataset.oidx);
+    btn.disabled = true;
+    if (bIdx === item.correct) btn.classList.add("correct");
+    else if (bIdx === oidx) btn.classList.add("incorrect");
+    else btn.classList.add("dim");
+  });
+  finishAnswer(idx, isCorrect);
+}
+
+function submitFill(idx) {
+  const item = questions[idx];
+  const input = document.getElementById(`fill-${idx}`);
+  const val = normalize(input.value);
+  const isCorrect = val.length > 0 && item.accepted.some(a => normalize(a) === val);
+  input.disabled = true;
+  input.classList.add(isCorrect ? "correct" : "incorrect");
+  document.getElementById(`submit-${idx}`).disabled = true;
+  if (!isCorrect) {
+    input.insertAdjacentHTML("afterend", `<span class="expected">Réponse attendue : <strong>${item.accepted[0]}</strong></span>`);
+  }
+  finishAnswer(idx, isCorrect);
+}
+
+function finishAnswer(idx, isCorrect) {
+  results[idx] = isCorrect;
+  document.getElementById(`explanation-${idx}`).style.display = "block";
+  document.getElementById(`context-${idx}`).style.display = "block";
+  document.getElementById(`hint-btn-${idx}`).style.display = "none";
+  document.getElementById(`card-${idx}`).classList.add(isCorrect ? "correct-card" : "incorrect-card");
+
+  addToTotalAnswered(1);
+  if (isCorrect) {
+    currentCombo++;
+    if (currentCombo > sessionBestCombo) sessionBestCombo = currentCombo;
+    setBestComboIfHigher(currentCombo);
+  } else {
+    currentCombo = 0;
+  }
+
+  updateLiveBar();
+  if (results.every(r => r !== null)) {
+    showSummary();
+  }
+}
+
+function updateLiveBar() {
+  const answeredCount = results.filter(r => r !== null).length;
+  const correctCount = results.filter(r => r === true).length;
+  document.getElementById("correct-count").textContent = correctCount;
+  document.getElementById("progress").style.width = `${(answeredCount / questions.length) * 100}%`;
+
+  const comboBadge = document.getElementById("combo-badge");
+  const comboCount = document.getElementById("combo-count");
+  if (currentCombo >= 2) {
+    comboCount.textContent = currentCombo;
+    comboBadge.classList.remove("show");
+    void comboBadge.offsetWidth;
+    comboBadge.classList.add("show");
+  } else {
+    comboBadge.classList.remove("show");
+  }
+}
+
+function showSummary() {
+  const total = results.filter(r => r === true).length;
+  const percent = Math.round((total / questions.length) * 100);
+  const byTopic = {};
+  questions.forEach((q, idx) => {
+    byTopic[q.topic] = byTopic[q.topic] || { ok: 0, tot: 0 };
+    byTopic[q.topic].tot += 1;
+    byTopic[q.topic].ok += results[idx] ? 1 : 0;
+  });
+
+  const rows = Object.entries(byTopic).map(([t, v]) => {
+    const p = (v.ok / v.tot) * 100;
+    return `
+      <div class="topic-row">
+        <span>${t}</span>
+        <span>${v.ok}/${v.tot}</span>
+        <div class="bar-container">
+          <div class="bar" style="width: ${p}%; background: ${topicColors[t]};"></div>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  let tier, tierColor, tierEmoji;
+  if (percent === 100) { tier = "Sans faute !"; tierColor = "#1d9e75"; tierEmoji = "🏆"; }
+  else if (percent >= 80) { tier = "Excellent"; tierColor = "#1d9e75"; tierEmoji = "🌟"; }
+  else if (percent >= 50) { tier = "Bien joué"; tierColor = "#185fa5"; tierEmoji = "👍"; }
+  else { tier = "En progression"; tierColor = "#ff9800"; tierEmoji = "💪"; }
+
+  const isNewRecord = saveBestScoreIfHigher(currentCategoryKey, total, questions.length);
+  const isNewComboRecord = setBestComboIfHigher(sessionBestCombo);
+  const totalAnswered = getTotalAnswered();
+  const streak = getStreakDays();
+
+  summaryEl.style.display = "block";
+  summaryEl.innerHTML = `
+    <p style="font-size:13px;color:var(--text-tertiary);margin:0 0 8px 0;font-weight:600;">Score final</p>
+    <div class="score-ring-wrap">
+      <svg viewBox="0 0 120 120">
+        <circle class="score-ring-bg" cx="60" cy="60" r="54"></circle>
+        <circle class="score-ring-fg" id="score-ring-fg" cx="60" cy="60" r="54" style="stroke:${tierColor}"></circle>
+      </svg>
+      <div class="score-ring-center">
+        <span class="score-ring-percent">${percent}%</span>
+        <span class="score-ring-frac">${total}/${questions.length}</span>
+      </div>
+    </div>
+    <div>
+      <span class="tier-badge" style="background:${tierColor}20; color:${tierColor}">${tierEmoji} ${tier}</span>
+    </div>
+    ${isNewRecord ? `<div><span class="record-badge">🏅 Nouveau record sur cette catégorie !</span></div>` : ""}
+    ${isNewComboRecord && sessionBestCombo >= 2 ? `<div><span class="record-badge">🔥 Nouveau record de combo : ${sessionBestCombo} !</span></div>` : ""}
+
+    <div class="gamif-stats">
+      <div class="g-stat"><div class="g-num">🔥 ${streak}</div><div class="g-label">Jours d'affilée</div></div>
+      <div class="g-stat"><div class="g-num">${sessionBestCombo}</div><div class="g-label">Meilleur combo</div></div>
+      <div class="g-stat"><div class="g-num">${totalAnswered}</div><div class="g-label">Questions au total</div></div>
+    </div>
+
+    <div style="text-align:left;">
+      <p style="font-size:14px;color:var(--text-secondary);margin:14px 0 6px 0;">Répartition par thème</p>
+      ${rows}
+    </div>
+    <div class="summary-actions">
+      <button class="btn-primary" id="restart">Recommencer</button>
+      ${NO_SHUFFLE_TOPICS.includes(currentCategoryKey) ? "" : `<button class="btn-secondary" id="shuffle">Mélanger et recommencer</button>`}
+      <button class="btn-secondary" id="change-cat">Changer de catégorie</button>
+    </div>
+    <p class="replay-hook">🔥 Reviens à la prochaine séance pour garder ta série, ou choisis un autre chapitre pour décrocher un nouveau record !</p>
+  `;
+  summaryEl.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  requestAnimationFrame(() => {
+    const circumference = 339.3;
+    const offset = circumference * (1 - percent / 100);
+    document.getElementById("score-ring-fg").style.strokeDashoffset = offset;
+  });
+
+  document.getElementById("restart").addEventListener("click", () => {
+    renderAll();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+  document.getElementById("shuffle")?.addEventListener("click", () => {
+    questions = shuffleArray(questions);
+    renderAll();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+  document.getElementById("change-cat").addEventListener("click", () => {
+    screenQuiz.style.display = "none";
+    screenCategory.style.display = "block";
+    buildCategoryScreen();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+}
+
+// Initialize
+buildCategoryScreen();
+</script>
+</body>
+</html>
