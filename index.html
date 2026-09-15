@@ -1,78 +1,116 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Narith Tav</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,500;0,600;0,700&display=swap" rel="stylesheet">
 <style>
-  * {
-    box-sizing: border-box;
+  :root {
+    --bg: #f4f3ef;
+    --text-primary: #111111;
+    --text-secondary: #555555;
+    --text-tertiary: #8a8a8d;
   }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   body {
-    font-family: Georgia, 'Times New Roman', serif;
-    max-width: 640px;
-    margin: 0 auto;
-    padding: 16px 20px 40px;
-    line-height: 1.5;
-    color: #1a1a1a;
+    margin: 0;
+    padding: 14px 10px 60px 10px;
+    background: var(--bg);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    color: var(--text-primary);
+    display: flex;
+    justify-content: center;
+    font-size: 17px;
   }
-  h1 {
-    font-size: 1.6rem;
-    margin-bottom: 0.6em;
-    word-break: break-word;
-  }
-  ul {
-    padding-left: 1.2em;
-    margin: 0.3em 0;
-  }
-  li {
-    margin: 0.35em 0;
-    font-size: 1.05rem;
-  }
-  li strong {
-    display: inline-block;
-    margin: 0.2em 0;
-  }
-  a {
-    color: #1a56db;
-    text-decoration: underline;
-    padding: 6px 2px;
-    display: inline-block;
-    word-break: break-word;
-    min-height: 32px;
-  }
-  a:visited {
-    color: #6b3fa0;
+  .wrap { max-width: 600px; width: 100%; }
+  @media (min-width: 640px) {
+    body { padding: 20px 16px 60px 16px; }
   }
 
-  @media (max-width: 480px) {
-    body {
-      padding: 12px 14px 32px;
-      font-size: 0.98rem;
-    }
-    h1 {
-      font-size: 1.35rem;
-    }
-    ul {
-      padding-left: 0.9em;
-    }
-    li {
-      font-size: 1rem;
-      margin: 0.3em 0;
-    }
-    a {
-      padding: 8px 2px;
-    }
+  .avatar {
+    width: 36px; height: 36px; border-radius: 18px;
+    background: #000; color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; margin: 0 auto 10px auto;
+  }
+  h1 {
+    margin: 0 0 4px 0; text-align: center;
+    font-size: 24px; font-weight: 600; letter-spacing: -0.3px; color: #000;
+  }
+  .subtitle {
+    margin: 0 0 28px 0; text-align: center;
+    color: var(--text-secondary); font-size: 14px; font-weight: 500;
+  }
+
+  section.group {
+    margin-bottom: 26px;
+  }
+  .group-title {
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-tertiary);
+    margin: 0 0 12px 0;
+  }
+  .link-grid {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;
+  }
+  .link-btn-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; max-width: 220px; }
+  .link-btn {
+    border: none; border-radius: 24px; color: #fff;
+    font-size: 16px; font-weight: 600;
+    padding: 14px 22px;
+    font-family: inherit;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+  }
+  .link-btn:hover { opacity: 0.9; }
+
+  .subgroup-title {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-tertiary);
+    margin: 18px 0 10px 0;
+  }
+
+  #loading {
+    text-align: center; color: var(--text-tertiary); font-size: 14px; margin-top: 20px;
   }
 </style>
 </head>
 <body>
-<h1>Narith Tav</h1>
-<ul id="file-list"></ul>
+<div class="wrap">
+  <div class="avatar">🏠</div>
+  <h1>Narith Tav</h1>
+  <p class="subtitle">Écrits, quiz et projets</p>
+
+  <div id="content">
+    <p id="loading">Chargement…</p>
+  </div>
+</div>
 
 <script>
 const OWNER = "narith-tav";
 const REPO = "narith-tav.github.io";
+
+const PALETTE = ["#0066cc", "#128a5e", "#cc6600", "#800080", "#00807a", "#cc0055", "#8b1e3f", "#5b6fd8", "#a35800"];
+
+const ICONS = {
+  "about": "👋",
+  "1984": "📖",
+  "bank": "🏦",
+  "maths": "📐",
+  "chimie": "🧪",
+  "quiz": "📝"
+};
 
 function toDisplayName(name) {
   return name
@@ -82,7 +120,15 @@ function toDisplayName(name) {
     .trim();
 }
 
-// 1. Récupère la branche par défaut, puis l'arbre complet du repo (récursif en un seul appel)
+function iconFor(name) {
+  const key = Object.keys(ICONS).find(k => name.toLowerCase().includes(k));
+  return ICONS[key] || "📄";
+}
+
+function colorFor(index) {
+  return PALETTE[index % PALETTE.length];
+}
+
 fetch(`https://api.github.com/repos/${OWNER}/${REPO}`)
   .then(res => res.json())
   .then(repoInfo => {
@@ -91,7 +137,8 @@ fetch(`https://api.github.com/repos/${OWNER}/${REPO}`)
   })
   .then(res => res.json())
   .then(tree => {
-    const list = document.getElementById("file-list");
+    const content = document.getElementById("content");
+    content.innerHTML = "";
 
     const htmlFiles = tree.tree
       .filter(item => item.type === "blob" && item.path.endsWith(".html") && item.path !== "index.html")
@@ -112,39 +159,64 @@ fetch(`https://api.github.com/repos/${OWNER}/${REPO}`)
       node.files.push({ path: item.path, filename });
     });
 
-    function renderNode(node, container, depth) {
-      // Fichiers de ce niveau : liste à puces
-      node.files
+    let colorIndex = 0;
+
+    function renderGrid(files, parent) {
+      const grid = document.createElement("div");
+      grid.className = "link-grid";
+      files
         .sort((a, b) => a.filename.localeCompare(b.filename))
         .forEach(({ path, filename }) => {
-          const li = document.createElement("li");
+          const wrap = document.createElement("div");
+          wrap.className = "link-btn-wrap";
           const a = document.createElement("a");
+          a.className = "link-btn";
           a.href = path;
-          a.textContent = toDisplayName(filename);
-          li.appendChild(a);
-          container.appendChild(li);
+          a.style.background = colorFor(colorIndex++);
+          a.textContent = `${iconFor(filename)} ${toDisplayName(filename)}`;
+          wrap.appendChild(a);
+          grid.appendChild(wrap);
         });
-
-      // Sous-répertoires : titre en gras + sous-liste indentée (bullets et retrait gérés nativement par l'imbrication de <ul>)
-      Object.keys(node.children).sort().forEach((folderName) => {
-        const folderLi = document.createElement("li");
-        folderLi.style.marginTop = depth === 0 ? "0.8em" : "0.4em";
-
-        const heading = document.createElement("strong");
-        heading.textContent = toDisplayName(folderName);
-        folderLi.appendChild(heading);
-
-        const subList = document.createElement("ul");
-        renderNode(node.children[folderName], subList, depth + 1);
-        folderLi.appendChild(subList);
-
-        container.appendChild(folderLi);
-      });
+      parent.appendChild(grid);
     }
 
-    renderNode(root, list, 0);
+    function renderFolder(node, folderName, parent, isTopLevel) {
+      const section = document.createElement("section");
+      section.className = "group";
+
+      const title = document.createElement("p");
+      title.className = isTopLevel ? "group-title" : "subgroup-title";
+      title.textContent = toDisplayName(folderName);
+      section.appendChild(title);
+
+      if (node.files.length > 0) {
+        renderGrid(node.files, section);
+      }
+
+      Object.keys(node.children).sort().forEach(childName => {
+        renderFolder(node.children[childName], childName, section, false);
+      });
+
+      parent.appendChild(section);
+    }
+
+    // 1. Fichiers à la racine
+    if (root.files.length > 0) {
+      const section = document.createElement("section");
+      section.className = "group";
+      renderGrid(root.files, section);
+      content.appendChild(section);
+    }
+
+    // 2. Répertoires (récursif)
+    Object.keys(root.children).sort().forEach(folderName => {
+      renderFolder(root.children[folderName], folderName, content, true);
+    });
   })
-  .catch(err => console.error("Erreur GitHub API :", err));
+  .catch(err => {
+    document.getElementById("loading").textContent = "Impossible de charger la liste des fichiers.";
+    console.error("Erreur GitHub API :", err);
+  });
 </script>
 </body>
 </html>
