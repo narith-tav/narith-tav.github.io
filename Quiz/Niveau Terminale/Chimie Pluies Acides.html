@@ -769,75 +769,66 @@ const allQuestions = [
   // ===== Épreuve : Pluies acides =====
   {
     topic: "Épreuve : Pluies acides", type: "qcm",
-    q: `Question a. Quels sont les couples acide-base associés à l'acide chlorhydrique et à l'acide nitrique ?`,
+    q: `Question 1 (a). Quels sont les couples acide-base associés à l'acide chlorhydrique et à l'acide nitrique ?`,
     options: ["H3O⁺/H2O et HCl/Cl⁻ pour l'acide chlorhydrique ; H3O⁺/H2O et HNO3/NO3⁻ pour l'acide nitrique", "HCl/H2 et HNO3/N2 pour les deux acides", "Cl⁻/HCl et NO3⁻/HNO3 uniquement, sans le couple de l'eau", "Il n'existe qu'un seul couple commun aux deux acides"],
     correct: 0,
     explanation: "Pour HCl, le couple est HCl/Cl⁻ (l'acide cède un proton pour donner sa base conjuguée Cl⁻) ; pour HNO3, c'est HNO3/NO3⁻. Le couple de l'eau H3O⁺/H2O intervient aussi car c'est elle qui capte le proton cédé.",
-    context: "C'est la première étape (question a) du sujet réel sur les pluies acides.",
+    context: "C'est la question a du sujet réel (Partie 1), la toute première étape sur les pluies acides.",
     hint: "Pense à retirer un proton H⁺ à chaque acide pour trouver sa base conjuguée."
   },
   {
     topic: "Épreuve : Pluies acides", type: "qcm",
-    q: `Question b. Pour HCl, C1=1,0×10⁻² mol/L et pH1=2,0. Quelle est la valeur de [H3O⁺] et que peut-on en conclure en la comparant à C1 ?`,
+    q: `Question 2 (b). Pour HCl, C1=1,0×10⁻² mol/L et pH1=2,0. Quelle est la valeur de [H3O⁺] et que peut-on en conclure en la comparant à C1 ?`,
     options: ["[H3O⁺] = 1,0×10⁻² mol/L, soit une valeur égale à C1 : la réaction est totale", "[H3O⁺] = 2,0 mol/L, très supérieure à C1", "[H3O⁺] = 1,0×10⁻⁴ mol/L, très inférieure à C1", "On ne peut pas calculer [H3O⁺] sans plus d'informations"],
     correct: 0,
     explanation: "[H3O⁺] = 10⁻pH1 = 10⁻2,0 = 1,0×10⁻² mol/L = C1 : toute la quantité d'acide introduite a réagi, la réaction est donc totale.",
-    context: "C'est la question b du sujet réel, qui permet de conclure sur la force de l'acide chlorhydrique.",
+    context: "C'est la question b du sujet réel (Partie 1), qui permet de conclure sur la force de l'acide chlorhydrique.",
     hint: "Calcule 10^(-2,0) et compare à C1 = 1,0×10⁻²."
   },
   {
     topic: "Épreuve : Pluies acides", type: "qcm",
-    q: `Question c. La réaction entre l'acide chlorhydrique et l'eau est-elle totale ? Quelle équation l'illustre ?`,
+    q: `Question 3 (c). La réaction entre l'acide chlorhydrique et l'eau est-elle totale ? Quelle équation l'illustre ?`,
     options: ["Oui, elle est totale : HCl + H2O → Cl⁻ + H3O⁺", "Non, elle est limitée : HCl + H2O ⇌ Cl⁻ + H3O⁺", "Oui, mais sans intervention de l'eau : HCl → H⁺ + Cl⁻", "Non, aucune réaction n'a lieu"],
     correct: 0,
     explanation: "Puisque [H3O⁺] = C1 (question b), la réaction est totale et s'écrit avec une flèche simple : HCl + H2O → Cl⁻ + H3O⁺.",
-    context: "C'est la question c du sujet réel, qui prolonge directement le raisonnement de la question b.",
+    context: "C'est la question c du sujet réel (Partie 1), qui prolonge directement le raisonnement de la question b.",
     hint: "Utilise la conclusion de la question précédente sur [H3O⁺] et C1."
   },
   {
     topic: "Épreuve : Pluies acides", type: "qcm",
-    q: `Question d. Une solution d'acide nitrique de concentration C2=C1 a aussi un pH=2. La réaction avec l'eau est-elle totale ?`,
+    q: `Question 4 (d). Une solution d'acide nitrique de concentration C2=C1 a aussi un pH=2. La réaction avec l'eau est-elle totale ?`,
     options: ["Oui, par le même raisonnement que pour HCl : HNO3 + H2O → NO3⁻ + H3O⁺", "Non, car l'acide nitrique est toujours un acide faible", "Impossible à déterminer sans expérience supplémentaire", "Oui, mais la réaction reste limitée malgré tout"],
     correct: 0,
     explanation: "Avec C2=C1 et le même pH, [H3O⁺]=C2 également : la réaction de l'acide nitrique avec l'eau est donc, elle aussi, totale : HNO3 + H2O → NO3⁻ + H3O⁺.",
-    context: "C'est la question d du sujet réel : elle applique le même raisonnement que pour HCl à un nouvel acide.",
+    context: "C'est la question d du sujet réel (Partie 1) : elle applique le même raisonnement que pour HCl à un nouvel acide.",
     hint: "Le même pH et la même concentration mènent à la même conclusion que pour l'acide chlorhydrique."
   },
   {
     topic: "Épreuve : Pluies acides", type: "qcm",
-    q: `Question e. À partir du schéma de Lewis de l'acide sulfurique H2SO4, pourquoi peut-on affirmer qu'il s'agit d'un diacide ?`,
+    q: `Question 5 (e). À partir du schéma de Lewis de l'acide sulfurique H2SO4, pourquoi peut-on affirmer qu'il s'agit d'un diacide ?`,
     options: ["Parce que le schéma de Lewis montre deux liaisons O-H, donc deux hydrogènes acides cessibles", "Parce qu'il contient deux atomes de soufre", "Parce que sa masse molaire est deux fois plus grande que celle de HCl", "Parce qu'il forme deux types de précipités différents"],
     correct: 0,
     explanation: "Le schéma de Lewis de H2SO4 montre bien deux liaisons O-H : ce sont ces deux hydrogènes, liés à un oxygène très électronégatif, qui peuvent être cédés lors de réactions acide-base successives — d'où le terme diacide.",
-    context: "C'est la question e du sujet réel, qui demande d'argumenter à partir du schéma de Lewis et de l'électronégativité.",
+    context: "C'est la question e du sujet réel (Partie 2), qui demande d'argumenter à partir du schéma de Lewis et de l'électronégativité.",
     hint: "Recompte les liaisons O-H visibles sur le schéma de Lewis de l'acide sulfurique."
   },
   {
     topic: "Épreuve : Pluies acides", type: "qcm",
-    q: `Question f. Sachant que la réaction de l'acide sulfurique dans l'eau est totale, quel est le bilan de cette réaction (diacide) ?`,
+    q: `Question 6 (f). Sachant que la réaction de l'acide sulfurique dans l'eau est totale, quel est le bilan de cette réaction (diacide) ?`,
     options: ["H2SO4 + 2H2O → SO4²⁻ + 2H3O⁺", "H2SO4 + H2O → SO4²⁻ + H3O⁺", "H2SO4 + 2H2O ⇌ SO4²⁻ + 2H3O⁺", "H2SO4 → 2H⁺ + SO4²⁻ (sans eau)"],
     correct: 0,
     explanation: "Puisque les 2 hydrogènes acides réagissent totalement, il faut 2 molécules d'eau pour les capter, formant 2 ions H3O⁺ et l'ion sulfate SO4²⁻ : H2SO4 + 2H2O → SO4²⁻ + 2H3O⁺.",
-    context: "C'est la question f du sujet réel, qui prouve concrètement le caractère diacide par le bilan réactionnel.",
+    context: "C'est la question f du sujet réel (Partie 2), qui prouve concrètement le caractère diacide par le bilan réactionnel.",
     hint: "Reprends l'équation vue en question e, mais avec les bons coefficients pour un diacide totalement dissocié."
   },
   {
     topic: "Épreuve : Pluies acides", type: "qcm",
-    q: `Question g (étape 1). Pour résoudre le problème de l'eau de pluie, quelle est la première chose à faire selon la méthodologie de résolution de problème ?`,
-    options: ["Reformuler le problème et identifier les grandeurs à déterminer (ici, le pH de l'eau de pluie)", "Calculer directement le pH sans réfléchir à la question posée", "Ignorer les concentrations données dans l'énoncé", "Répondre uniquement par oui ou par non sans justification"],
+    q: `Question 7 (g). Pour résoudre le problème de l'eau de pluie (Partie 3), comment mener la résolution : quelle grandeur rechercher, comment expliquer la présence des ions NO3⁻/SO4²⁻/Cl⁻, et comment calculer leur concentration molaire ?`,
+    options: ["Il faut d'abord identifier le pH comme grandeur à déterminer ; ces ions sont les bases conjuguées de HNO3, H2SO4 et HCl ayant réagi avec l'eau ; on obtient leur concentration molaire en divisant la concentration massique (g/L) par la masse molaire (g/mol)", "Il suffit de mesurer directement la couleur de l'eau de pluie, sans aucun calcul", "Ces ions n'ont aucun lien avec les acides cités dans le sujet, et leur concentration ne peut pas être calculée", "Il faut multiplier chaque concentration massique par la masse molaire correspondante"],
     correct: 0,
-    explanation: "La question g demande explicitement de reformuler le problème et d'identifier quelle grandeur permettrait de juger si la pluie est néfaste : ici, il s'agit du pH de l'eau de pluie.",
-    context: "C'est la question g du sujet réel, qui teste la démarche de résolution de problème plutôt qu'un simple calcul.",
-    hint: "Relis bien la consigne : que demande-t-elle avant même de calculer quoi que ce soit ?"
-  },
-  {
-    topic: "Épreuve : Pluies acides", type: "qcm",
-    q: `Question g (étape 2). Comment expliquer la présence des ions NO3⁻, SO4²⁻ et Cl⁻ dans l'eau de pluie, et comment calculer leur concentration molaire à partir de leur concentration massique ?`,
-    options: ["Ces ions proviennent des acides HNO3, H2SO4 et HCl ayant réagi avec l'eau ; on divise chaque concentration massique (en g/L) par la masse molaire correspondante pour obtenir la concentration molaire", "Ces ions n'ont aucun lien avec les acides cités dans le sujet", "Il faut multiplier la concentration massique par la masse molaire", "Ces ions proviennent uniquement de la pollution des sols, sans lien avec les acides atmosphériques"],
-    correct: 0,
-    explanation: "NO3⁻, SO4²⁻ et Cl⁻ sont les bases conjuguées des acides HNO3, H2SO4 et HCl, formés lors de leur réaction totale avec l'eau de pluie. Pour passer d'une concentration massique à une concentration molaire, on divise par la masse molaire : c = cm(g/L) / M(g/mol).",
-    context: "C'est la dernière étape de la question g du sujet réel, qui relie la chimie qualitative (origine des ions) à la chimie quantitative (calcul de concentration).",
-    hint: "Fais le lien avec les couples acide-base étudiés dans les parties 1 et 2 de l'exercice, puis applique c = m/M adapté aux concentrations."
+    explanation: "La question g demande de reformuler le problème (la grandeur clé est le pH), de relier les ions présents à leur acide d'origine (NO3⁻←HNO3, SO4²⁻←H2SO4, Cl⁻←HCl), puis de calculer c = cm(g/L) / M(g/mol) pour chaque ion avant de conclure.",
+    context: "C'est la question g du sujet réel (Partie 3), la question de synthèse qui mobilise toute la méthodologie de résolution de problème.",
+    hint: "Relis la démarche en trois temps : quelle grandeur chercher, d'où viennent les ions, comment passer de mg/L à mol/L."
   },
 ];
 
@@ -856,7 +847,7 @@ const topicWeeks = {
   "Diacides et schémas de Lewis": "Cas de l'acide sulfurique",
   "Amphions et acides aminés": "Zwitterion de l'alanine",
   "Méthodologie de résolution": "Comment aborder un problème ouvert",
-  "Épreuve : Pluies acides": "Sujet réel · ordre fixe des questions a à g"
+  "Épreuve : Pluies acides": "Sujet réel · questions 1 à 7 (a à g), ordre fixe"
 };
 
 function normalize(str) {
