@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quiz Pluies Acides</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f3ef;
+    --card: #f7f7f5;
+    --card-white: #ffffff;
+    --math-font: 'STIX Two Text', Cambria, Georgia, 'Times New Roman', serif;
+    --border: #e6e4dd;
+    --text-primary: #111111;
+    --text-secondary: #555555;
+    --text-tertiary: #8a8a8d;
+    --accent: #185fa5;
+    --accent-dark: #0c447c;
+    --accent-bg: #e6f1fb;
+    --success: #1d9e75;
+    --success-bg: #e1f5ee;
+    --warning: #ff9800;
+    --warning-bg: #fff3e0;
+    --error: #c0392b;
+    --error-bg: #ffebee;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    padding: 14px 10px 80px 10px;
+    background: var(--bg);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    color: var(--text-primary);
+    display: flex;
+    justify-content: center;
+    font-size: 17px;
+  }
+  .wrap { max-width: 600px; width: 100%; }
+  @media (min-width: 640px) {
+    body { padding: 20px 16px 80px 16px; }
+  }
+
+  /* Header */
+  .avatar {
+    width: 36px; height: 36px; border-radius: 18px;
+    background: #000; color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; margin: 0 auto 10px auto;
+  }
+  h1 {
+    margin: 0 0 4px 0; text-align: center;
+    font-size: 24px; font-weight: 600; letter-spacing: -0.3px; color: #000;
+  }
+  .subtitle {
+    margin: 0 0 14px 0; text-align: center;
+    color: var(--text-secondary); font-size: 14px; font-weight: 500;
+  }
+  .meta {
+    margin: 0 0 14px 0; text-align: center;
+    color: var(--text-tertiary); font-size: 12px;
+  }
+
+  /* Daily streak banner */
+  .daily-banner {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    background: linear-gradient(135deg, #fff3d6, #ffe3d6);
+    border-radius: 14px; padding: 9px 14px; margin-bottom: 10px;
+    font-size: 13px; font-weight: 700; color: #a35800;
+  }
+  .daily-banner .flame { font-size: 17px; }
+  .stat-strip {
+    display: flex; justify-content: center; gap: 18px; flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .stat-strip .stat { text-align: center; }
+  .stat-strip .stat-num { font-size: 17px; font-weight: 800; color: var(--text-primary); }
+  .stat-strip .stat-label { font-size: 10px; color: var(--text-tertiary); font-weight: 600; text-transform: uppercase; }
+
+  /* Category selection */
+  .cat-grid {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;
+    margin-bottom: 24px;
+  }
+  .cat-btn-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; max-width: 220px; }
+  .cat-btn {
+    border: none; border-radius: 24px; color: #fff;
+    font-size: 16px; font-weight: 600;
+    padding: 14px 22px; cursor: pointer;
+    font-family: inherit;
+  }
+  .cat-btn:hover { opacity: 0.9; }
+  .cat-btn .cat-count {
+    font-weight: 400; opacity: 0.85; font-size: 14px;
+  }
+  .cat-all { background: #111111; }
+  .cat-week {
+    font-size: 11px; font-weight: 600; color: var(--text-tertiary);
+    text-align: center;
+  }
+  .cat-record {
+    font-size: 11px; font-weight: 700; color: var(--text-tertiary);
+  }
+  .cat-record .star { color: #f0a500; }
+
+  .back-link {
+    display: block; text-align: center; margin: 0 0 18px 0;
+    font-size: 15px; color: var(--accent); cursor: pointer;
+    font-weight: 600; text-decoration: none;
+  }
+  .back-link:hover { text-decoration: underline; }
+
+  .current-cat {
+    text-align: center; margin: 0 0 18px 0;
+  }
+  .current-cat .pill {
+    display: inline-block; border-radius: 20px; padding: 9px 20px;
+    font-size: 15px; font-weight: 600; color: #fff;
+  }
+
+  /* Sticky live score bar */
+  .live-bar {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--bg); padding: 0 0 14px 0; margin-bottom: 6px;
+  }
+  .live-inner {
+    background: var(--card-white);
+    border: 0.5px solid var(--border);
+    border-radius: 18px;
+    padding: 14px 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  }
+  .live-top {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px;
+  }
+  .live-score-block { display: flex; align-items: baseline; gap: 6px; }
+  .live-score-number {
+    font-size: 30px; font-weight: 800; color: var(--text-primary);
+    line-height: 1; transition: color 0.2s ease;
+  }
+  .live-score-label { font-size: 13px; color: var(--text-tertiary); font-weight: 500; }
+  .live-right { display: flex; align-items: center; gap: 8px; }
+  .combo-badge {
+    display: none; align-items: center; gap: 4px;
+    background: linear-gradient(135deg, #ff9800, #ff5252);
+    color: #fff; font-weight: 700; font-size: 13px;
+    padding: 5px 12px; border-radius: 20px;
+    animation: pop 0.25s ease;
+  }
+  .combo-badge.show { display: inline-flex; }
+  @keyframes pop {
+    0% { transform: scale(0.7); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .progress-container {
+    width: 100%; background: var(--border); border-radius: 4px;
+    margin-top: 12px; height: 10px;
+  }
+  .progress-bar {
+    height: 100%; background: linear-gradient(90deg, var(--accent), #3fa7ff);
+    border-radius: 4px;
+    width: 0%; transition: width 0.35s ease;
+  }
+
+  .card {
+    background: var(--card);
+    border-radius: 18px;
+    padding: 20px 16px 18px 16px;
+    margin-bottom: 14px;
+    scroll-margin-top: 70px;
+  }
+  .card.correct-card { background: var(--success-bg); }
+  .card.incorrect-card { background: var(--error-bg); }
+
+  .card-top {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px; flex-wrap: wrap; gap: 6px;
+  }
+  .topic {
+    display: inline-block; font-size: 14px; font-weight: 600;
+    padding: 4px 12px; border-radius: 20px;
+  }
+  .topic[data-topic="Définir acide et pH"] { background: #d6ebff; color: #0066cc; }
+  .topic[data-topic="Réaction totale ou limitée ?"] { background: #d9f5ea; color: #128a5e; }
+  .topic[data-topic="Diacides et schémas de Lewis"] { background: #ffe9d6; color: #cc6600; }
+  .topic[data-topic="Amphions et acides aminés"] { background: #f2ddff; color: #800080; }
+  .topic[data-topic="Méthodologie de résolution"] { background: #d6fbf5; color: #00807a; }
+  .topic[data-topic="Épreuve : Pluies acides"] { background: #f5dde3; color: #8b1e3f; }
+
+  .qcount { font-size: 14px; color: var(--text-tertiary); }
+  .qtype {
+    font-size: 13px; color: var(--text-tertiary);
+    border: 0.5px solid var(--border); border-radius: 20px;
+    padding: 2px 10px; background: var(--card-white);
+  }
+  .question { font-size: 18px; font-weight: 400; margin: 0 0 8px 0; line-height: 1.5; font-family: var(--math-font); }
+  .question strong { font-weight: 700; }
+  .formula-line {
+    display: block; text-align: center; font-size: 1.15em; font-weight: 600;
+    margin: 10px 0; color: var(--text-primary);
+  }
+  sub, sup { font-size: 0.7em; }
+  .rad { display: inline-flex; align-items: flex-start; white-space: nowrap; }
+  .rad-sym { font-size: 1.15em; line-height: 1; transform: translateY(1px) scaleY(1.05); margin-right: 1px; }
+  .rad-bar { border-top: 1.5px solid currentColor; padding: 1px 2px 0 2px; }
+  .question sub, .option-btn sub, .explanation sub, .context sub, .hint sub { font-style: italic; }
+  .hint {
+    font-size: 15px; color: var(--text-tertiary); font-style: italic;
+    margin: 0 0 10px 0; display: none;
+    font-family: var(--math-font);
+  }
+
+  .center-row { display: flex; justify-content: center; margin-top: 12px; }
+
+  .hint-btn {
+    border: none; border-radius: 20px; background: var(--warning-bg); color: #a35800;
+    font-size: 15px; font-weight: 600; padding: 10px 18px; cursor: pointer;
+    font-family: inherit; margin: 0 0 12px 0;
+  }
+  .hint-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* Feedback + explanation + context: positioned before the answer choices */
+  /* Réponse : encadré bleu, même structure que l'astuce */
+  .reponse-box {
+    background: #e6f1fb; border: 1px solid #bcdcf5; border-radius: 14px;
+    margin: 0 0 12px 0; overflow: hidden; display: none;
+  }
+  .reponse-head {
+    background: #cfe6fa; padding: 10px 16px;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    font-weight: 800; font-size: 14px; text-transform: uppercase;
+    letter-spacing: 0.4px; color: #0c447c;
+  }
+  .reponse-body {
+    padding: 14px 16px; font-size: 16px; color: #0c447c; line-height: 1.6;
+    font-family: var(--math-font);
+    text-align: center;
+  }
+
+  /* Astuce : variante D, style "callout" documentation */
+  .context-box {
+    background: #fff8e8; border: 1px solid #f0d896; border-radius: 14px;
+    margin: 0 0 14px 0; overflow: hidden; display: none;
+  }
+  .context-head {
+    background: #ffe9b8; padding: 10px 16px;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    font-weight: 800; font-size: 14px; text-transform: uppercase;
+    letter-spacing: 0.4px; color: #7a4a00;
+  }
+  .context-body {
+    padding: 14px 16px; font-size: 16px; color: #5c3d00; line-height: 1.6;
+    font-family: var(--math-font);
+    text-align: center;
+  }
+
+  /* QCM options: centered pill cluster */
+  .options {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
+    margin-bottom: 4px;
+  }
+  .option-btn {
+    font-family: var(--math-font); font-size: 16px; font-weight: 600;
+    text-align: center; padding: 12px 18px;
+    border-radius: 20px; border: 1.5px solid #d8d6cd;
+    background: #fff; color: var(--text-primary);
+    cursor: pointer;
+  }
+  .option-btn:hover:not(:disabled) { background: #f0efe9; }
+  .option-btn:disabled { cursor: not-allowed; }
+  .option-btn.correct { background: var(--success); border-color: var(--success); color: #fff; }
+  .option-btn.incorrect { background: var(--error); border-color: var(--error); color: #fff; }
+  .option-btn.dim { opacity: 0.4; }
+
+  /* Fill-in: centered */
+  .fill-col {
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    margin-bottom: 4px;
+  }
+  .fill-input {
+    width: 100%; max-width: 280px;
+    font-family: var(--math-font); font-size: 18px; text-align: center;
+    padding: 12px 14px; border-radius: 20px;
+    border: 1.5px solid #d8d6cd; background: #fff; color: var(--text-primary);
+  }
+  .fill-input:focus { outline: 2px solid var(--accent); }
+  .fill-input.correct { border-color: var(--success); background: var(--success-bg); }
+  .fill-input.incorrect { border-color: var(--error); background: var(--error-bg); }
+  .submit-btn {
+    border: none; border-radius: 20px; background: var(--accent); color: #fff;
+    font-size: 16px; font-weight: 600; padding: 12px 24px; cursor: pointer;
+    font-family: inherit;
+  }
+  .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .expected {
+    font-size: 15px; color: var(--text-secondary); text-align: center;
+    font-family: var(--math-font);
+  }
+
+  .summary {
+    background: var(--card-white);
+    border-radius: 18px;
+    padding: 30px 22px;
+    text-align: center;
+    display: none;
+  }
+  .score-ring-wrap { position: relative; width: 160px; height: 160px; margin: 4px auto 6px auto; }
+  .score-ring-wrap svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .score-ring-bg { fill: none; stroke: var(--border); stroke-width: 12; }
+  .score-ring-fg {
+    fill: none; stroke-width: 12; stroke-linecap: round;
+    stroke-dasharray: 339.3; stroke-dashoffset: 339.3;
+    transition: stroke-dashoffset 1s ease, stroke 0.3s ease;
+  }
+  .score-ring-center {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+  .score-ring-percent { font-size: 34px; font-weight: 800; color: var(--text-primary); line-height: 1; }
+  .score-ring-frac { font-size: 13px; color: var(--text-tertiary); font-weight: 600; margin-top: 2px; }
+  .tier-badge {
+    display: inline-block; font-size: 15px; font-weight: 700; padding: 6px 16px;
+    border-radius: 20px; margin: 10px 0 4px 0;
+  }
+  .record-badge {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700;
+    color: #a35800; background: var(--warning-bg); padding: 6px 14px; border-radius: 20px;
+    margin: 6px 0 4px 0;
+  }
+  .gamif-stats {
+    display: flex; justify-content: center; gap: 22px; flex-wrap: wrap;
+    margin: 18px 0 6px 0; padding: 14px 0; border-top: 0.5px solid var(--border);
+    border-bottom: 0.5px solid var(--border);
+  }
+  .gamif-stats .g-stat { text-align: center; }
+  .gamif-stats .g-num { font-size: 19px; font-weight: 800; color: var(--text-primary); }
+  .gamif-stats .g-label { font-size: 11px; color: var(--text-tertiary); font-weight: 600; text-transform: uppercase; }
+  .replay-hook {
+    font-size: 13px; color: var(--text-secondary); margin-top: 16px; line-height: 1.5;
+  }
+  .topic-row {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 16px; padding: 12px 0; border-top: 0.5px solid var(--border);
+    text-align: left;
+  }
+  .topic-row .bar-container {
+    width: 90px; height: 8px; background: var(--border);
+    border-radius: 5px; margin-left: 10px; flex-shrink: 0;
+  }
+  .topic-row .bar { height: 100%; border-radius: 5px; }
+  .summary-actions {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
+    margin-top: 22px;
+  }
+  .summary-actions button {
+    border: none; border-radius: 20px; font-size: 16px; font-weight: 600;
+    padding: 12px 20px; cursor: pointer; font-family: inherit;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-secondary { background: var(--bg); color: var(--text-primary); border: 1px solid var(--border) !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="avatar">🌧️</div>
+  <h1>Quiz Pluies Acides</h1>
+  <p class="subtitle">6 catégories · Sujet Objectif Bac « Pluies acides »</p>
+
+  <div id="screen-category">
+    <div class="daily-banner" id="daily-banner" style="display:none"></div>
+    <div class="stat-strip" id="stat-strip"></div>
+    <div class="cat-grid" id="cat-grid"></div>
+  </div>
+
+  <div id="screen-quiz" style="display:none">
+    <div class="current-cat" id="current-cat"></div>
+    <a class="back-link" id="back-link">← Changer de catégorie</a>
+
+    <div class="live-bar">
+      <div class="live-inner">
+        <div class="live-top">
+          <div class="live-score-block">
+            <span class="live-score-number" id="correct-count">0</span>
+            <span class="live-score-label">/ <span id="total-count">0</span> bonnes réponses</span>
+          </div>
+          <div class="live-right">
+            <span class="combo-badge" id="combo-badge">🔥 <span id="combo-count">0</span></span>
+          </div>
+        </div>
+        <div class="progress-container">
+          <div class="progress-bar" id="progress"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="quiz"></div>
+    <div id="summary" class="summary"></div>
+  </div>
+</div>
+
+<script>
+const allQuestions = [
+  // ===== Définir acide et pH =====
+  {
+    topic: "Définir acide et pH", type: "qcm",
+    q: `Selon Brönsted, un acide est une espèce chimique capable de...`,
+    options: ["Céder un proton H⁺", "Capter un proton H⁺", "Céder un électron", "Capter un électron"],
+    correct: 0,
+    explanation: "Selon Brönsted, un acide est un donneur de proton H⁺ ; une base est un accepteur de proton H⁺.",
+    context: "Ne confonds pas avec la définition de l'oxydant/réducteur, qui concerne les électrons, pas les protons.",
+    hint: "Le mot « donneur » est la clé : un acide donne quelque chose."
+  },
+  {
+    topic: "Définir acide et pH", type: "qcm",
+    q: `Quelle relation relie le pH et la concentration en ions oxonium [H3O⁺] ?`,
+    options: ["pH = -log([H3O⁺])", "pH = log([H3O⁺])", "pH = [H3O⁺]/10", "pH = 10 × [H3O⁺]"],
+    correct: 0,
+    explanation: "La relation fondamentale est pH = -log([H3O⁺]), ou de façon équivalente [H3O⁺] = 10^(-pH).",
+    context: "C'est la relation la plus utilisée pour tous les calculs d'acido-basicité.",
+    hint: "Il y a un signe moins devant le logarithme."
+  },
+  {
+    topic: "Définir acide et pH", type: "qcm",
+    q: `Une réaction acide-base met en jeu...`,
+    options: ["Un transfert de proton entre deux couples acide/base", "Un transfert d'électrons", "Une précipitation", "Un changement d'état"],
+    correct: 0,
+    explanation: "Toute réaction acide-base repose sur un transfert de proton H⁺ de l'acide d'un couple vers la base de l'autre couple.",
+    context: "Il faut toujours deux couples acide-base pour écrire une réaction acide-base complète.",
+    hint: "Pense à ce qui différencie une réaction acide-base d'une réaction d'oxydoréduction."
+  },
+  {
+    topic: "Définir acide et pH", type: "qcm",
+    q: `Dans une réaction acide-base entre un acide fort et l'eau, quel est le rôle de l'eau ?`,
+    options: ["L'eau joue le rôle de base (elle capte le proton cédé par l'acide)", "L'eau joue le rôle d'acide", "L'eau ne participe pas à la réaction", "L'eau joue le rôle de catalyseur uniquement"],
+    correct: 0,
+    explanation: "L'eau capte le proton cédé par l'acide pour former l'ion oxonium H3O⁺ : elle se comporte donc comme une base.",
+    context: "C'est pour cela que l'eau est qualifiée d'espèce amphotère : elle peut aussi jouer le rôle d'acide face à une base forte.",
+    hint: "L'eau reçoit le proton cédé par l'acide : quel rôle joue-t-elle alors ?"
+  },
+  {
+    topic: "Définir acide et pH", type: "qcm",
+    q: `Comment identifie-t-on les deux espèces d'un couple acide-base ?`,
+    options: ["Elles ne diffèrent que par un proton H⁺", "Elles ont la même formule chimique", "Elles diffèrent par un électron", "Elles ont des masses molaires égales"],
+    correct: 0,
+    explanation: "Un couple acide/base est formé de deux espèces qui ne diffèrent que par un proton H⁺ (l'acide en a un de plus que la base).",
+    context: "Exemple : le couple H3O⁺/H2O, ou CH3COOH/CH3COO⁻.",
+    hint: "Compare la formule de l'acide et celle de la base : que remarques-tu ?"
+  },
+  {
+    topic: "Définir acide et pH", type: "qcm",
+    q: `Comment note-t-on symboliquement une réaction totale (qui va jusqu'au bout) ?`,
+    options: ["Avec une simple flèche →", "Avec une double flèche ⇌", "Avec un signe =", "Avec un signe ≈"],
+    correct: 0,
+    explanation: "Une réaction totale s'écrit avec une flèche simple → ; une réaction limitée (équilibre) s'écrit avec une double flèche ⇌.",
+    context: "Cette convention d'écriture est essentielle pour communiquer clairement l'état d'avancement d'une réaction.",
+    hint: "Une réaction totale ne « revient » pas en arrière : une seule direction."
+  },
+  {
+    topic: "Définir acide et pH", type: "qcm",
+    q: `Une réaction est dite totale lorsque...`,
+    options: ["Le réactif limitant est entièrement consommé", "Les réactifs et produits coexistent en équilibre", "Elle nécessite un catalyseur", "Elle libère de la chaleur"],
+    correct: 0,
+    explanation: "Une réaction est totale quand le réactif limitant est intégralement consommé à la fin de la transformation.",
+    context: "Si ce n'est pas le cas, la réaction est dite limitée et un équilibre s'établit entre réactifs et produits.",
+    hint: "Regarde ce qu'il reste du réactif limitant à la fin."
+  },
+  {
+    topic: "Définir acide et pH", type: "fill",
+    q: `Si [H3O⁺] = 1,0 × 10⁻³ mol/L, quel est le pH de la solution ? (réponds par un nombre)`,
+    accepted: ["3", "3,0", "3.0"],
+    explanation: "pH = -log(1,0×10⁻³) = 3.",
+    context: "Application directe de la relation pH = -log([H3O⁺]).",
+    hint: "-log(10⁻³) = ?"
+  },
+  // ===== Réaction totale ou limitée ? =====
+  {
+    topic: "Réaction totale ou limitée ?", type: "qcm",
+    q: `Une solution d'acide chlorhydrique a une concentration apportée C = 1,0×10⁻² mol/L et un pH = 2,0. Que peut-on en déduire sur [H3O⁺] ?`,
+    options: ["[H3O⁺] = 1,0×10⁻² mol/L, donc [H3O⁺] = C", "[H3O⁺] est très inférieur à C", "[H3O⁺] est très supérieur à C", "On ne peut rien en déduire"],
+    correct: 0,
+    explanation: "[H3O⁺] = 10⁻pH = 10⁻2,0 = 1,0×10⁻² mol/L, ce qui est exactement égal à la concentration apportée C.",
+    context: "Quand [H3O⁺] = C, cela signifie que tout l'acide introduit s'est dissocié : la réaction est totale.",
+    hint: "Calcule [H3O⁺] = 10^(-pH), puis compare à C."
+  },
+  {
+    topic: "Réaction totale ou limitée ?", type: "qcm",
+    q: `Que peut-on conclure sur la réaction de HCl avec l'eau si [H3O⁺] obtenu est égal à la concentration apportée C ?`,
+    options: ["La réaction est totale : HCl est un acide fort", "La réaction est limitée : HCl est un acide faible", "Il n'y a pas eu de réaction", "L'eau n'a pas réagi"],
+    correct: 0,
+    explanation: "Si tout l'acide introduit s'est transformé en ions H3O⁺ (soit [H3O⁺]=C), la réaction est totale : c'est la caractéristique d'un acide fort.",
+    context: "HCl et HNO3 sont deux exemples classiques d'acides forts, totalement dissociés dans l'eau.",
+    hint: "Si tout l'acide a réagi, quel type d'acide est-ce ?"
+  },
+  {
+    topic: "Réaction totale ou limitée ?", type: "qcm",
+    q: `Comment écrit-on l'équation de la réaction de l'acide chlorhydrique avec l'eau, sachant qu'elle est totale ?`,
+    options: ["HCl + H2O → Cl⁻ + H3O⁺", "HCl + H2O ⇌ Cl⁻ + H3O⁺", "HCl → H⁺ + Cl⁻ (sans eau)", "HCl + H2O → HCl + H2O"],
+    correct: 0,
+    explanation: "Comme la réaction est totale, on utilise une flèche simple → : HCl + H2O → Cl⁻ + H3O⁺.",
+    context: "L'eau capte le proton cédé par HCl pour former l'ion oxonium H3O⁺.",
+    hint: "N'oublie pas d'utiliser la bonne flèche pour une réaction totale."
+  },
+  {
+    topic: "Réaction totale ou limitée ?", type: "qcm",
+    q: `Une solution d'acide nitrique de même concentration C que l'acide chlorhydrique a aussi un pH = 2. Que peut-on en conclure ?`,
+    options: ["L'acide nitrique est également un acide fort, totalement dissocié", "L'acide nitrique est un acide faible", "L'acide nitrique ne réagit pas avec l'eau", "On ne peut rien conclure sans plus d'informations"],
+    correct: 0,
+    explanation: "Même raisonnement que pour HCl : si [H3O⁺] = C, la réaction est totale, donc HNO3 est lui aussi un acide fort.",
+    context: "HNO3 et HCl sont deux acides forts classiques du programme de Terminale.",
+    hint: "Applique le même raisonnement que pour l'acide chlorhydrique."
+  },
+  {
+    topic: "Réaction totale ou limitée ?", type: "qcm",
+    q: `Quelle est l'équation de la réaction de l'acide nitrique avec l'eau ?`,
+    options: ["HNO3 + H2O → NO3⁻ + H3O⁺", "HNO3 + H2O ⇌ NO3⁻ + H3O⁺", "HNO3 → H⁺ + NO3⁻", "HNO3 + H3O⁺ → NO3⁻ + H2O"],
+    correct: 0,
+    explanation: "Comme HNO3 est un acide fort (réaction totale), on écrit HNO3 + H2O → NO3⁻ + H3O⁺ avec une flèche simple.",
+    context: "L'ion nitrate NO3⁻ est la base conjuguée de l'acide nitrique.",
+    hint: "Utilise la même flèche que pour l'acide chlorhydrique, car c'est aussi un acide fort."
+  },
+  {
+    topic: "Réaction totale ou limitée ?", type: "qcm",
+    q: `Si pour un acide, on trouvait [H3O⁺] très inférieur à la concentration apportée C, qu'en déduirait-on ?`,
+    options: ["La réaction est limitée : c'est un acide faible", "La réaction est totale : c'est un acide fort", "L'acide n'existe pas en solution", "Le pH serait négatif"],
+    correct: 0,
+    explanation: "Si [H3O⁺] est très inférieur à C, cela signifie que seule une petite partie de l'acide a réagi avec l'eau : la réaction est limitée (acide faible).",
+    context: "C'est le cas par exemple de l'acide éthanoïque (acide acétique), un acide faible.",
+    hint: "Si peu d'acide a réagi, quel type d'acide est-ce ?"
+  },
+  {
+    topic: "Réaction totale ou limitée ?", type: "qcm",
+    q: `Pourquoi compare-t-on systématiquement [H3O⁺] à la concentration apportée C pour qualifier la force d'un acide ?`,
+    options: ["Parce que cela permet de savoir si tout l'acide introduit a réagi ou non", "Parce que c'est obligatoire pour calculer le pH", "Parce que cela donne directement la masse molaire de l'acide", "Parce que cela permet de calculer le volume de la solution"],
+    correct: 0,
+    explanation: "Cette comparaison renseigne directement sur l'avancement de la réaction : si [H3O⁺] = C, tout l'acide a réagi (réaction totale, acide fort) ; sinon la réaction est limitée (acide faible).",
+    context: "C'est la méthode systématique à appliquer pour déterminer la force d'un acide à partir de données expérimentales de pH.",
+    hint: "Cette comparaison te dit si l'acide a réagi complètement ou partiellement."
+  },
+  {
+    topic: "Réaction totale ou limitée ?", type: "fill",
+    q: `Une solution a une concentration apportée C = 5,0×10⁻³ mol/L et [H3O⁺] = 5,0×10⁻³ mol/L. Le rapport [H3O⁺]/C vaut... (réponds par un nombre)`,
+    accepted: ["1"],
+    explanation: "[H3O⁺]/C = 5,0×10⁻³ / 5,0×10⁻³ = 1, ce qui confirme que la réaction est totale.",
+    context: "Un rapport égal à 1 est la signature d'un acide fort totalement dissocié.",
+    hint: "Divise les deux valeurs, qui sont identiques ici."
+  },
+  // ===== Diacides et schémas de Lewis =====
+  {
+    topic: "Diacides et schémas de Lewis", type: "qcm",
+    q: `Dans le schéma de Lewis de l'acide sulfurique H2SO4, quels atomes portent les hydrogènes acides ?`,
+    options: ["Les deux atomes d'oxygène liés chacun à un hydrogène (groupes O-H)", "L'atome de soufre central", "Les deux atomes d'oxygène doublement liés (S=O)", "Aucun atome en particulier"],
+    correct: 0,
+    explanation: "Les hydrogènes acides sont ceux liés à un atome d'oxygène (liaison O-H) : ce sont eux qui peuvent être cédés lors d'une réaction acide-base.",
+    context: "Les deux oxygènes reliés par une double liaison (S=O) ne portent pas d'hydrogène et ne sont pas concernés par l'acidité.",
+    hint: "Cherche les liaisons O-H dans le schéma de Lewis."
+  },
+  {
+    topic: "Diacides et schémas de Lewis", type: "qcm",
+    q: `Pourquoi les hydrogènes liés à l'oxygène sont-ils considérés comme acides, en utilisant l'électronégativité ?`,
+    options: ["L'oxygène, plus électronégatif, attire fortement les électrons de la liaison O-H, ce qui facilite le départ du proton H⁺", "L'hydrogène est plus électronégatif que l'oxygène", "La liaison O-H est plus solide qu'une liaison O=O", "L'électronégativité n'a aucun rapport avec l'acidité"],
+    correct: 0,
+    explanation: "L'oxygène est plus électronégatif que l'hydrogène : il attire vers lui les électrons de la liaison O-H, ce qui rend cette liaison polarisée et facilite la libération du proton H⁺.",
+    context: "C'est le raisonnement classique utilisé pour justifier le caractère acide d'un hydrogène à partir de l'électronégativité des atomes.",
+    hint: "Compare l'électronégativité de l'oxygène et de l'hydrogène : qui attire le plus les électrons ?"
+  },
+  {
+    topic: "Diacides et schémas de Lewis", type: "qcm",
+    q: `Pourquoi dit-on que l'acide sulfurique est un diacide ?`,
+    options: ["Parce qu'il possède deux hydrogènes acides (deux liaisons O-H) qu'il peut céder", "Parce qu'il contient deux atomes de soufre", "Parce qu'il réagit deux fois plus vite qu'un autre acide", "Parce qu'il a une masse molaire deux fois plus grande"],
+    correct: 0,
+    explanation: "L'acide sulfurique possède deux groupes O-H, donc deux hydrogènes acides qu'il peut céder successivement : c'est pour cela qu'on l'appelle un diacide.",
+    context: "On distingue les monoacides (1 hydrogène acide, comme HCl) des diacides (2 hydrogènes acides, comme H2SO4).",
+    hint: "Compte le nombre de liaisons O-H dans la molécule."
+  },
+  {
+    topic: "Diacides et schémas de Lewis", type: "qcm",
+    q: `Quelle est l'équation bilan de la réaction totale de l'acide sulfurique avec l'eau (les deux hydrogènes réagissent) ?`,
+    options: ["H2SO4 + 2H2O → SO4²⁻ + 2H3O⁺", "H2SO4 + H2O → SO4²⁻ + H3O⁺", "H2SO4 + 2H2O ⇌ SO4²⁻ + 2H3O⁺", "H2SO4 → SO4²⁻ + 2H⁺"],
+    correct: 0,
+    explanation: "Comme l'acide sulfurique cède ses deux hydrogènes de façon totale dans l'eau, il faut deux molécules d'eau pour capter les deux protons : H2SO4 + 2H2O → SO4²⁻ + 2H3O⁺.",
+    context: "Cette équation traduit bien le caractère diacide et totalement dissocié de H2SO4 dans l'eau.",
+    hint: "Comme il y a 2 hydrogènes acides, il faut 2 molécules d'eau pour les capter."
+  },
+  {
+    topic: "Diacides et schémas de Lewis", type: "qcm",
+    q: `Dans l'équation H2SO4 + 2H2O → SO4²⁻ + 2H3O⁺, combien d'ions oxonium H3O⁺ sont formés par molécule d'acide sulfurique ?`,
+    options: ["2", "1", "4", "0"],
+    correct: 0,
+    explanation: "Chaque molécule d'acide sulfurique cède 2 protons, donc forme 2 ions H3O⁺ (un par eau qui capte un proton).",
+    context: "C'est la conséquence directe du caractère diacide de H2SO4.",
+    hint: "Compte le coefficient devant H3O⁺ dans l'équation."
+  },
+  {
+    topic: "Diacides et schémas de Lewis", type: "qcm",
+    q: `Quelle est la charge de l'ion formé lorsque l'acide sulfurique a cédé ses deux protons ?`,
+    options: ["2- (ion sulfate SO4²⁻)", "1- (ion hydrogénosulfate HSO4⁻)", "Neutre", "2+"],
+    correct: 0,
+    explanation: "Quand les deux protons ont été cédés, il reste l'ion sulfate SO4²⁻, de charge 2-.",
+    context: "Si un seul proton était cédé, on obtiendrait l'ion intermédiaire hydrogénosulfate HSO4⁻ (charge 1-).",
+    hint: "La molécule de départ est neutre ; elle perd 2 charges positives (2 H⁺)."
+  },
+  {
+    topic: "Diacides et schémas de Lewis", type: "qcm",
+    q: `Un monoacide, contrairement à un diacide, ne possède que...`,
+    options: ["Un seul hydrogène acide", "Un seul atome au total", "Une seule liaison chimique", "Une seule charge négative"],
+    correct: 0,
+    explanation: "Un monoacide ne possède qu'un seul hydrogène acide qu'il peut céder, contrairement à un diacide qui en possède deux.",
+    context: "HCl et HNO3, vus dans les parties précédentes, sont des exemples de monoacides.",
+    hint: "Compare avec la définition du diacide vue juste avant."
+  },
+  {
+    topic: "Diacides et schémas de Lewis", type: "fill",
+    q: `Dans le schéma de Lewis de l'acide sulfurique, combien de liaisons O-H (donc d'hydrogènes acides) sont présentes ? (réponds par un chiffre)`,
+    accepted: ["2"],
+    explanation: "Il y a 2 liaisons O-H dans H2SO4, ce qui en fait un diacide.",
+    context: "C'est cette observation directe du schéma de Lewis qui permet de justifier le caractère diacide.",
+    hint: "Regarde le schéma de Lewis : compte les groupes O-H."
+  },
+  // ===== Amphions et acides aminés =====
+  {
+    topic: "Amphions et acides aminés", type: "qcm",
+    q: `Un acide α-aminé comme l'alanine possède dans sa structure...`,
+    options: ["Un groupe carboxyle -COOH et un groupe amine -NH2", "Seulement un groupe carboxyle", "Seulement un groupe amine", "Deux groupes carboxyle"],
+    correct: 0,
+    explanation: "Un acide α-aminé possède à la fois un groupe acide carboxylique (-COOH) et un groupe basique amine (-NH2) sur le même carbone (le carbone α).",
+    context: "C'est cette double nature acide et basique qui rend possible le transfert de proton intramoléculaire.",
+    hint: "Le nom « acide aminé » indique la présence de deux groupes fonctionnels différents."
+  },
+  {
+    topic: "Amphions et acides aminés", type: "qcm",
+    q: `En solution aqueuse, pourquoi un transfert de proton intramoléculaire a-t-il lieu du groupe carboxyle vers le groupe amine ?`,
+    options: ["Le groupe carboxyle -COOH est plus acide que ne l'est le groupe -NH3⁺, donc son proton est plus facilement cédé au groupe amine, plus basique", "Le groupe amine est plus acide que le groupe carboxyle", "Il n'y a pas de transfert de proton en réalité", "Le transfert se fait uniquement en présence d'un catalyseur externe"],
+    correct: 0,
+    explanation: "Le groupe -COOH est un acide plus fort que l'acide conjugué de l'amine (-NH3⁺), donc le proton est spontanément transféré du groupe carboxyle vers le groupe amine, qui est une base plus forte.",
+    context: "C'est ce transfert intramoléculaire qui explique la formation de l'amphion (zwitterion).",
+    hint: "Compare la force acide du groupe -COOH à celle du groupe -NH3⁺."
+  },
+  {
+    topic: "Amphions et acides aminés", type: "qcm",
+    q: `Comment appelle-t-on l'espèce formée après ce transfert de proton intramoléculaire, qui porte à la fois une charge positive et une charge négative ?`,
+    options: ["Un amphion (ou zwitterion)", "Un cation", "Un anion", "Un radical"],
+    correct: 0,
+    explanation: "Cette espèce, électriquement neutre dans l'ensemble mais portant deux charges opposées (-NH3⁺ et -COO⁻), s'appelle un amphion ou zwitterion.",
+    context: "C'est la forme majoritaire des acides aminés en solution aqueuse à pH proche de la neutralité.",
+    hint: "Le préfixe « ampho- » évoque une double nature, comme dans « amphotère »."
+  },
+  {
+    topic: "Amphions et acides aminés", type: "qcm",
+    q: `Quelle est la formule de l'amphion (zwitterion) de l'alanine, à partir de la structure H2N-CH(CH3)-COOH ?`,
+    options: ["H3N⁺-CH(CH3)-COO⁻", "H2N-CH(CH3)-COO⁻", "H3N⁺-CH(CH3)-COOH", "H2N-CH(CH3)-COOH"],
+    correct: 0,
+    explanation: "Le transfert de proton du groupe -COOH vers le groupe -NH2 donne -COO⁻ (base conjuguée) et -NH3⁺ (acide conjugué) : la formule de l'amphion est donc H3N⁺-CH(CH3)-COO⁻.",
+    context: "Cette formule est neutre globalement (charge +1 et charge -1 s'annulent), mais elle correspond bien à un amphion et non à une molécule non chargée.",
+    hint: "Le proton part de -COOH pour arriver sur -NH2 : que deviennent ces deux groupes ?"
+  },
+  {
+    topic: "Amphions et acides aminés", type: "qcm",
+    q: `On dit qu'une espèce amphotère peut se comporter...`,
+    options: ["Tantôt comme un acide, tantôt comme une base, selon la réaction", "Uniquement comme un acide", "Uniquement comme une base", "Ni comme un acide ni comme une base"],
+    correct: 0,
+    explanation: "Une espèce amphotère peut réagir comme un acide (en cédant un proton) ou comme une base (en captant un proton), selon l'espèce avec laquelle elle réagit.",
+    context: "L'eau est un autre exemple classique d'espèce amphotère.",
+    hint: "« Amphotère » signifie littéralement « des deux côtés »."
+  },
+  {
+    topic: "Amphions et acides aminés", type: "qcm",
+    q: `Sachant que le pHi de l'alanine est 6,1, sous quelle forme se trouve principalement l'alanine dans un milieu de pH = 2 (très acide, pH < pHi) ?`,
+    options: ["Sous forme cationique (les deux groupes protonés : -COOH et -NH3⁺)", "Sous forme d'amphion neutre", "Sous forme anionique (-COO⁻ et -NH2)", "Elle n'existe pas à ce pH"],
+    correct: 0,
+    explanation: "Quand le pH est inférieur au pHi, la charge globale de l'espèce est positive : l'alanine se trouve sous forme cationique, avec les deux groupes protonés (-COOH et -NH3⁺).",
+    context: "C'est l'excès d'ions H3O⁺ du milieu acide qui protone également le groupe carboxylate, en plus du groupe amine.",
+    hint: "À pH très inférieur au pHi, la charge globale est positive : quels groupes portent alors un proton en plus ?"
+  },
+  {
+    topic: "Amphions et acides aminés", type: "qcm",
+    q: `Sous quelle forme se trouve l'alanine si le pH du milieu devient supérieur au pHi (milieu basique) ?`,
+    options: ["Sous forme anionique (-COO⁻ et -NH2)", "Sous forme cationique (-COOH et -NH3⁺)", "Sous forme d'amphion uniquement", "Elle précipite systématiquement"],
+    correct: 0,
+    explanation: "Quand le pH est supérieur au pHi, la charge globale devient négative : l'alanine perd un proton supplémentaire, le groupe -NH3⁺ redevient -NH2, donnant la forme anionique -COO⁻/-NH2.",
+    context: "Cette évolution en fonction du pH illustre bien le caractère amphotère de l'acide aminé.",
+    hint: "À pH supérieur au pHi, la charge globale est négative : quel groupe perd alors son proton ?"
+  },
+  {
+    topic: "Amphions et acides aminés", type: "qcm",
+    q: `L'amphion de l'alanine appartient à deux couples acide-base : dans lequel des deux joue-t-il le rôle de BASE ?`,
+    options: ["Le couple où l'acide est la forme cationique (-COOH protoné)", "Le couple où l'acide est la forme anionique", "Il ne joue jamais le rôle de base", "Les deux à la fois de façon identique"],
+    correct: 0,
+    explanation: "Dans le couple forme cationique / amphion, l'amphion est la base conjuguée (il a reçu le proton du groupe -COOH). Dans l'autre couple amphion / forme anionique, c'est l'amphion qui joue cette fois le rôle d'acide (en cédant un proton du groupe -NH3⁺).",
+    context: "C'est justement cette double appartenance à deux couples différents qui rend l'amphion amphotère.",
+    hint: "Rappelle-toi : l'amphion se forme quand le groupe carboxyle cède son proton à l'amine — dans ce couple-là, quel rôle joue-t-il ?"
+  },
+  // ===== Méthodologie de résolution =====
+  {
+    topic: "Méthodologie de résolution", type: "qcm",
+    q: `Face à un problème ouvert (comme l'analyse d'une eau de pluie), quelle est la première étape recommandée ?`,
+    options: ["Reformuler clairement le problème posé avec ses propres mots", "Se lancer directement dans les calculs numériques", "Chercher immédiatement la réponse dans le cours", "Ignorer les données fournies et raisonner de mémoire"],
+    correct: 0,
+    explanation: "La première étape d'une résolution de problème est de reformuler la question posée pour bien comprendre ce qui est réellement demandé.",
+    context: "Cette étape évite de partir dans une mauvaise direction dès le départ.",
+    hint: "Avant de calculer, il faut d'abord bien comprendre ce qui est demandé."
+  },
+  {
+    topic: "Méthodologie de résolution", type: "qcm",
+    q: `Après avoir reformulé le problème, que doit-on identifier ensuite ?`,
+    options: ["Les informations et données déjà disponibles, et celles qui manquent", "Le nombre de pages du sujet", "La couleur de la solution étudiée", "Le temps qu'il fera le jour de l'analyse"],
+    correct: 0,
+    explanation: "Il faut ensuite lister les données disponibles (concentrations, masses molaires...) et repérer les informations ou grandeurs manquantes à déterminer.",
+    context: "C'est cette étape qui permet de construire un plan de résolution cohérent.",
+    hint: "Fais l'inventaire de ce que tu as, et de ce qu'il te manque pour répondre."
+  },
+  {
+    topic: "Méthodologie de résolution", type: "qcm",
+    q: `Dans le problème des pluies acides, quelle grandeur clé doit-on rechercher pour juger si la pluie est néfaste pour l'environnement ?`,
+    options: ["Le pH de l'eau de pluie", "La couleur de l'eau de pluie", "Le volume total de pluie tombée", "La température de l'eau de pluie"],
+    correct: 0,
+    explanation: "Le pH de l'eau de pluie est la grandeur clé : plus il est bas (acide), plus la pluie est potentiellement néfaste pour les écosystèmes.",
+    context: "C'est en calculant les concentrations des ions acides présents que l'on peut ensuite estimer ce pH.",
+    hint: "Quelle grandeur permet de qualifier le caractère acide d'une solution ?"
+  },
+  {
+    topic: "Méthodologie de résolution", type: "qcm",
+    q: `Pour relier une concentration massique (en mg/L) à une concentration molaire (en mol/L), quelle formule utilise-t-on ?`,
+    options: ["c (mol/L) = concentration massique (g/L) ÷ masse molaire (g/mol)", "c (mol/L) = concentration massique (g/L) × masse molaire (g/mol)", "c (mol/L) = masse molaire ÷ concentration massique", "c (mol/L) = concentration massique + masse molaire"],
+    correct: 0,
+    explanation: "La concentration molaire s'obtient en divisant la concentration massique (convertie en g/L) par la masse molaire de l'espèce (en g/mol).",
+    context: "N'oublie pas de convertir les mg/L en g/L avant d'appliquer cette formule (diviser par 1000).",
+    hint: "C'est la même logique que pour trouver une quantité de matière n = m/M, mais appliquée à des concentrations."
+  },
+  {
+    topic: "Méthodologie de résolution", type: "qcm",
+    q: `Pourquoi est-il utile de faire le lien entre les ions présents (NO3⁻, SO4²⁻, Cl⁻) et les acides évoqués dans l'énoncé ?`,
+    options: ["Parce que ces ions sont les bases conjuguées des acides responsables des pluies acides (HNO3, H2SO4, HCl)", "Parce que ces ions n'ont aucun rapport avec les acides", "Parce que cela permet de connaître la couleur de la pluie", "Parce que ces ions sont neutres et donc sans intérêt"],
+    correct: 0,
+    explanation: "NO3⁻ est la base conjuguée de HNO3, SO4²⁻ celle de H2SO4, et Cl⁻ celle de HCl : leur présence dans l'eau de pluie prouve que ces acides ont bien réagi avec l'eau.",
+    context: "Faire ce lien permet de comprendre l'origine chimique de l'acidité observée, et pas seulement de la calculer.",
+    hint: "Repense aux couples acide-base étudiés dans les parties précédentes de l'exercice."
+  },
+  {
+    topic: "Méthodologie de résolution", type: "qcm",
+    q: `Une fois toutes les concentrations calculées, quelle doit être la dernière étape de la résolution ?`,
+    options: ["Conclure en répondant clairement à la question initiale posée", "Recommencer tous les calculs depuis le début", "Changer d'unité une dernière fois sans raison", "S'arrêter sans formuler de réponse finale"],
+    correct: 0,
+    explanation: "La dernière étape essentielle est de revenir à la question initiale et d'y répondre clairement à l'aide des résultats obtenus.",
+    context: "Un calcul juste mais sans conclusion explicite ne répond pas complètement à un problème ouvert.",
+    hint: "Repense à la question de départ : as-tu formulé une réponse claire à cette question précise ?"
+  },
+  {
+    topic: "Méthodologie de résolution", type: "qcm",
+    q: `Que signifie l'instruction « présenter toutes les étapes de la démarche, même si elle n'a pas abouti » ?`,
+    options: ["Il faut montrer son raisonnement même en cas d'erreur ou de blocage, pas seulement le résultat final", "Il faut uniquement donner la réponse finale sans justification", "Il ne faut présenter que les étapes qui ont fonctionné", "Cette instruction n'a pas d'importance pour la notation"],
+    correct: 0,
+    explanation: "Cette instruction signifie que la démarche et le raisonnement comptent autant que le résultat final : même une tentative incomplète ou erronée peut être valorisée si elle est bien expliquée.",
+    context: "C'est une compétence essentielle évaluée dans les exercices de type « résolution de problème » du baccalauréat.",
+    hint: "Cette instruction valorise le raisonnement, pas seulement la bonne réponse finale."
+  },
+  {
+    topic: "Méthodologie de résolution", type: "qcm",
+    q: `Pourquoi vérifier la cohérence des unités à chaque étape d'un calcul est-il important ?`,
+    options: ["Pour éviter les erreurs de conversion qui fausseraient complètement le résultat final", "Parce que les unités n'ont aucune influence sur le résultat", "Uniquement pour la présentation, sans impact sur le calcul", "Parce que cela permet de deviner la réponse sans calculer"],
+    correct: 0,
+    explanation: "Une erreur d'unité (oublier de convertir des mg en g, par exemple) peut fausser le résultat final d'un facteur 1000 : vérifier les unités à chaque étape est essentiel.",
+    context: "C'est une source d'erreur très fréquente, notamment lors de conversions entre mg/L et mol/L.",
+    hint: "Pense à ce qui pourrait se passer si tu oublies de convertir des mg en g avant un calcul."
+  },
+  // ===== Épreuve : Pluies acides =====
+  {
+    topic: "Épreuve : Pluies acides", type: "qcm",
+    q: `Question a. Quels sont les couples acide-base associés à l'acide chlorhydrique et à l'acide nitrique ?`,
+    options: ["H3O⁺/H2O et HCl/Cl⁻ pour l'acide chlorhydrique ; H3O⁺/H2O et HNO3/NO3⁻ pour l'acide nitrique", "HCl/H2 et HNO3/N2 pour les deux acides", "Cl⁻/HCl et NO3⁻/HNO3 uniquement, sans le couple de l'eau", "Il n'existe qu'un seul couple commun aux deux acides"],
+    correct: 0,
+    explanation: "Pour HCl, le couple est HCl/Cl⁻ (l'acide cède un proton pour donner sa base conjuguée Cl⁻) ; pour HNO3, c'est HNO3/NO3⁻. Le couple de l'eau H3O⁺/H2O intervient aussi car c'est elle qui capte le proton cédé.",
+    context: "C'est la première étape (question a) du sujet réel sur les pluies acides.",
+    hint: "Pense à retirer un proton H⁺ à chaque acide pour trouver sa base conjuguée."
+  },
+  {
+    topic: "Épreuve : Pluies acides", type: "qcm",
+    q: `Question b. Pour HCl, C1=1,0×10⁻² mol/L et pH1=2,0. Quelle est la valeur de [H3O⁺] et que peut-on en conclure en la comparant à C1 ?`,
+    options: ["[H3O⁺] = 1,0×10⁻² mol/L, soit une valeur égale à C1 : la réaction est totale", "[H3O⁺] = 2,0 mol/L, très supérieure à C1", "[H3O⁺] = 1,0×10⁻⁴ mol/L, très inférieure à C1", "On ne peut pas calculer [H3O⁺] sans plus d'informations"],
+    correct: 0,
+    explanation: "[H3O⁺] = 10⁻pH1 = 10⁻2,0 = 1,0×10⁻² mol/L = C1 : toute la quantité d'acide introduite a réagi, la réaction est donc totale.",
+    context: "C'est la question b du sujet réel, qui permet de conclure sur la force de l'acide chlorhydrique.",
+    hint: "Calcule 10^(-2,0) et compare à C1 = 1,0×10⁻²."
+  },
+  {
+    topic: "Épreuve : Pluies acides", type: "qcm",
+    q: `Question c. La réaction entre l'acide chlorhydrique et l'eau est-elle totale ? Quelle équation l'illustre ?`,
+    options: ["Oui, elle est totale : HCl + H2O → Cl⁻ + H3O⁺", "Non, elle est limitée : HCl + H2O ⇌ Cl⁻ + H3O⁺", "Oui, mais sans intervention de l'eau : HCl → H⁺ + Cl⁻", "Non, aucune réaction n'a lieu"],
+    correct: 0,
+    explanation: "Puisque [H3O⁺] = C1 (question b), la réaction est totale et s'écrit avec une flèche simple : HCl + H2O → Cl⁻ + H3O⁺.",
+    context: "C'est la question c du sujet réel, qui prolonge directement le raisonnement de la question b.",
+    hint: "Utilise la conclusion de la question précédente sur [H3O⁺] et C1."
+  },
+  {
+    topic: "Épreuve : Pluies acides", type: "qcm",
+    q: `Question d. Une solution d'acide nitrique de concentration C2=C1 a aussi un pH=2. La réaction avec l'eau est-elle totale ?`,
+    options: ["Oui, par le même raisonnement que pour HCl : HNO3 + H2O → NO3⁻ + H3O⁺", "Non, car l'acide nitrique est toujours un acide faible", "Impossible à déterminer sans expérience supplémentaire", "Oui, mais la réaction reste limitée malgré tout"],
+    correct: 0,
+    explanation: "Avec C2=C1 et le même pH, [H3O⁺]=C2 également : la réaction de l'acide nitrique avec l'eau est donc, elle aussi, totale : HNO3 + H2O → NO3⁻ + H3O⁺.",
+    context: "C'est la question d du sujet réel : elle applique le même raisonnement que pour HCl à un nouvel acide.",
+    hint: "Le même pH et la même concentration mènent à la même conclusion que pour l'acide chlorhydrique."
+  },
+  {
+    topic: "Épreuve : Pluies acides", type: "qcm",
+    q: `Question e. À partir du schéma de Lewis de l'acide sulfurique H2SO4, pourquoi peut-on affirmer qu'il s'agit d'un diacide ?`,
+    options: ["Parce que le schéma de Lewis montre deux liaisons O-H, donc deux hydrogènes acides cessibles", "Parce qu'il contient deux atomes de soufre", "Parce que sa masse molaire est deux fois plus grande que celle de HCl", "Parce qu'il forme deux types de précipités différents"],
+    correct: 0,
+    explanation: "Le schéma de Lewis de H2SO4 montre bien deux liaisons O-H : ce sont ces deux hydrogènes, liés à un oxygène très électronégatif, qui peuvent être cédés lors de réactions acide-base successives — d'où le terme diacide.",
+    context: "C'est la question e du sujet réel, qui demande d'argumenter à partir du schéma de Lewis et de l'électronégativité.",
+    hint: "Recompte les liaisons O-H visibles sur le schéma de Lewis de l'acide sulfurique."
+  },
+  {
+    topic: "Épreuve : Pluies acides", type: "qcm",
+    q: `Question f. Sachant que la réaction de l'acide sulfurique dans l'eau est totale, quel est le bilan de cette réaction (diacide) ?`,
+    options: ["H2SO4 + 2H2O → SO4²⁻ + 2H3O⁺", "H2SO4 + H2O → SO4²⁻ + H3O⁺", "H2SO4 + 2H2O ⇌ SO4²⁻ + 2H3O⁺", "H2SO4 → 2H⁺ + SO4²⁻ (sans eau)"],
+    correct: 0,
+    explanation: "Puisque les 2 hydrogènes acides réagissent totalement, il faut 2 molécules d'eau pour les capter, formant 2 ions H3O⁺ et l'ion sulfate SO4²⁻ : H2SO4 + 2H2O → SO4²⁻ + 2H3O⁺.",
+    context: "C'est la question f du sujet réel, qui prouve concrètement le caractère diacide par le bilan réactionnel.",
+    hint: "Reprends l'équation vue en question e, mais avec les bons coefficients pour un diacide totalement dissocié."
+  },
+  {
+    topic: "Épreuve : Pluies acides", type: "qcm",
+    q: `Question g (étape 1). Pour résoudre le problème de l'eau de pluie, quelle est la première chose à faire selon la méthodologie de résolution de problème ?`,
+    options: ["Reformuler le problème et identifier les grandeurs à déterminer (ici, le pH de l'eau de pluie)", "Calculer directement le pH sans réfléchir à la question posée", "Ignorer les concentrations données dans l'énoncé", "Répondre uniquement par oui ou par non sans justification"],
+    correct: 0,
+    explanation: "La question g demande explicitement de reformuler le problème et d'identifier quelle grandeur permettrait de juger si la pluie est néfaste : ici, il s'agit du pH de l'eau de pluie.",
+    context: "C'est la question g du sujet réel, qui teste la démarche de résolution de problème plutôt qu'un simple calcul.",
+    hint: "Relis bien la consigne : que demande-t-elle avant même de calculer quoi que ce soit ?"
+  },
+  {
+    topic: "Épreuve : Pluies acides", type: "qcm",
+    q: `Question g (étape 2). Comment expliquer la présence des ions NO3⁻, SO4²⁻ et Cl⁻ dans l'eau de pluie, et comment calculer leur concentration molaire à partir de leur concentration massique ?`,
+    options: ["Ces ions proviennent des acides HNO3, H2SO4 et HCl ayant réagi avec l'eau ; on divise chaque concentration massique (en g/L) par la masse molaire correspondante pour obtenir la concentration molaire", "Ces ions n'ont aucun lien avec les acides cités dans le sujet", "Il faut multiplier la concentration massique par la masse molaire", "Ces ions proviennent uniquement de la pollution des sols, sans lien avec les acides atmosphériques"],
+    correct: 0,
+    explanation: "NO3⁻, SO4²⁻ et Cl⁻ sont les bases conjuguées des acides HNO3, H2SO4 et HCl, formés lors de leur réaction totale avec l'eau de pluie. Pour passer d'une concentration massique à une concentration molaire, on divise par la masse molaire : c = cm(g/L) / M(g/mol).",
+    context: "C'est la dernière étape de la question g du sujet réel, qui relie la chimie qualitative (origine des ions) à la chimie quantitative (calcul de concentration).",
+    hint: "Fais le lien avec les couples acide-base étudiés dans les parties 1 et 2 de l'exercice, puis applique c = m/M adapté aux concentrations."
+  },
+];
+
+const topicColors = {
+  "Définir acide et pH": "#0066cc",
+  "Réaction totale ou limitée ?": "#128a5e",
+  "Diacides et schémas de Lewis": "#cc6600",
+  "Amphions et acides aminés": "#800080",
+  "Méthodologie de résolution": "#00807a",
+  "Épreuve : Pluies acides": "#8b1e3f"
+};
+
+const topicWeeks = {
+  "Définir acide et pH": "Brönsted, pH, couples acide-base",
+  "Réaction totale ou limitée ?": "→ ou ⇌ selon [H3O+] et C",
+  "Diacides et schémas de Lewis": "Cas de l'acide sulfurique",
+  "Amphions et acides aminés": "Zwitterion de l'alanine",
+  "Méthodologie de résolution": "Comment aborder un problème ouvert",
+  "Épreuve : Pluies acides": "Sujet réel · ordre fixe des questions a à g"
+};
+
+function normalize(str) {
+  return str
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[’']/g, "'")
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
+function shuffleArray(arr) {
+  return arr.slice().sort(() => Math.random() - 0.5);
+}
+
+// ===== Gamification : persistance locale =====
+function getBestScores() {
+  try { return JSON.parse(localStorage.getItem("pluiesacidesquiz_bestScores")) || {}; }
+  catch { return {}; }
+}
+function saveBestScoreIfHigher(key, correct, total) {
+  const scores = getBestScores();
+  const prevPercent = scores[key] ? (scores[key].correct / scores[key].total) * 100 : -1;
+  const newPercent = (correct / total) * 100;
+  const isNewRecord = newPercent > prevPercent;
+  if (isNewRecord) {
+    scores[key] = { correct, total };
+    localStorage.setItem("pluiesacidesquiz_bestScores", JSON.stringify(scores));
+  }
+  return isNewRecord;
+}
+function getBestScoreFor(key) {
+  const scores = getBestScores();
+  return scores[key] || null;
+}
+
+function updateDailyStreak() {
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const last = localStorage.getItem("pluiesacidesquiz_lastPlayedDate");
+  let streak = parseInt(localStorage.getItem("pluiesacidesquiz_streakDays")) || 0;
+  if (last === todayStr) {
+    return streak;
+  }
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  streak = (last === yesterday) ? streak + 1 : 1;
+  localStorage.setItem("pluiesacidesquiz_lastPlayedDate", todayStr);
+  localStorage.setItem("pluiesacidesquiz_streakDays", streak);
+  return streak;
+}
+function getStreakDays() {
+  return parseInt(localStorage.getItem("pluiesacidesquiz_streakDays")) || 0;
+}
+
+function getTotalAnswered() {
+  return parseInt(localStorage.getItem("pluiesacidesquiz_totalAnswered")) || 0;
+}
+function addToTotalAnswered(n) {
+  const total = getTotalAnswered() + n;
+  localStorage.setItem("pluiesacidesquiz_totalAnswered", total);
+  return total;
+}
+
+function getBestCombo() {
+  return parseInt(localStorage.getItem("pluiesacidesquiz_bestCombo")) || 0;
+}
+function setBestComboIfHigher(n) {
+  const best = getBestCombo();
+  if (n > best) {
+    localStorage.setItem("pluiesacidesquiz_bestCombo", n);
+    return true;
+  }
+  return false;
+}
+
+let currentCombo = 0;
+let sessionBestCombo = 0;
+
+let questions = [];
+let results = [];
+let currentCategoryKey = "__ALL__";
+
+const screenCategory = document.getElementById("screen-category");
+const screenQuiz = document.getElementById("screen-quiz");
+const quizEl = document.getElementById("quiz");
+const summaryEl = document.getElementById("summary");
+
+function buildCategoryScreen() {
+  const CATEGORY_ORDER = [
+    "Épreuve : Pluies acides",
+    "Définir acide et pH",
+    "Réaction totale ou limitée ?",
+    "Diacides et schémas de Lewis",
+    "Amphions et acides aminés",
+    "Méthodologie de résolution"
+  ];
+  const allTopics = [...new Set(allQuestions.map(q => q.topic))];
+  const topics = CATEGORY_ORDER.filter(t => allTopics.includes(t))
+    .concat(allTopics.filter(t => !CATEGORY_ORDER.includes(t)));
+  const grid = document.getElementById("cat-grid");
+
+  const streak = getStreakDays();
+  const banner = document.getElementById("daily-banner");
+  if (banner) {
+    if (streak > 0) {
+      banner.style.display = "flex";
+      banner.innerHTML = `<span class="flame">🔥</span> ${streak} jour${streak > 1 ? "s" : ""} d'affilée — reviens demain pour continuer ta série !`;
+    } else {
+      banner.style.display = "none";
+    }
+  }
+
+  const totalAnswered = getTotalAnswered();
+  const bestCombo = getBestCombo();
+  const statsStrip = document.getElementById("stat-strip");
+  if (statsStrip) {
+    statsStrip.innerHTML = `
+      <div class="stat"><div class="stat-num">${totalAnswered}</div><div class="stat-label">Questions répondues</div></div>
+      <div class="stat"><div class="stat-num">${bestCombo}</div><div class="stat-label">Meilleur combo</div></div>
+    `;
+  }
+
+  const allBest = getBestScoreFor("__ALL__");
+  const allRecordHtml = allBest ? `<span class="cat-record">⭐ Record : ${allBest.correct}/${allBest.total}</span>` : "";
+  const allBtn = `
+    <div class="cat-btn-wrap">
+      <button class="cat-btn cat-all" data-topic="__ALL__">Toutes les catégories <span class="cat-count">(${allQuestions.length})</span></button>
+      <span class="cat-week">Mini bac / révision globale</span>
+      ${allRecordHtml}
+    </div>
+  `;
+  const topicBtns = topics.map(t => {
+    const count = allQuestions.filter(q => q.topic === t).length;
+    const best = getBestScoreFor(t);
+    const recordHtml = best ? `<span class="cat-record"><span class="star">⭐</span> Record : ${best.correct}/${best.total}</span>` : "";
+    return `
+      <div class="cat-btn-wrap">
+        <button class="cat-btn" data-topic="${t}" style="background:${topicColors[t]}">${t} <span class="cat-count">(${count})</span></button>
+        <span class="cat-week">${topicWeeks[t] || ""}</span>
+        ${recordHtml}
+      </div>
+    `;
+  }).join("");
+  grid.innerHTML = allBtn + topicBtns;
+
+  grid.querySelectorAll(".cat-btn").forEach(btn => {
+    btn.addEventListener("click", () => startQuiz(btn.dataset.topic));
+  });
+}
+
+const NO_SHUFFLE_TOPICS = ["Épreuve : Pluies acides"];
+
+function startQuiz(topicKey) {
+  if (topicKey === "__ALL__") {
+    questions = shuffleArray(allQuestions);
+  } else if (NO_SHUFFLE_TOPICS.includes(topicKey)) {
+    questions = allQuestions.filter(q => q.topic === topicKey);
+  } else {
+    questions = shuffleArray(allQuestions.filter(q => q.topic === topicKey));
+  }
+
+  updateDailyStreak();
+  currentCategoryKey = topicKey;
+
+  const currentCatEl = document.getElementById("current-cat");
+  if (topicKey === "__ALL__") {
+    currentCatEl.innerHTML = `<span class="pill" style="background:#111111">Toutes les catégories</span>`;
+  } else {
+    currentCatEl.innerHTML = `<span class="pill" style="background:${topicColors[topicKey]}">${topicKey}</span>`;
+  }
+
+  screenCategory.style.display = "none";
+  screenQuiz.style.display = "block";
+  document.getElementById("total-count").textContent = questions.length;
+  renderAll();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+document.getElementById("back-link").addEventListener("click", () => {
+  screenQuiz.style.display = "none";
+  screenCategory.style.display = "block";
+  buildCategoryScreen();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+function cardHtml(item, idx) {
+  const typeLabel = item.type === "qcm" ? "QCM" : "À compléter";
+  let bodyHtml = "";
+  if (item.type === "qcm") {
+    const order = shuffleArray(item.options.map((_, i) => i));
+    bodyHtml = `
+      <div class="options" id="options-${idx}">
+        ${order.map(oidx => `
+          <button class="option-btn" data-qidx="${idx}" data-oidx="${oidx}">${item.options[oidx]}</button>
+        `).join("")}
+      </div>
+    `;
+  } else {
+    bodyHtml = `
+      <div class="fill-col">
+        <input type="text" class="fill-input" id="fill-${idx}" placeholder="Ta réponse..." autocomplete="off">
+        <button class="submit-btn" id="submit-${idx}" data-qidx="${idx}">Valider</button>
+      </div>
+    `;
+  }
+  return `
+    <div class="card" id="card-${idx}">
+      <div class="card-top">
+        <span class="topic" data-topic="${item.topic}">${item.topic}</span>
+        <span class="qcount">Question ${idx + 1}/${questions.length}</span>
+        <span class="qtype">${typeLabel}</span>
+      </div>
+      <p class="question">${item.q}</p>
+      ${bodyHtml}
+      <div class="center-row">
+        <button class="hint-btn" id="hint-btn-${idx}">Voir l'indice</button>
+      </div>
+      <p class="hint" id="hint-${idx}">💡 ${item.hint}</p>
+      <div class="reponse-box" id="explanation-${idx}">
+        <div class="reponse-head">✅ Réponse</div>
+        <div class="reponse-body">${item.explanation}</div>
+      </div>
+      <div class="context-box" id="context-${idx}">
+        <div class="context-head">💡 Astuce</div>
+        <div class="context-body">${item.context}</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderAll() {
+  results = new Array(questions.length).fill(null);
+  currentCombo = 0;
+  sessionBestCombo = 0;
+  quizEl.innerHTML = questions.map((item, idx) => cardHtml(item, idx)).join("");
+  summaryEl.style.display = "none";
+  quizEl.style.display = "block";
+
+  questions.forEach((item, idx) => {
+    document.getElementById(`hint-btn-${idx}`).addEventListener("click", () => {
+      document.getElementById(`hint-${idx}`).style.display = "block";
+      document.getElementById(`hint-btn-${idx}`).disabled = true;
+    });
+
+    if (item.type === "qcm") {
+      document.querySelectorAll(`#options-${idx} .option-btn`).forEach(btn => {
+        btn.addEventListener("click", () => {
+          if (results[idx] !== null) return;
+          const oidx = parseInt(btn.dataset.oidx);
+          submitQcm(idx, oidx);
+        });
+      });
+    } else {
+      const input = document.getElementById(`fill-${idx}`);
+      const submitBtn = document.getElementById(`submit-${idx}`);
+      submitBtn.addEventListener("click", () => {
+        if (results[idx] !== null) return;
+        submitFill(idx);
+      });
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && results[idx] === null) submitFill(idx);
+      });
+    }
+  });
+
+  updateLiveBar();
+}
+
+function submitQcm(idx, oidx) {
+  const item = questions[idx];
+  const isCorrect = oidx === item.correct;
+  document.querySelectorAll(`#options-${idx} .option-btn`).forEach((btn) => {
+    const bIdx = parseInt(btn.dataset.oidx);
+    btn.disabled = true;
+    if (bIdx === item.correct) btn.classList.add("correct");
+    else if (bIdx === oidx) btn.classList.add("incorrect");
+    else btn.classList.add("dim");
+  });
+  finishAnswer(idx, isCorrect);
+}
+
+function submitFill(idx) {
+  const item = questions[idx];
+  const input = document.getElementById(`fill-${idx}`);
+  const val = normalize(input.value);
+  const isCorrect = val.length > 0 && item.accepted.some(a => normalize(a) === val);
+  input.disabled = true;
+  input.classList.add(isCorrect ? "correct" : "incorrect");
+  document.getElementById(`submit-${idx}`).disabled = true;
+  if (!isCorrect) {
+    input.insertAdjacentHTML("afterend", `<span class="expected">Réponse attendue : <strong>${item.accepted[0]}</strong></span>`);
+  }
+  finishAnswer(idx, isCorrect);
+}
+
+function finishAnswer(idx, isCorrect) {
+  results[idx] = isCorrect;
+  document.getElementById(`explanation-${idx}`).style.display = "block";
+  document.getElementById(`context-${idx}`).style.display = "block";
+  document.getElementById(`hint-btn-${idx}`).style.display = "none";
+  document.getElementById(`card-${idx}`).classList.add(isCorrect ? "correct-card" : "incorrect-card");
+
+  addToTotalAnswered(1);
+  if (isCorrect) {
+    currentCombo++;
+    if (currentCombo > sessionBestCombo) sessionBestCombo = currentCombo;
+    setBestComboIfHigher(currentCombo);
+  } else {
+    currentCombo = 0;
+  }
+
+  updateLiveBar();
+  if (results.every(r => r !== null)) {
+    showSummary();
+  }
+}
+
+function updateLiveBar() {
+  const answeredCount = results.filter(r => r !== null).length;
+  const correctCount = results.filter(r => r === true).length;
+  document.getElementById("correct-count").textContent = correctCount;
+  document.getElementById("progress").style.width = `${(answeredCount / questions.length) * 100}%`;
+
+  const comboBadge = document.getElementById("combo-badge");
+  const comboCount = document.getElementById("combo-count");
+  if (currentCombo >= 2) {
+    comboCount.textContent = currentCombo;
+    comboBadge.classList.remove("show");
+    void comboBadge.offsetWidth;
+    comboBadge.classList.add("show");
+  } else {
+    comboBadge.classList.remove("show");
+  }
+}
+
+function showSummary() {
+  const total = results.filter(r => r === true).length;
+  const percent = Math.round((total / questions.length) * 100);
+  const byTopic = {};
+  questions.forEach((q, idx) => {
+    byTopic[q.topic] = byTopic[q.topic] || { ok: 0, tot: 0 };
+    byTopic[q.topic].tot += 1;
+    byTopic[q.topic].ok += results[idx] ? 1 : 0;
+  });
+
+  const rows = Object.entries(byTopic).map(([t, v]) => {
+    const p = (v.ok / v.tot) * 100;
+    return `
+      <div class="topic-row">
+        <span>${t}</span>
+        <span>${v.ok}/${v.tot}</span>
+        <div class="bar-container">
+          <div class="bar" style="width: ${p}%; background: ${topicColors[t]};"></div>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  let tier, tierColor, tierEmoji;
+  if (percent === 100) { tier = "Sans faute !"; tierColor = "#1d9e75"; tierEmoji = "🏆"; }
+  else if (percent >= 80) { tier = "Excellent"; tierColor = "#1d9e75"; tierEmoji = "🌟"; }
+  else if (percent >= 50) { tier = "Bien joué"; tierColor = "#185fa5"; tierEmoji = "👍"; }
+  else { tier = "En progression"; tierColor = "#ff9800"; tierEmoji = "💪"; }
+
+  const isNewRecord = saveBestScoreIfHigher(currentCategoryKey, total, questions.length);
+  const isNewComboRecord = setBestComboIfHigher(sessionBestCombo);
+  const totalAnswered = getTotalAnswered();
+  const streak = getStreakDays();
+
+  summaryEl.style.display = "block";
+  summaryEl.innerHTML = `
+    <p style="font-size:13px;color:var(--text-tertiary);margin:0 0 8px 0;font-weight:600;">Score final</p>
+    <div class="score-ring-wrap">
+      <svg viewBox="0 0 120 120">
+        <circle class="score-ring-bg" cx="60" cy="60" r="54"></circle>
+        <circle class="score-ring-fg" id="score-ring-fg" cx="60" cy="60" r="54" style="stroke:${tierColor}"></circle>
+      </svg>
+      <div class="score-ring-center">
+        <span class="score-ring-percent">${percent}%</span>
+        <span class="score-ring-frac">${total}/${questions.length}</span>
+      </div>
+    </div>
+    <div>
+      <span class="tier-badge" style="background:${tierColor}20; color:${tierColor}">${tierEmoji} ${tier}</span>
+    </div>
+    ${isNewRecord ? `<div><span class="record-badge">🏅 Nouveau record sur cette catégorie !</span></div>` : ""}
+    ${isNewComboRecord && sessionBestCombo >= 2 ? `<div><span class="record-badge">🔥 Nouveau record de combo : ${sessionBestCombo} !</span></div>` : ""}
+
+    <div class="gamif-stats">
+      <div class="g-stat"><div class="g-num">🔥 ${streak}</div><div class="g-label">Jours d'affilée</div></div>
+      <div class="g-stat"><div class="g-num">${sessionBestCombo}</div><div class="g-label">Meilleur combo</div></div>
+      <div class="g-stat"><div class="g-num">${totalAnswered}</div><div class="g-label">Questions au total</div></div>
+    </div>
+
+    <div style="text-align:left;">
+      <p style="font-size:14px;color:var(--text-secondary);margin:14px 0 6px 0;">Répartition par thème</p>
+      ${rows}
+    </div>
+    <div class="summary-actions">
+      <button class="btn-primary" id="restart">Recommencer</button>
+      ${NO_SHUFFLE_TOPICS.includes(currentCategoryKey) ? "" : `<button class="btn-secondary" id="shuffle">Mélanger et recommencer</button>`}
+      <button class="btn-secondary" id="change-cat">Changer de catégorie</button>
+    </div>
+    <p class="replay-hook">🔥 Reviens à la prochaine séance pour garder ta série, ou choisis un autre chapitre pour décrocher un nouveau record !</p>
+  `;
+  summaryEl.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  requestAnimationFrame(() => {
+    const circumference = 339.3;
+    const offset = circumference * (1 - percent / 100);
+    document.getElementById("score-ring-fg").style.strokeDashoffset = offset;
+  });
+
+  document.getElementById("restart").addEventListener("click", () => {
+    renderAll();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+  document.getElementById("shuffle")?.addEventListener("click", () => {
+    questions = shuffleArray(questions);
+    renderAll();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+  document.getElementById("change-cat").addEventListener("click", () => {
+    screenQuiz.style.display = "none";
+    screenCategory.style.display = "block";
+    buildCategoryScreen();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+}
+
+// Initialize
+buildCategoryScreen();
+</script>
+</body>
+</html>
