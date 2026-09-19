@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quiz Préhistoire</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f3ef;
+    --card: #f7f7f5;
+    --card-white: #ffffff;
+    --math-font: 'STIX Two Text', Cambria, Georgia, 'Times New Roman', serif;
+    --border: #e6e4dd;
+    --text-primary: #111111;
+    --text-secondary: #555555;
+    --text-tertiary: #8a8a8d;
+    --accent: #185fa5;
+    --accent-dark: #0c447c;
+    --accent-bg: #e6f1fb;
+    --success: #1d9e75;
+    --success-bg: #e1f5ee;
+    --warning: #ff9800;
+    --warning-bg: #fff3e0;
+    --error: #c0392b;
+    --error-bg: #ffebee;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    padding: 14px 10px 80px 10px;
+    background: var(--bg);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    color: var(--text-primary);
+    display: flex;
+    justify-content: center;
+    font-size: 17px;
+  }
+  .wrap { max-width: 600px; width: 100%; }
+  @media (min-width: 640px) {
+    body { padding: 20px 16px 80px 16px; }
+  }
+
+  /* Header */
+  .avatar {
+    width: 36px; height: 36px; border-radius: 18px;
+    background: #000; color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; margin: 0 auto 10px auto;
+  }
+  h1 {
+    margin: 0 0 4px 0; text-align: center;
+    font-size: 24px; font-weight: 600; letter-spacing: -0.3px; color: #000;
+  }
+  .subtitle {
+    margin: 0 0 14px 0; text-align: center;
+    color: var(--text-secondary); font-size: 14px; font-weight: 500;
+  }
+  .meta {
+    margin: 0 0 14px 0; text-align: center;
+    color: var(--text-tertiary); font-size: 12px;
+  }
+
+  /* Daily streak banner */
+  .daily-banner {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    background: linear-gradient(135deg, #fff3d6, #ffe3d6);
+    border-radius: 14px; padding: 9px 14px; margin-bottom: 10px;
+    font-size: 13px; font-weight: 700; color: #a35800;
+  }
+  .daily-banner .flame { font-size: 17px; }
+  .stat-strip {
+    display: flex; justify-content: center; gap: 18px; flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .stat-strip .stat { text-align: center; }
+  .stat-strip .stat-num { font-size: 17px; font-weight: 800; color: var(--text-primary); }
+  .stat-strip .stat-label { font-size: 10px; color: var(--text-tertiary); font-weight: 600; text-transform: uppercase; }
+
+  /* Category selection */
+  .cat-grid {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;
+    margin-bottom: 24px;
+  }
+  .cat-btn-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; max-width: 220px; }
+  .cat-btn {
+    border: none; border-radius: 24px; color: #fff;
+    font-size: 16px; font-weight: 600;
+    padding: 14px 22px; cursor: pointer;
+    font-family: inherit;
+  }
+  .cat-btn:hover { opacity: 0.9; }
+  .cat-btn .cat-count {
+    font-weight: 400; opacity: 0.85; font-size: 14px;
+  }
+  .cat-all { background: #111111; }
+  .cat-week {
+    font-size: 11px; font-weight: 600; color: var(--text-tertiary);
+    text-align: center;
+  }
+  .cat-record {
+    font-size: 11px; font-weight: 700; color: var(--text-tertiary);
+  }
+  .cat-record .star { color: #f0a500; }
+
+  .back-link {
+    display: block; text-align: center; margin: 0 0 18px 0;
+    font-size: 15px; color: var(--accent); cursor: pointer;
+    font-weight: 600; text-decoration: none;
+  }
+  .back-link:hover { text-decoration: underline; }
+
+  .current-cat {
+    text-align: center; margin: 0 0 18px 0;
+  }
+  .current-cat .pill {
+    display: inline-block; border-radius: 20px; padding: 9px 20px;
+    font-size: 15px; font-weight: 600; color: #fff;
+  }
+
+  /* Sticky live score bar */
+  .live-bar {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--bg); padding: 0 0 14px 0; margin-bottom: 6px;
+  }
+  .live-inner {
+    background: var(--card-white);
+    border: 0.5px solid var(--border);
+    border-radius: 18px;
+    padding: 14px 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  }
+  .live-top {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px;
+  }
+  .live-score-block { display: flex; align-items: baseline; gap: 6px; }
+  .live-score-number {
+    font-size: 30px; font-weight: 800; color: var(--text-primary);
+    line-height: 1; transition: color 0.2s ease;
+  }
+  .live-score-label { font-size: 13px; color: var(--text-tertiary); font-weight: 500; }
+  .live-right { display: flex; align-items: center; gap: 8px; }
+  .combo-badge {
+    display: none; align-items: center; gap: 4px;
+    background: linear-gradient(135deg, #ff9800, #ff5252);
+    color: #fff; font-weight: 700; font-size: 13px;
+    padding: 5px 12px; border-radius: 20px;
+    animation: pop 0.25s ease;
+  }
+  .combo-badge.show { display: inline-flex; }
+  @keyframes pop {
+    0% { transform: scale(0.7); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .progress-container {
+    width: 100%; background: var(--border); border-radius: 4px;
+    margin-top: 12px; height: 10px;
+  }
+  .progress-bar {
+    height: 100%; background: linear-gradient(90deg, var(--accent), #3fa7ff);
+    border-radius: 4px;
+    width: 0%; transition: width 0.35s ease;
+  }
+
+  .card {
+    background: var(--card);
+    border-radius: 18px;
+    padding: 20px 16px 18px 16px;
+    margin-bottom: 14px;
+    scroll-margin-top: 70px;
+  }
+  .card.correct-card { background: var(--success-bg); }
+  .card.incorrect-card { background: var(--error-bg); }
+
+  .card-top {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px; flex-wrap: wrap; gap: 6px;
+  }
+  .topic {
+    display: inline-block; font-size: 14px; font-weight: 600;
+    padding: 4px 12px; border-radius: 20px;
+  }
+  .topic[data-topic="Vocabulaire et repères"] { background: #d6ebff; color: #0066cc; }
+  .topic[data-topic="Les grandes étapes de l\'évolution humaine"] { background: #d9f5ea; color: #128a5e; }
+  .topic[data-topic="La sortie d\'Afrique et le peuplement de la Terre"] { background: #ffe9d6; color: #cc6600; }
+  .topic[data-topic="Le site d\'Étiolles"] { background: #f2ddff; color: #800080; }
+  .topic[data-topic="L\'art des premiers hommes"] { background: #d6fbf5; color: #00807a; }
+  .topic[data-topic="Attention aux pièges !"] { background: #ffd9e6; color: #cc0055; }
+
+  .qcount { font-size: 14px; color: var(--text-tertiary); }
+  .qtype {
+    font-size: 13px; color: var(--text-tertiary);
+    border: 0.5px solid var(--border); border-radius: 20px;
+    padding: 2px 10px; background: var(--card-white);
+  }
+  .question { font-size: 18px; font-weight: 400; margin: 0 0 8px 0; line-height: 1.5; font-family: var(--math-font); }
+  .question strong { font-weight: 700; }
+  .formula-line {
+    display: block; text-align: center; font-size: 1.15em; font-weight: 600;
+    margin: 10px 0; color: var(--text-primary);
+  }
+  sub, sup { font-size: 0.7em; }
+  .rad { display: inline-flex; align-items: flex-start; white-space: nowrap; }
+  .rad-sym { font-size: 1.15em; line-height: 1; transform: translateY(1px) scaleY(1.05); margin-right: 1px; }
+  .rad-bar { border-top: 1.5px solid currentColor; padding: 1px 2px 0 2px; }
+  .question sub, .option-btn sub, .explanation sub, .context sub, .hint sub { font-style: italic; }
+  .hint {
+    font-size: 15px; color: var(--text-tertiary); font-style: italic;
+    margin: 0 0 10px 0; display: none;
+    font-family: var(--math-font);
+  }
+
+  .center-row { display: flex; justify-content: center; margin-top: 12px; }
+
+  .hint-btn {
+    border: none; border-radius: 20px; background: var(--warning-bg); color: #a35800;
+    font-size: 15px; font-weight: 600; padding: 10px 18px; cursor: pointer;
+    font-family: inherit; margin: 0 0 12px 0;
+  }
+  .hint-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* Feedback + explanation + context: positioned before the answer choices */
+  /* Réponse : encadré bleu, même structure que l'astuce */
+  .reponse-box {
+    background: #e6f1fb; border: 1px solid #bcdcf5; border-radius: 14px;
+    margin: 0 0 12px 0; overflow: hidden; display: none;
+  }
+  .reponse-head {
+    background: #cfe6fa; padding: 10px 16px;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    font-weight: 800; font-size: 14px; text-transform: uppercase;
+    letter-spacing: 0.4px; color: #0c447c;
+  }
+  .reponse-body {
+    padding: 14px 16px; font-size: 16px; color: #0c447c; line-height: 1.6;
+    font-family: var(--math-font);
+    text-align: center;
+  }
+
+  /* Astuce : variante D, style "callout" documentation */
+  .context-box {
+    background: #fff8e8; border: 1px solid #f0d896; border-radius: 14px;
+    margin: 0 0 14px 0; overflow: hidden; display: none;
+  }
+  .context-head {
+    background: #ffe9b8; padding: 10px 16px;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    font-weight: 800; font-size: 14px; text-transform: uppercase;
+    letter-spacing: 0.4px; color: #7a4a00;
+  }
+  .context-body {
+    padding: 14px 16px; font-size: 16px; color: #5c3d00; line-height: 1.6;
+    font-family: var(--math-font);
+    text-align: center;
+  }
+
+  /* QCM options: centered pill cluster */
+  .options {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
+    margin-bottom: 4px;
+  }
+  .option-btn {
+    font-family: var(--math-font); font-size: 16px; font-weight: 600;
+    text-align: center; padding: 12px 18px;
+    border-radius: 20px; border: 1.5px solid #d8d6cd;
+    background: #fff; color: var(--text-primary);
+    cursor: pointer;
+  }
+  .option-btn:hover:not(:disabled) { background: #f0efe9; }
+  .option-btn:disabled { cursor: not-allowed; }
+  .option-btn.correct { background: var(--success); border-color: var(--success); color: #fff; }
+  .option-btn.incorrect { background: var(--error); border-color: var(--error); color: #fff; }
+  .option-btn.dim { opacity: 0.4; }
+
+  /* Fill-in: centered */
+  .fill-col {
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    margin-bottom: 4px;
+  }
+  .fill-input {
+    width: 100%; max-width: 280px;
+    font-family: var(--math-font); font-size: 18px; text-align: center;
+    padding: 12px 14px; border-radius: 20px;
+    border: 1.5px solid #d8d6cd; background: #fff; color: var(--text-primary);
+  }
+  .fill-input:focus { outline: 2px solid var(--accent); }
+  .fill-input.correct { border-color: var(--success); background: var(--success-bg); }
+  .fill-input.incorrect { border-color: var(--error); background: var(--error-bg); }
+  .submit-btn {
+    border: none; border-radius: 20px; background: var(--accent); color: #fff;
+    font-size: 16px; font-weight: 600; padding: 12px 24px; cursor: pointer;
+    font-family: inherit;
+  }
+  .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .expected {
+    font-size: 15px; color: var(--text-secondary); text-align: center;
+    font-family: var(--math-font);
+  }
+
+  .summary {
+    background: var(--card-white);
+    border-radius: 18px;
+    padding: 30px 22px;
+    text-align: center;
+    display: none;
+  }
+  .score-ring-wrap { position: relative; width: 160px; height: 160px; margin: 4px auto 6px auto; }
+  .score-ring-wrap svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .score-ring-bg { fill: none; stroke: var(--border); stroke-width: 12; }
+  .score-ring-fg {
+    fill: none; stroke-width: 12; stroke-linecap: round;
+    stroke-dasharray: 339.3; stroke-dashoffset: 339.3;
+    transition: stroke-dashoffset 1s ease, stroke 0.3s ease;
+  }
+  .score-ring-center {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+  .score-ring-percent { font-size: 34px; font-weight: 800; color: var(--text-primary); line-height: 1; }
+  .score-ring-frac { font-size: 13px; color: var(--text-tertiary); font-weight: 600; margin-top: 2px; }
+  .tier-badge {
+    display: inline-block; font-size: 15px; font-weight: 700; padding: 6px 16px;
+    border-radius: 20px; margin: 10px 0 4px 0;
+  }
+  .record-badge {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700;
+    color: #a35800; background: var(--warning-bg); padding: 6px 14px; border-radius: 20px;
+    margin: 6px 0 4px 0;
+  }
+  .gamif-stats {
+    display: flex; justify-content: center; gap: 22px; flex-wrap: wrap;
+    margin: 18px 0 6px 0; padding: 14px 0; border-top: 0.5px solid var(--border);
+    border-bottom: 0.5px solid var(--border);
+  }
+  .gamif-stats .g-stat { text-align: center; }
+  .gamif-stats .g-num { font-size: 19px; font-weight: 800; color: var(--text-primary); }
+  .gamif-stats .g-label { font-size: 11px; color: var(--text-tertiary); font-weight: 600; text-transform: uppercase; }
+  .replay-hook {
+    font-size: 13px; color: var(--text-secondary); margin-top: 16px; line-height: 1.5;
+  }
+  .topic-row {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 16px; padding: 12px 0; border-top: 0.5px solid var(--border);
+    text-align: left;
+  }
+  .topic-row .bar-container {
+    width: 90px; height: 8px; background: var(--border);
+    border-radius: 5px; margin-left: 10px; flex-shrink: 0;
+  }
+  .topic-row .bar { height: 100%; border-radius: 5px; }
+  .summary-actions {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
+    margin-top: 22px;
+  }
+  .summary-actions button {
+    border: none; border-radius: 20px; font-size: 16px; font-weight: 600;
+    padding: 12px 20px; cursor: pointer; font-family: inherit;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-secondary { background: var(--bg); color: var(--text-primary); border: 1px solid var(--border) !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="avatar">🦴</div>
+  <h1>Quiz Préhistoire</h1>
+  <p class="subtitle">6 catégories · Les débuts de l'humanité</p>
+
+  <div id="screen-category">
+    <div class="daily-banner" id="daily-banner" style="display:none"></div>
+    <div class="stat-strip" id="stat-strip"></div>
+    <div class="cat-grid" id="cat-grid"></div>
+  </div>
+
+  <div id="screen-quiz" style="display:none">
+    <div class="current-cat" id="current-cat"></div>
+    <a class="back-link" id="back-link">← Changer de catégorie</a>
+
+    <div class="live-bar">
+      <div class="live-inner">
+        <div class="live-top">
+          <div class="live-score-block">
+            <span class="live-score-number" id="correct-count">0</span>
+            <span class="live-score-label">/ <span id="total-count">0</span> bonnes réponses</span>
+          </div>
+          <div class="live-right">
+            <span class="combo-badge" id="combo-badge">🔥 <span id="combo-count">0</span></span>
+          </div>
+        </div>
+        <div class="progress-container">
+          <div class="progress-bar" id="progress"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="quiz"></div>
+    <div id="summary" class="summary"></div>
+  </div>
+</div>
+
+<script>
+const allQuestions = [
+  // ===== Vocabulaire et repères =====
+  {
+    topic: "Vocabulaire et repères", type: "qcm",
+    q: `Que signifie le mot « nomade » ?`,
+    options: ["Une personne qui n'a pas d'habitat fixe et se déplace régulièrement", "Une personne qui vit toujours au même endroit", "Un outil en pierre taillée", "Un type de peinture rupestre"],
+    correct: 0,
+    explanation: "Un nomade est une personne qui n'a pas d'habitat fixe : elle se déplace au fil des saisons, souvent pour suivre le gibier ou trouver de la nourriture.",
+    context: "Les groupes préhistoriques étaient nomades avant l'apparition de l'agriculture et des premiers villages.",
+    hint: "Pense au contraire de « sédentaire »."
+  },
+  {
+    topic: "Vocabulaire et repères", type: "qcm",
+    q: `Comment définit-on la Préhistoire ?`,
+    options: ["La période qui s'étend de l'apparition des premiers humains à l'invention de l'écriture", "La période qui commence avec l'écriture", "La période des dinosaures uniquement", "La période qui commence avec les pyramides d'Égypte"],
+    correct: 0,
+    explanation: "La Préhistoire est la période qui va de l'apparition des premiers représentants du genre Homo (il y a environ 2,4 millions d'années) jusqu'à l'invention de l'écriture (vers 3500 avant J.-C.), qui marque le début de l'Histoire.",
+    context: "Après l'invention de l'écriture, on entre dans la période appelée l'Histoire, car les hommes laissent des traces écrites de leurs actions.",
+    hint: "Cherche ce qui marque la fin de cette période, et donc le début de l'Histoire."
+  },
+  {
+    topic: "Vocabulaire et repères", type: "qcm",
+    q: `Qu'est-ce que l'art pariétal ?`,
+    options: ["Une œuvre réalisée par l'homme sur la roche, à l'intérieur d'une grotte", "Une sculpture en argile", "Un instrument de musique préhistorique", "Un vêtement en peau d'animal"],
+    correct: 0,
+    explanation: "L'art pariétal désigne les œuvres (peintures, gravures) réalisées directement sur les parois rocheuses d'une grotte.",
+    context: "Le mot vient du latin « paries », qui signifie « paroi ».",
+    hint: "Le mot ressemble à « paroi »."
+  },
+  {
+    topic: "Vocabulaire et repères", type: "qcm",
+    q: `Qu'est-ce que l'ocre, utilisée par les premiers hommes pour peindre ?`,
+    options: ["Une roche naturellement rouge ou jaune dont on extrait des pigments", "Un type de silex très dur", "Un os d'animal broyé", "Une plante servant à faire de la peinture verte"],
+    correct: 0,
+    explanation: "L'ocre est une roche naturellement colorée en rouge ou en jaune, dont on peut extraire des pigments pour peindre.",
+    context: "Avec le charbon de bois (pour le noir), l'ocre est l'un des principaux pigments utilisés dans l'art préhistorique.",
+    hint: "C'est une roche colorée, pas un objet fabriqué."
+  },
+  {
+    topic: "Vocabulaire et repères", type: "qcm",
+    q: `Qu'est-ce qu'une sépulture ?`,
+    options: ["Une tombe humaine", "Une habitation temporaire", "Un outil de chasse", "Une peinture rupestre"],
+    correct: 0,
+    explanation: "Une sépulture est une tombe humaine. Sa découverte permet aux archéologues de mieux comprendre les croyances des premiers hommes.",
+    context: "La sépulture de Sungir, datée d'environ 25 000 ans, est un exemple célèbre étudié dans ce chapitre.",
+    hint: "C'est lié à la mort et à l'enterrement d'un défunt."
+  },
+  {
+    topic: "Vocabulaire et repères", type: "qcm",
+    q: `Avec quels matériaux les premiers hommes peignent-ils les parois des grottes ?`,
+    options: ["De l'ocre et du charbon de bois", "De la peinture à l'huile", "De l'argile cuite uniquement", "Des colorants végétaux uniquement"],
+    correct: 0,
+    explanation: "Les premiers hommes utilisaient de l'ocre (pour le rouge et le jaune) et du charbon de bois (pour le noir) afin de réaliser leurs peintures rupestres.",
+    context: "Ces pigments naturels ont permis à ces œuvres de traverser des dizaines de milliers d'années.",
+    hint: "Il y a deux matériaux : un minéral coloré et un résidu de combustion."
+  },
+  {
+    topic: "Vocabulaire et repères", type: "qcm",
+    q: `Que veut dire l'expression « chasseurs-cueilleurs » ?`,
+    options: ["Des hommes qui chassent des animaux et cueillent des plantes/fruits pour se nourrir", "Des hommes qui cultivent la terre", "Des hommes qui élèvent des animaux domestiques", "Des hommes qui pratiquent uniquement la pêche"],
+    correct: 0,
+    explanation: "Les chasseurs-cueilleurs se nourrissent en chassant des animaux et en cueillant des plantes, des fruits ou des graines sauvages, sans pratiquer l'agriculture ni l'élevage.",
+    context: "C'est le mode de vie de tous les groupes humains pendant la majeure partie de la Préhistoire.",
+    hint: "Le mot est composé de deux activités : une pour la viande, une pour les végétaux."
+  },
+  {
+    topic: "Vocabulaire et repères", type: "fill",
+    q: `En quelle année (avant J.-C.) situe-t-on l'invention de l'écriture, qui marque la fin de la Préhistoire ? (réponds par un nombre, sans signe -)`,
+    accepted: ["3500"],
+    explanation: "L'écriture apparaît vers 3500 avant J.-C. en Mésopotamie, ce qui marque conventionnellement la fin de la Préhistoire et le début de l'Histoire.",
+    context: "C'est une date repère essentielle pour situer la frontière entre Préhistoire et Histoire.",
+    hint: "C'est un nombre à 4 chiffres, aux alentours de -3500."
+  },
+  // ===== Les grandes étapes de l'évolution humaine =====
+  {
+    topic: "Les grandes étapes de l'évolution humaine", type: "qcm",
+    q: `Quelle est, selon les connaissances actuelles, la première espèce du genre Homo ?`,
+    options: ["Homo habilis", "Homo sapiens", "Homo erectus", "Australopithèque"],
+    correct: 0,
+    explanation: "Homo habilis (« l'homme habile ») est considérée comme la première espèce du genre Homo, apparue il y a environ 2,4 millions d'années. L'Australopithèque, plus ancien, n'appartient pas au genre Homo.",
+    context: "Un piège classique : l'Australopithèque est un ancêtre important, mais il n'est pas classé dans le genre Homo, contrairement à Homo habilis.",
+    hint: "Attention à ne pas confondre avec l'Australopithèque, qui est antérieur mais d'un genre différent."
+  },
+  {
+    topic: "Les grandes étapes de l'évolution humaine", type: "qcm",
+    q: `Pourquoi Homo habilis porte-t-il ce nom (« l'homme habile ») ?`,
+    options: ["Parce qu'il fabrique les premiers outils en pierre taillée", "Parce qu'il maîtrise le feu", "Parce qu'il peint sur les parois des grottes", "Parce qu'il pratique l'agriculture"],
+    correct: 0,
+    explanation: "Homo habilis doit son nom au fait qu'il est le premier à fabriquer des outils en pierre taillée (comme des galets taillés).",
+    context: "Il possède aussi une habileté manuelle plus développée que ses prédécesseurs, ce qui explique ce nom.",
+    hint: "Le mot « habile » fait référence à un savoir-faire technique."
+  },
+  {
+    topic: "Les grandes étapes de l'évolution humaine", type: "qcm",
+    q: `Quelle grande maîtrise technique caractérise Homo erectus ?`,
+    options: ["La maîtrise du feu", "L'invention de l'écriture", "La domestication des animaux", "L'agriculture"],
+    correct: 0,
+    explanation: "Homo erectus est reconnu pour avoir maîtrisé l'usage du feu, ce qui lui permet de se chauffer, de cuire ses aliments et de se protéger des prédateurs.",
+    context: "Cette maîtrise du feu est l'une des avancées majeures qui distinguent Homo erectus de ses prédécesseurs.",
+    hint: "Pense à un élément essentiel pour se réchauffer et cuisiner."
+  },
+  {
+    topic: "Les grandes étapes de l'évolution humaine", type: "qcm",
+    q: `Où et quand apparaît Homo sapiens, selon les connaissances les plus courantes enseignées en classe ?`,
+    options: ["En Afrique, il y a environ 300 000 ans (des sites plus anciens comme Jebel Irhoud repoussent même cette date)", "En Europe, il y a environ 5 000 ans", "En Asie, il y a environ 1 million d'années", "En Amérique, il y a environ 50 000 ans"],
+    correct: 0,
+    explanation: "Homo sapiens apparaît en Afrique. Longtemps daté à environ 200 000 ans (site d'Omo Kibish, Éthiopie), la découverte du site de Jebel Irhoud (Maroc) a repoussé cette apparition à environ 300 000 ans. Certains manuels plus anciens utilisent encore la date de 200 000 ans.",
+    context: "C'est un bon exemple de connaissance scientifique qui évolue : ne t'étonne pas si ton cours indique 200 000 ans, c'était la date de référence avant 2017.",
+    hint: "Cette date a été révisée récemment grâce à de nouvelles découvertes archéologiques."
+  },
+  {
+    topic: "Les grandes étapes de l'évolution humaine", type: "qcm",
+    q: `Qu'est-ce qui caractérise particulièrement Homo sapiens par rapport aux espèces précédentes ?`,
+    options: ["Un cerveau plus développé, qui lui permet d'inventer l'art et d'enterrer ses morts", "Une taille beaucoup plus petite", "L'incapacité à fabriquer des outils", "L'absence totale de vie sociale"],
+    correct: 0,
+    explanation: "Homo sapiens possède un cerveau plus développé que ses prédécesseurs, ce qui lui permet de développer des comportements symboliques comme l'art (peintures, sculptures) et les sépultures.",
+    context: "C'est cette capacité symbolique qui nous renseigne le plus sur les croyances des premiers hommes.",
+    hint: "Pense à ce qui permet de créer de l'art et de réfléchir à la mort."
+  },
+  {
+    topic: "Les grandes étapes de l'évolution humaine", type: "qcm",
+    q: `Quel ordre chronologique est correct pour ces trois espèces ?`,
+    options: ["Homo habilis → Homo erectus → Homo sapiens", "Homo sapiens → Homo erectus → Homo habilis", "Homo erectus → Homo sapiens → Homo habilis", "Homo habilis → Homo sapiens → Homo erectus"],
+    correct: 0,
+    explanation: "L'ordre chronologique est : Homo habilis (le plus ancien, premier outilleur), puis Homo erectus (maîtrise du feu), puis Homo sapiens (le plus récent, notre espèce).",
+    context: "Retiens bien cet ordre : il correspond à une évolution progressive des capacités techniques et cérébrales.",
+    hint: "Le suffixe « habilis » (habile) précède logiquement « sapiens » (savant)."
+  },
+  {
+    topic: "Les grandes étapes de l'évolution humaine", type: "qcm",
+    q: `Qu'est-ce que la fabrication d'un outil « par percussion », comme pratiquée par Homo habilis ?`,
+    options: ["Frapper un galet contre un autre pour en détacher des éclats tranchants", "Faire fondre un métal pour lui donner une forme", "Tresser des fibres végétales", "Sculpter du bois avec un couteau en fer"],
+    correct: 0,
+    explanation: "La percussion consiste à frapper une pierre (galet, silex) contre une autre pour détacher des éclats et obtenir un bord tranchant, utilisable comme outil ou arme.",
+    context: "Cette technique est la base de la fabrication d'outils en pierre taillée pendant toute la Préhistoire.",
+    hint: "Le mot « percussion » évoque un choc entre deux objets."
+  },
+  {
+    topic: "Les grandes étapes de l'évolution humaine", type: "fill",
+    q: `Vers quelle année (avant J.-C.) situe-t-on généralement l'apparition d'Homo sapiens en Afrique de l'Est, selon la date la plus couramment enseignée au collège ? (réponds par un nombre, sans signe -)`,
+    accepted: ["200000"],
+    explanation: "La date la plus couramment enseignée au collège est 200 000 ans avant J.-C. (certains programmes plus récents mentionnent plutôt 300 000 ans grâce aux découvertes de Jebel Irhoud).",
+    context: "Les deux dates (200 000 et 300 000 ans) peuvent être rencontrées selon l'édition de ton manuel.",
+    hint: "C'est un nombre à 6 chiffres, qui commence par 2."
+  },
+  // ===== La sortie d'Afrique et le peuplement de la Terre =====
+  {
+    topic: "La sortie d'Afrique et le peuplement de la Terre", type: "qcm",
+    q: `D'où viennent les tout premiers représentants du genre Homo, selon la théorie du « berceau africain » ?`,
+    options: ["D'Afrique", "D'Europe", "D'Asie", "D'Amérique"],
+    correct: 0,
+    explanation: "Selon la théorie du berceau africain, tous les représentants du genre Homo (habilis, erectus, sapiens) sont originaires d'Afrique, avant de se répandre progressivement sur les autres continents.",
+    context: "C'est pour cela que l'Afrique est qualifiée de « berceau de l'humanité ».",
+    hint: "C'est le continent surnommé « berceau de l'humanité »."
+  },
+  {
+    topic: "La sortie d'Afrique et le peuplement de la Terre", type: "qcm",
+    q: `Pourquoi les Homo erectus quittent-ils leur berceau africain, selon le document étudié ?`,
+    options: ["En quête de nourriture, favorisés par des réchauffements climatiques", "Pour fuir une guerre", "Pour échapper à une épidémie", "Par pur hasard, sans aucune raison"],
+    correct: 0,
+    explanation: "Les Homo erectus se sont aventurés hors d'Afrique en quête de nourriture, en profitant des périodes de réchauffement climatique qui rendaient certaines régions plus accueillantes.",
+    context: "Ils ont notamment suivi les troupeaux de grands herbivores dans leur migration.",
+    hint: "Pense à ce qui pousse un groupe à se déplacer pour trouver à manger."
+  },
+  {
+    topic: "La sortie d'Afrique et le peuplement de la Terre", type: "qcm",
+    q: `Quelle nouvelle activité les Homo erectus développent-ils au cours de leurs déplacements hors d'Afrique ?`,
+    options: ["Ils deviennent chasseurs, en plus de récupérer la viande laissée par d'autres carnivores", "Ils deviennent agriculteurs", "Ils deviennent uniquement pêcheurs", "Ils cessent totalement de se nourrir de viande"],
+    correct: 0,
+    explanation: "En poursuivant les troupeaux de grands herbivores, les Homo erectus cessent progressivement de seulement récupérer la viande laissée par d'autres carnivores : ils deviennent eux-mêmes chasseurs.",
+    context: "C'est une étape importante dans l'évolution du mode de vie humain, qui passe d'une alimentation opportuniste à une chasse active.",
+    hint: "Ils passaient auparavant leur temps à récupérer les restes des autres prédateurs : que deviennent-ils ensuite ?"
+  },
+  {
+    topic: "La sortie d'Afrique et le peuplement de la Terre", type: "qcm",
+    q: `Quelle direction empruntent d'abord les Homo erectus en sortant d'Afrique, selon le document ?`,
+    options: ["La côte méditerranéenne, avant de s'aventurer plus au nord de l'Europe", "Directement vers l'Amérique", "Directement vers l'Australie", "Vers le pôle Nord en premier"],
+    correct: 0,
+    explanation: "Les Homo erectus se sont d'abord dirigés vers la côte méditerranéenne, avant de s'aventurer plus au nord de l'Europe à la faveur des réchauffements climatiques.",
+    context: "Ce parcours progressif illustre une conquête de l'Europe étape par étape, dépendante du climat.",
+    hint: "Pense à la région qui borde l'Afrique du Nord et l'Europe du Sud."
+  },
+  {
+    topic: "La sortie d'Afrique et le peuplement de la Terre", type: "qcm",
+    q: `Que signifie l'expression « sortie du berceau africain » ?`,
+    options: ["Le moment où les premiers hominidés quittent l'Afrique pour peupler d'autres continents", "La naissance du premier bébé humain en Afrique", "La construction des premières maisons en Afrique", "La fin de la vie nomade en Afrique"],
+    correct: 0,
+    explanation: "Cette expression désigne le moment où les Homo erectus, puis plus tard Homo sapiens, quittent le continent africain pour peupler progressivement le reste du monde.",
+    context: "Il y a eu plusieurs vagues de sortie d'Afrique au cours de la Préhistoire, notamment celle d'Homo erectus, puis celle plus tardive d'Homo sapiens.",
+    hint: "Le mot « berceau » est à prendre au sens figuré : le lieu d'origine."
+  },
+  {
+    topic: "La sortie d'Afrique et le peuplement de la Terre", type: "qcm",
+    q: `Homo sapiens a-t-il été le premier représentant du genre Homo à quitter l'Afrique ?`,
+    options: ["Non, Homo erectus a quitté l'Afrique bien avant lui", "Oui, il est le tout premier à avoir quitté l'Afrique", "Non, aucun Homo n'a jamais quitté l'Afrique avant l'an 0", "Oui, mais seulement vers l'Amérique"],
+    correct: 0,
+    explanation: "Homo erectus a quitté l'Afrique bien avant Homo sapiens, ouvrant la voie à une première colonisation de l'Europe et de l'Asie il y a plus d'un million d'années.",
+    context: "Homo sapiens effectuera ses propres migrations hors d'Afrique bien plus tard, complétant le peuplement de la planète.",
+    hint: "Il y a eu plusieurs vagues de migration, pas une seule."
+  },
+  {
+    topic: "La sortie d'Afrique et le peuplement de la Terre", type: "qcm",
+    q: `Quel type de document permet le mieux d'étudier les migrations humaines dans le temps et l'espace ?`,
+    options: ["Une carte avec des flèches et des dates", "Une recette de cuisine", "Un poème", "Un extrait de roman"],
+    correct: 0,
+    explanation: "Une carte des migrations, avec des flèches indiquant les directions et des dates repères, permet de visualiser clairement comment et quand les hommes ont peuplé la Terre.",
+    context: "C'est l'outil principal utilisé dans les manuels pour étudier ce sujet.",
+    hint: "Pense à l'outil géographique qui montre des déplacements dans l'espace."
+  },
+  {
+    topic: "La sortie d'Afrique et le peuplement de la Terre", type: "qcm",
+    q: `Le climat a-t-il joué un rôle dans les migrations humaines de la Préhistoire ?`,
+    options: ["Oui, les réchauffements climatiques ont favorisé certaines migrations vers de nouvelles régions", "Non, le climat n'a jamais eu d'influence", "Oui, mais uniquement pour empêcher toute migration", "Non, seules les guerres expliquent les migrations"],
+    correct: 0,
+    explanation: "Les réchauffements climatiques ont rendu certaines régions plus accueillantes (climat plus tempéré, plus de ressources), ce qui a favorisé les migrations humaines vers ces nouvelles zones.",
+    context: "C'est notamment le cas pour la conquête de l'Europe par Homo erectus, favorisée par des périodes de réchauffement.",
+    hint: "Repense à la raison pour laquelle Homo erectus s'aventure plus au nord de l'Europe."
+  },
+  // ===== Le site d'Étiolles =====
+  {
+    topic: "Le site d'Étiolles", type: "qcm",
+    q: `Où se situe le site préhistorique d'Étiolles étudié en classe ?`,
+    options: ["En France (aujourd'hui en Essonne)", "En Espagne", "En Russie", "Au Maroc"],
+    correct: 0,
+    explanation: "Étiolles est un site préhistorique situé en France, dans l'actuel département de l'Essonne.",
+    context: "C'est un site magdalénien célèbre, notamment étudié pour ses vestiges d'ateliers de taille du silex.",
+    hint: "Le site est étudié comme exemple européen, en France."
+  },
+  {
+    topic: "Le site d'Étiolles", type: "qcm",
+    q: `Il y a combien d'années environ un groupe nomade prend-il l'habitude de venir passer la fin de l'été à Étiolles ?`,
+    options: ["Environ 13 000 ans", "Environ 2 millions d'années", "Environ 200 ans", "Environ 500 000 ans"],
+    correct: 0,
+    explanation: "Il y a environ 13 000 ans, un groupe nomade magdalénien prend l'habitude de venir passer la fin de l'été sur le site d'Étiolles.",
+    context: "Cette période correspond à la culture magdalénienne, une des dernières grandes cultures de la Préhistoire en Europe.",
+    hint: "C'est une période bien plus récente que l'apparition d'Homo erectus, mais bien plus ancienne que l'écriture."
+  },
+  {
+    topic: "Le site d'Étiolles", type: "qcm",
+    q: `Que font principalement les Homo sapiens à Étiolles, d'après le document ?`,
+    options: ["Ils taillent des silex pour chasser les animaux et cherchent de la nourriture", "Ils cultivent des céréales", "Ils construisent des maisons en pierre définitives", "Ils élèvent des troupeaux domestiques"],
+    correct: 0,
+    explanation: "À Étiolles, les Homo sapiens taillent des silex pour chasser les animaux ; ce sont des chasseurs-cueilleurs qui passent beaucoup de temps à chercher leur nourriture.",
+    context: "Le site a livré de nombreux vestiges de silex taillés, témoins de cette activité.",
+    hint: "Repense à la définition de « chasseurs-cueilleurs » vue dans la première catégorie."
+  },
+  {
+    topic: "Le site d'Étiolles", type: "qcm",
+    q: `Autour de quel élément la vie à l'intérieur de la tente magdalénienne s'organise-t-elle ?`,
+    options: ["Le foyer (le feu)", "Un puits d'eau", "Un enclos à animaux", "Un four à poterie"],
+    correct: 0,
+    explanation: "La vie à l'intérieur de la tente s'organise autour du foyer, qui permet de se protéger du froid et de préparer la nourriture.",
+    context: "Le foyer occupe une place centrale dans la reconstitution de la tente magdalénienne présentée dans le document.",
+    hint: "C'est l'élément qui produit chaleur et lumière, essentiel pour la vie quotidienne."
+  },
+  {
+    topic: "Le site d'Étiolles", type: "qcm",
+    q: `De quoi était constituée la structure de la tente magdalénienne, qui n'a pas été conservée jusqu'à nous ?`,
+    options: ["Du bois et des peaux", "Des briques de terre cuite", "Du métal", "Du verre"],
+    correct: 0,
+    explanation: "La structure de la tente était en bois et en peaux d'animaux, des matériaux périssables qui n'ont pas résisté jusqu'à aujourd'hui : seuls les silex et les pierres qui calaient les perches ont été retrouvés.",
+    context: "C'est pour cela que les archéologues doivent reconstituer l'apparence de la tente à partir d'indices indirects.",
+    hint: "Ce sont des matériaux qui se décomposent avec le temps, contrairement à la pierre."
+  },
+  {
+    topic: "Le site d'Étiolles", type: "qcm",
+    q: `Qu'est-ce que le « galet gravé » retrouvé sur le site d'Étiolles ?`,
+    options: ["Une pierre sur laquelle est gravé le dessin d'un cheval", "Un outil de cuisine", "Une arme de chasse en métal", "Un bijou en or"],
+    correct: 0,
+    explanation: "Le galet gravé d'Étiolles porte la gravure d'un cheval, réalisée il y a plus de 12 000 ans : c'est un exemple d'art mobilier (par opposition à l'art pariétal, réalisé sur les parois d'une grotte).",
+    context: "Cette œuvre témoigne d'une activité artistique en dehors des grottes, sur un objet transportable.",
+    hint: "C'est une pierre portant un dessin, pas une peinture sur un mur de grotte."
+  },
+  {
+    topic: "Le site d'Étiolles", type: "qcm",
+    q: `Quelles activités artistiques pratiquent les hommes et les femmes de l'époque magdalénienne, d'après les documents étudiés (galet gravé et statuette) ?`,
+    options: ["La gravure et la sculpture", "La poterie uniquement", "La peinture à l'huile sur toile", "La musique uniquement"],
+    correct: 0,
+    explanation: "Les Magdaléniens pratiquent la gravure (comme le galet gravé représentant un cheval) et la sculpture (comme la statuette en ivoire de la Dame de Brassempouy).",
+    context: "Ces deux formes d'art mobilier complètent l'art pariétal (peintures de grottes) déjà étudié.",
+    hint: "Repense aux deux objets présentés : une pierre gravée et une statuette sculptée."
+  },
+  {
+    topic: "Le site d'Étiolles", type: "fill",
+    q: `Combien mesure la statuette de la Dame de Brassempouy, en centimètres ? (réponds par un nombre)`,
+    accepted: ["3,6", "3.6"],
+    explanation: "La Dame de Brassempouy, sculptée dans de l'ivoire de mammouth, mesure seulement 3,6 cm : c'est un fragment de statuette, daté d'environ 21 000 avant J.-C.",
+    context: "Malgré sa petite taille, cette œuvre est l'une des plus célèbres représentations humaines de la Préhistoire.",
+    hint: "C'est un très petit objet, à peine plus grand qu'un timbre-poste."
+  },
+  // ===== L'art des premiers hommes =====
+  {
+    topic: "L'art des premiers hommes", type: "qcm",
+    q: `Il y a combien d'années environ les premiers hommes commencent-ils à peindre sur les parois des grottes, d'après la frise chronologique étudiée ?`,
+    options: ["Il y a environ 35 000 ans", "Il y a environ 3 500 ans", "Il y a environ 350 000 ans", "Il y a environ 3,5 millions d'années"],
+    correct: 0,
+    explanation: "D'après la frise chronologique étudiée, les premières peintures apparaissent il y a environ 35 000 ans.",
+    context: "Cette date marque le début de ce qu'on appelle l'art pariétal, qui se développera notamment jusqu'à l'époque de Lascaux.",
+    hint: "Attention aux zéros : ce n'est ni 3 500, ni 350 000 ans."
+  },
+  {
+    topic: "L'art des premiers hommes", type: "qcm",
+    q: `Où se situe la célèbre grotte de Lascaux, mentionnée comme exemple d'art pariétal ?`,
+    options: ["En Dordogne (France)", "En Espagne", "En Italie", "Au Portugal"],
+    correct: 0,
+    explanation: "La grotte de Lascaux se situe en Dordogne, en France, et est célèbre pour sa « salle des Taureaux ».",
+    context: "C'est l'un des exemples les plus emblématiques de l'art pariétal préhistorique dans le monde.",
+    hint: "C'est une région du sud-ouest de la France."
+  },
+  {
+    topic: "L'art des premiers hommes", type: "qcm",
+    q: `Vers quelle date (avant J.-C.) datent les peintures de la grotte de Lascaux ?`,
+    options: ["Environ 18 000 avant J.-C.", "Environ 3 500 avant J.-C.", "Environ 200 000 avant J.-C.", "Environ 500 avant J.-C."],
+    correct: 0,
+    explanation: "Les peintures de la grotte de Lascaux datent d'environ 18 000 avant J.-C.",
+    context: "Cette date se situe bien après les toutes premières peintures (35 000 ans), ce qui montre que l'art pariétal s'est développé sur une longue période.",
+    hint: "C'est la date indiquée sur la frise chronologique, entre les deux autres repères."
+  },
+  {
+    topic: "L'art des premiers hommes", type: "qcm",
+    q: `Qu'observe-t-on sur les images de mains retrouvées dans plusieurs grottes (Argentine, Indonésie, France) ?`,
+    options: ["Des empreintes ou pochoirs de mains humaines", "Des empreintes de pattes d'animaux uniquement", "Des écritures anciennes", "Des cartes géographiques"],
+    correct: 0,
+    explanation: "Ces images montrent des empreintes ou des pochoirs de mains humaines, réalisés en soufflant de la peinture autour de la main posée sur la paroi.",
+    context: "Ce type de représentation se retrouve sur plusieurs continents différents, montrant une pratique culturelle très répandue chez les premiers hommes.",
+    hint: "Ce sont des représentations d'une partie du corps humain, retrouvées sur plusieurs continents."
+  },
+  {
+    topic: "L'art des premiers hommes", type: "qcm",
+    q: `Sur quels continents retrouve-t-on des exemples de mains peintes dans des grottes (Argentine, Indonésie, France) ?`,
+    options: ["L'Amérique, l'Asie et l'Europe", "L'Afrique uniquement", "L'Antarctique et l'Europe", "L'Océanie uniquement"],
+    correct: 0,
+    explanation: "Les exemples cités se situent en Argentine (Amérique du Sud), en Indonésie (Asie du Sud-Est, île de Bornéo) et en France (Europe), montrant que cette pratique artistique est répandue sur plusieurs continents.",
+    context: "Cela illustre le caractère universel de certaines pratiques artistiques chez Homo sapiens, où qu'il se trouve dans le monde.",
+    hint: "Rappelle-toi des trois pays cités en exemple."
+  },
+  {
+    topic: "L'art des premiers hommes", type: "qcm",
+    q: `Quel est le plus ancien des trois exemples de mains peintes (Argentine, Indonésie, France), d'après les dates données ?`,
+    options: ["Gargas (France), vers 25 000 avant J.-C.", "Argentine, vers 13 000 avant J.-C.", "Bornéo (Indonésie), vers 8 000 avant J.-C.", "Ils datent tous de la même année"],
+    correct: 0,
+    explanation: "Parmi les trois exemples, celui de Gargas (France), daté vers 25 000 avant J.-C., est le plus ancien, suivi par l'Argentine (13 000 avant J.-C.) puis Bornéo (8 000 avant J.-C.).",
+    context: "Plus une date est éloignée dans le passé (plus le nombre est grand avant J.-C.), plus l'événement est ancien.",
+    hint: "Compare les trois dates : quelle est la plus grande (donc la plus ancienne) ?"
+  },
+  {
+    topic: "L'art des premiers hommes", type: "qcm",
+    q: `Pourquoi l'étude de l'art des premiers hommes est-elle utile pour les historiens ?`,
+    options: ["Elle renseigne sur la culture et les croyances des premiers hommes", "Elle ne sert à rien de particulier", "Elle permet uniquement de dater les roches", "Elle prouve que les premiers hommes savaient écrire"],
+    correct: 0,
+    explanation: "L'art des premiers hommes (peintures, sculptures, sépultures) nous renseigne sur leur culture, notamment sur leurs croyances, bien qu'ils ne sachent pas encore écrire.",
+    context: "C'est une source précieuse d'informations pour les historiens et archéologues, en l'absence de textes écrits à cette période.",
+    hint: "Pense à ce que peuvent nous apprendre des objets, en l'absence de textes écrits."
+  },
+  {
+    topic: "L'art des premiers hommes", type: "qcm",
+    q: `Pourquoi peut-on proposer plusieurs hypothèses sur les raisons qui poussaient les hommes à peindre des animaux, sans certitude absolue ?`,
+    options: ["Parce qu'aucun texte écrit de l'époque n'explique leurs intentions", "Parce que les grottes ont toutes disparu", "Parce que les animaux peints n'existent plus aujourd'hui", "Parce que les scientifiques ne s'intéressent pas à cette question"],
+    correct: 0,
+    explanation: "Comme la Préhistoire précède l'invention de l'écriture, aucun texte ne permet de connaître avec certitude les intentions des artistes préhistoriques : les historiens formulent donc des hypothèses (rites de chasse, croyances religieuses, transmission de savoirs...) à partir des indices disponibles.",
+    context: "C'est une différence essentielle entre étudier la Préhistoire et étudier l'Histoire, où l'on dispose de textes écrits.",
+    hint: "Repense à la définition même de la Préhistoire : qu'est-ce qui manque pour avoir des certitudes ?"
+  },
+  // ===== Attention aux pièges ! =====
+  {
+    topic: "Attention aux pièges !", type: "qcm",
+    q: `Quelle confusion faut-il éviter à propos de l'Australopithèque ?`,
+    options: ["Il n'appartient pas au genre Homo, contrairement à Homo habilis", "Il est plus récent qu'Homo sapiens", "Il a inventé l'écriture", "Il vivait uniquement en Europe"],
+    correct: 0,
+    explanation: "L'Australopithèque est un hominidé ancien, mais il n'appartient pas au genre Homo : le premier représentant du genre Homo est Homo habilis, apparu plus tard.",
+    context: "C'est une confusion fréquente dans les cours : bien distinguer « hominidé » (catégorie plus large) et « genre Homo » (plus restreint).",
+    hint: "Repense à la différence entre un ancêtre lointain et le tout premier membre du genre Homo."
+  },
+  {
+    topic: "Attention aux pièges !", type: "qcm",
+    q: `Faut-il confondre la « maîtrise » du feu par Homo erectus avec l'invention d'une méthode pour « allumer » un feu à volonté ?`,
+    options: ["Non : maîtriser le feu (l'entretenir, l'utiliser) est différent de savoir l'allumer soi-même à tout moment, une technique généralisée plus tard", "Oui, c'est exactement la même chose", "Non, car Homo erectus n'a jamais utilisé le feu", "Oui, Homo habilis savait déjà allumer un feu"],
+    correct: 0,
+    explanation: "Il existe une nuance importante : les traces d'usage contrôlé et entretenu du feu par Homo erectus sont très anciennes, mais la capacité à allumer un feu à volonté (par percussion silex/pyrite, par exemple) est une technique qui se généralise beaucoup plus tard dans la Préhistoire.",
+    context: "Cette distinction entre « utiliser/entretenir un feu déjà existant » et « savoir l'allumer à volonté » est un point souvent source de confusion.",
+    hint: "Pense à la différence entre garder un feu allumé et être capable de le créer à partir de rien."
+  },
+  {
+    topic: "Attention aux pièges !", type: "qcm",
+    q: `Peut-on dater avec une précision absolue et définitive l'apparition d'Homo sapiens ?`,
+    options: ["Non : cette date évolue avec les nouvelles découvertes archéologiques (elle est passée de 200 000 à environ 300 000 ans avec la découverte de Jebel Irhoud)", "Oui, cette date est fixée depuis toujours et ne changera jamais", "Non, car Homo sapiens n'a jamais existé", "Oui, elle a toujours été de 300 000 ans"],
+    correct: 0,
+    explanation: "Les dates en Préhistoire évoluent régulièrement avec les nouvelles découvertes archéologiques : la date d'apparition d'Homo sapiens, longtemps fixée à 200 000 ans, a été repoussée à environ 300 000 ans après la découverte du site de Jebel Irhoud au Maroc en 2017.",
+    context: "C'est important de comprendre que les connaissances scientifiques évoluent : ce n'est pas une erreur si ton cours indique une date légèrement différente de celle d'un autre manuel.",
+    hint: "Repense à ce qu'on a vu sur l'évolution des connaissances scientifiques dans une catégorie précédente."
+  },
+  {
+    topic: "Attention aux pièges !", type: "qcm",
+    q: `L'art pariétal et l'art mobilier (comme un galet gravé ou une statuette) désignent-ils la même chose ?`,
+    options: ["Non : l'art pariétal est réalisé sur une paroi rocheuse fixe, l'art mobilier est réalisé sur un objet transportable", "Oui, ce sont deux noms pour la même chose", "Non, l'art mobilier n'existe pas à la Préhistoire", "Oui, mais seul l'art pariétal a une valeur historique"],
+    correct: 0,
+    explanation: "L'art pariétal (comme à Lascaux) est réalisé directement sur les parois d'une grotte, donc fixe. L'art mobilier (comme le galet gravé d'Étiolles ou la Dame de Brassempouy) est réalisé sur un objet que l'on peut transporter.",
+    context: "Cette distinction est importante pour bien catégoriser les différentes formes d'art préhistorique étudiées dans ce chapitre.",
+    hint: "Le mot « mobilier » vient de « mobile » : qu'est-ce que ça suggère sur l'objet ?"
+  },
+  {
+    topic: "Attention aux pièges !", type: "qcm",
+    q: `Homo erectus et l'Homme de Néandertal désignent-ils la même espèce ?`,
+    options: ["Non, ce sont deux espèces différentes, Néandertal étant apparu plus tardivement et n'ayant pas survécu jusqu'à aujourd'hui", "Oui, c'est exactement la même espèce sous deux noms différents", "Non, Néandertal est un ancêtre des australopithèques", "Oui, Néandertal est notre nom scientifique actuel"],
+    correct: 0,
+    explanation: "Homo erectus et l'Homme de Néandertal (Homo neanderthalensis) sont deux espèces distinctes du genre Homo, qui ont vécu à des périodes différentes. Aucune des deux n'est l'espèce actuelle : nous appartenons à Homo sapiens.",
+    context: "Il ne faut pas confondre les différentes espèces du genre Homo qui se sont succédé au cours de la Préhistoire.",
+    hint: "Rappelle-toi : plusieurs espèces différentes ont existé successivement au sein du genre Homo."
+  },
+  {
+    topic: "Attention aux pièges !", type: "qcm",
+    q: `Peut-on affirmer avec certitude pourquoi les premiers hommes peignaient des animaux sur les parois des grottes ?`,
+    options: ["Non, on ne peut proposer que des hypothèses, sans certitude absolue", "Oui, c'était uniquement pour se nourrir en mangeant les peintures", "Oui, c'était uniquement de la décoration sans aucune signification", "Oui, un texte de l'époque l'explique clairement"],
+    correct: 0,
+    explanation: "En l'absence de textes écrits (la Préhistoire précède l'écriture), on ne peut que formuler des hypothèses sur les motivations des artistes préhistoriques (rites, croyances, transmission de savoir de chasse...).",
+    context: "Se méfier des réponses trop catégoriques sur les motivations des hommes préhistoriques : la prudence scientifique est de mise.",
+    hint: "Repense à ce qui manque en Préhistoire pour connaître les intentions exactes des gens de l'époque."
+  },
+  {
+    topic: "Attention aux pièges !", type: "qcm",
+    q: `Les dates données en Préhistoire (par exemple « 25 000 avant J.-C. ») sont-elles toujours d'une précision absolue au jour près ?`,
+    options: ["Non, ce sont des estimations, parfois révisées selon les techniques de datation utilisées", "Oui, elles sont toujours exactes au jour près", "Non, car aucune datation n'est jamais possible en Préhistoire", "Oui, car les hommes préhistoriques utilisaient un calendrier écrit"],
+    correct: 0,
+    explanation: "Les dates préhistoriques sont des estimations obtenues par des méthodes scientifiques (comme la datation au carbone 14), et peuvent être révisées ou légèrement différentes selon les sources et les avancées techniques.",
+    context: "C'est pourquoi tu peux parfois trouver de légères différences de dates entre ton cours et d'autres sources : ce n'est pas forcément une erreur, mais le résultat de méthodes de datation en constante amélioration.",
+    hint: "Pense à la façon dont on date des objets vieux de plusieurs milliers d'années, sans document écrit."
+  },
+  {
+    topic: "Attention aux pièges !", type: "qcm",
+    q: `Le mot « Homo » dans « Homo sapiens », « Homo habilis » ou « Homo erectus » signifie-t-il la même chose que le mot français « homme » au sens courant (mâle adulte) ?`,
+    options: ["Non, « Homo » est un terme scientifique latin désignant le genre humain (hommes et femmes), pas seulement les mâles", "Oui, cela désigne uniquement les hommes, pas les femmes", "Non, « Homo » signifie « singe » en latin", "Oui, mais seulement pour Homo sapiens"],
+    correct: 0,
+    explanation: "En latin scientifique, « Homo » désigne le genre humain dans son ensemble (hommes et femmes), et non uniquement les individus de sexe masculin comme dans le langage courant.",
+    context: "C'est une nuance de vocabulaire scientifique à bien comprendre, pour éviter une confusion avec le sens courant du mot « homme ».",
+    hint: "Pense au sens scientifique et latin du mot, différent du sens courant en français."
+  },
+];
+
+const topicColors = {
+  "Vocabulaire et repères": "#0066cc",
+  "Les grandes étapes de l'évolution humaine": "#128a5e",
+  "La sortie d'Afrique et le peuplement de la Terre": "#cc6600",
+  "Le site d'Étiolles": "#800080",
+  "L'art des premiers hommes": "#00807a",
+  "Attention aux pièges !": "#cc0055"
+};
+
+const topicWeeks = {
+  "Vocabulaire et repères": "Nomade, ocre, art pariétal, sépulture",
+  "Les grandes étapes de l'évolution humaine": "Habilis, erectus, sapiens",
+  "La sortie d'Afrique et le peuplement de la Terre": "Le berceau africain et les migrations",
+  "Le site d'Étiolles": "La vie d'un groupe magdalénien",
+  "L'art des premiers hommes": "Lascaux, mains peintes, Brassempouy",
+  "Attention aux pièges !": "Les confusions et nuances à connaître"
+};
+
+function normalize(str) {
+  return str
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[’']/g, "'")
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
+function shuffleArray(arr) {
+  return arr.slice().sort(() => Math.random() - 0.5);
+}
+
+// ===== Gamification : persistance locale =====
+function getBestScores() {
+  try { return JSON.parse(localStorage.getItem("prehistoirequiz_bestScores")) || {}; }
+  catch { return {}; }
+}
+function saveBestScoreIfHigher(key, correct, total) {
+  const scores = getBestScores();
+  const prevPercent = scores[key] ? (scores[key].correct / scores[key].total) * 100 : -1;
+  const newPercent = (correct / total) * 100;
+  const isNewRecord = newPercent > prevPercent;
+  if (isNewRecord) {
+    scores[key] = { correct, total };
+    localStorage.setItem("prehistoirequiz_bestScores", JSON.stringify(scores));
+  }
+  return isNewRecord;
+}
+function getBestScoreFor(key) {
+  const scores = getBestScores();
+  return scores[key] || null;
+}
+
+function updateDailyStreak() {
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const last = localStorage.getItem("prehistoirequiz_lastPlayedDate");
+  let streak = parseInt(localStorage.getItem("prehistoirequiz_streakDays")) || 0;
+  if (last === todayStr) {
+    return streak;
+  }
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  streak = (last === yesterday) ? streak + 1 : 1;
+  localStorage.setItem("prehistoirequiz_lastPlayedDate", todayStr);
+  localStorage.setItem("prehistoirequiz_streakDays", streak);
+  return streak;
+}
+function getStreakDays() {
+  return parseInt(localStorage.getItem("prehistoirequiz_streakDays")) || 0;
+}
+
+function getTotalAnswered() {
+  return parseInt(localStorage.getItem("prehistoirequiz_totalAnswered")) || 0;
+}
+function addToTotalAnswered(n) {
+  const total = getTotalAnswered() + n;
+  localStorage.setItem("prehistoirequiz_totalAnswered", total);
+  return total;
+}
+
+function getBestCombo() {
+  return parseInt(localStorage.getItem("prehistoirequiz_bestCombo")) || 0;
+}
+function setBestComboIfHigher(n) {
+  const best = getBestCombo();
+  if (n > best) {
+    localStorage.setItem("prehistoirequiz_bestCombo", n);
+    return true;
+  }
+  return false;
+}
+
+let currentCombo = 0;
+let sessionBestCombo = 0;
+
+let questions = [];
+let results = [];
+let currentCategoryKey = "__ALL__";
+
+const screenCategory = document.getElementById("screen-category");
+const screenQuiz = document.getElementById("screen-quiz");
+const quizEl = document.getElementById("quiz");
+const summaryEl = document.getElementById("summary");
+
+function buildCategoryScreen() {
+  const CATEGORY_ORDER = [
+    "Vocabulaire et repères",
+    "Les grandes étapes de l'évolution humaine",
+    "La sortie d'Afrique et le peuplement de la Terre",
+    "Le site d'Étiolles",
+    "L'art des premiers hommes",
+    "Attention aux pièges !"
+  ];
+  const allTopics = [...new Set(allQuestions.map(q => q.topic))];
+  const topics = CATEGORY_ORDER.filter(t => allTopics.includes(t))
+    .concat(allTopics.filter(t => !CATEGORY_ORDER.includes(t)));
+  const grid = document.getElementById("cat-grid");
+
+  const streak = getStreakDays();
+  const banner = document.getElementById("daily-banner");
+  if (banner) {
+    if (streak > 0) {
+      banner.style.display = "flex";
+      banner.innerHTML = `<span class="flame">🔥</span> ${streak} jour${streak > 1 ? "s" : ""} d'affilée — reviens demain pour continuer ta série !`;
+    } else {
+      banner.style.display = "none";
+    }
+  }
+
+  const totalAnswered = getTotalAnswered();
+  const bestCombo = getBestCombo();
+  const statsStrip = document.getElementById("stat-strip");
+  if (statsStrip) {
+    statsStrip.innerHTML = `
+      <div class="stat"><div class="stat-num">${totalAnswered}</div><div class="stat-label">Questions répondues</div></div>
+      <div class="stat"><div class="stat-num">${bestCombo}</div><div class="stat-label">Meilleur combo</div></div>
+    `;
+  }
+
+  const allBest = getBestScoreFor("__ALL__");
+  const allRecordHtml = allBest ? `<span class="cat-record">⭐ Record : ${allBest.correct}/${allBest.total}</span>` : "";
+  const allBtn = `
+    <div class="cat-btn-wrap">
+      <button class="cat-btn cat-all" data-topic="__ALL__">Toutes les catégories <span class="cat-count">(${allQuestions.length})</span></button>
+      <span class="cat-week">Mini bac / révision globale</span>
+      ${allRecordHtml}
+    </div>
+  `;
+  const topicBtns = topics.map(t => {
+    const count = allQuestions.filter(q => q.topic === t).length;
+    const best = getBestScoreFor(t);
+    const recordHtml = best ? `<span class="cat-record"><span class="star">⭐</span> Record : ${best.correct}/${best.total}</span>` : "";
+    return `
+      <div class="cat-btn-wrap">
+        <button class="cat-btn" data-topic="${t}" style="background:${topicColors[t]}">${t} <span class="cat-count">(${count})</span></button>
+        <span class="cat-week">${topicWeeks[t] || ""}</span>
+        ${recordHtml}
+      </div>
+    `;
+  }).join("");
+  grid.innerHTML = allBtn + topicBtns;
+
+  grid.querySelectorAll(".cat-btn").forEach(btn => {
+    btn.addEventListener("click", () => startQuiz(btn.dataset.topic));
+  });
+}
+
+const NO_SHUFFLE_TOPICS = [];
+
+function startQuiz(topicKey) {
+  if (topicKey === "__ALL__") {
+    questions = shuffleArray(allQuestions);
+  } else if (NO_SHUFFLE_TOPICS.includes(topicKey)) {
+    questions = allQuestions.filter(q => q.topic === topicKey);
+  } else {
+    questions = shuffleArray(allQuestions.filter(q => q.topic === topicKey));
+  }
+
+  updateDailyStreak();
+  currentCategoryKey = topicKey;
+
+  const currentCatEl = document.getElementById("current-cat");
+  if (topicKey === "__ALL__") {
+    currentCatEl.innerHTML = `<span class="pill" style="background:#111111">Toutes les catégories</span>`;
+  } else {
+    currentCatEl.innerHTML = `<span class="pill" style="background:${topicColors[topicKey]}">${topicKey}</span>`;
+  }
+
+  screenCategory.style.display = "none";
+  screenQuiz.style.display = "block";
+  document.getElementById("total-count").textContent = questions.length;
+  renderAll();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+document.getElementById("back-link").addEventListener("click", () => {
+  screenQuiz.style.display = "none";
+  screenCategory.style.display = "block";
+  buildCategoryScreen();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+function cardHtml(item, idx) {
+  const typeLabel = item.type === "qcm" ? "QCM" : "À compléter";
+  let bodyHtml = "";
+  if (item.type === "qcm") {
+    const order = shuffleArray(item.options.map((_, i) => i));
+    bodyHtml = `
+      <div class="options" id="options-${idx}">
+        ${order.map(oidx => `
+          <button class="option-btn" data-qidx="${idx}" data-oidx="${oidx}">${item.options[oidx]}</button>
+        `).join("")}
+      </div>
+    `;
+  } else {
+    bodyHtml = `
+      <div class="fill-col">
+        <input type="text" class="fill-input" id="fill-${idx}" placeholder="Ta réponse..." autocomplete="off">
+        <button class="submit-btn" id="submit-${idx}" data-qidx="${idx}">Valider</button>
+      </div>
+    `;
+  }
+  return `
+    <div class="card" id="card-${idx}">
+      <div class="card-top">
+        <span class="topic" data-topic="${item.topic}">${item.topic}</span>
+        <span class="qcount">Question ${idx + 1}/${questions.length}</span>
+        <span class="qtype">${typeLabel}</span>
+      </div>
+      <p class="question">${item.q}</p>
+      ${bodyHtml}
+      <div class="center-row">
+        <button class="hint-btn" id="hint-btn-${idx}">Voir l'indice</button>
+      </div>
+      <p class="hint" id="hint-${idx}">💡 ${item.hint}</p>
+      <div class="reponse-box" id="explanation-${idx}">
+        <div class="reponse-head">✅ Réponse</div>
+        <div class="reponse-body">${item.explanation}</div>
+      </div>
+      <div class="context-box" id="context-${idx}">
+        <div class="context-head">💡 Astuce</div>
+        <div class="context-body">${item.context}</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderAll() {
+  results = new Array(questions.length).fill(null);
+  currentCombo = 0;
+  sessionBestCombo = 0;
+  quizEl.innerHTML = questions.map((item, idx) => cardHtml(item, idx)).join("");
+  summaryEl.style.display = "none";
+  quizEl.style.display = "block";
+
+  questions.forEach((item, idx) => {
+    document.getElementById(`hint-btn-${idx}`).addEventListener("click", () => {
+      document.getElementById(`hint-${idx}`).style.display = "block";
+      document.getElementById(`hint-btn-${idx}`).disabled = true;
+    });
+
+    if (item.type === "qcm") {
+      document.querySelectorAll(`#options-${idx} .option-btn`).forEach(btn => {
+        btn.addEventListener("click", () => {
+          if (results[idx] !== null) return;
+          const oidx = parseInt(btn.dataset.oidx);
+          submitQcm(idx, oidx);
+        });
+      });
+    } else {
+      const input = document.getElementById(`fill-${idx}`);
+      const submitBtn = document.getElementById(`submit-${idx}`);
+      submitBtn.addEventListener("click", () => {
+        if (results[idx] !== null) return;
+        submitFill(idx);
+      });
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && results[idx] === null) submitFill(idx);
+      });
+    }
+  });
+
+  updateLiveBar();
+}
+
+function submitQcm(idx, oidx) {
+  const item = questions[idx];
+  const isCorrect = oidx === item.correct;
+  document.querySelectorAll(`#options-${idx} .option-btn`).forEach((btn) => {
+    const bIdx = parseInt(btn.dataset.oidx);
+    btn.disabled = true;
+    if (bIdx === item.correct) btn.classList.add("correct");
+    else if (bIdx === oidx) btn.classList.add("incorrect");
+    else btn.classList.add("dim");
+  });
+  finishAnswer(idx, isCorrect);
+}
+
+function submitFill(idx) {
+  const item = questions[idx];
+  const input = document.getElementById(`fill-${idx}`);
+  const val = normalize(input.value);
+  const isCorrect = val.length > 0 && item.accepted.some(a => normalize(a) === val);
+  input.disabled = true;
+  input.classList.add(isCorrect ? "correct" : "incorrect");
+  document.getElementById(`submit-${idx}`).disabled = true;
+  if (!isCorrect) {
+    input.insertAdjacentHTML("afterend", `<span class="expected">Réponse attendue : <strong>${item.accepted[0]}</strong></span>`);
+  }
+  finishAnswer(idx, isCorrect);
+}
+
+function finishAnswer(idx, isCorrect) {
+  results[idx] = isCorrect;
+  document.getElementById(`explanation-${idx}`).style.display = "block";
+  document.getElementById(`context-${idx}`).style.display = "block";
+  document.getElementById(`hint-btn-${idx}`).style.display = "none";
+  document.getElementById(`card-${idx}`).classList.add(isCorrect ? "correct-card" : "incorrect-card");
+
+  addToTotalAnswered(1);
+  if (isCorrect) {
+    currentCombo++;
+    if (currentCombo > sessionBestCombo) sessionBestCombo = currentCombo;
+    setBestComboIfHigher(currentCombo);
+  } else {
+    currentCombo = 0;
+  }
+
+  updateLiveBar();
+  if (results.every(r => r !== null)) {
+    showSummary();
+  }
+}
+
+function updateLiveBar() {
+  const answeredCount = results.filter(r => r !== null).length;
+  const correctCount = results.filter(r => r === true).length;
+  document.getElementById("correct-count").textContent = correctCount;
+  document.getElementById("progress").style.width = `${(answeredCount / questions.length) * 100}%`;
+
+  const comboBadge = document.getElementById("combo-badge");
+  const comboCount = document.getElementById("combo-count");
+  if (currentCombo >= 2) {
+    comboCount.textContent = currentCombo;
+    comboBadge.classList.remove("show");
+    void comboBadge.offsetWidth;
+    comboBadge.classList.add("show");
+  } else {
+    comboBadge.classList.remove("show");
+  }
+}
+
+function showSummary() {
+  const total = results.filter(r => r === true).length;
+  const percent = Math.round((total / questions.length) * 100);
+  const byTopic = {};
+  questions.forEach((q, idx) => {
+    byTopic[q.topic] = byTopic[q.topic] || { ok: 0, tot: 0 };
+    byTopic[q.topic].tot += 1;
+    byTopic[q.topic].ok += results[idx] ? 1 : 0;
+  });
+
+  const rows = Object.entries(byTopic).map(([t, v]) => {
+    const p = (v.ok / v.tot) * 100;
+    return `
+      <div class="topic-row">
+        <span>${t}</span>
+        <span>${v.ok}/${v.tot}</span>
+        <div class="bar-container">
+          <div class="bar" style="width: ${p}%; background: ${topicColors[t]};"></div>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  let tier, tierColor, tierEmoji;
+  if (percent === 100) { tier = "Sans faute !"; tierColor = "#1d9e75"; tierEmoji = "🏆"; }
+  else if (percent >= 80) { tier = "Excellent"; tierColor = "#1d9e75"; tierEmoji = "🌟"; }
+  else if (percent >= 50) { tier = "Bien joué"; tierColor = "#185fa5"; tierEmoji = "👍"; }
+  else { tier = "En progression"; tierColor = "#ff9800"; tierEmoji = "💪"; }
+
+  const isNewRecord = saveBestScoreIfHigher(currentCategoryKey, total, questions.length);
+  const isNewComboRecord = setBestComboIfHigher(sessionBestCombo);
+  const totalAnswered = getTotalAnswered();
+  const streak = getStreakDays();
+
+  summaryEl.style.display = "block";
+  summaryEl.innerHTML = `
+    <p style="font-size:13px;color:var(--text-tertiary);margin:0 0 8px 0;font-weight:600;">Score final</p>
+    <div class="score-ring-wrap">
+      <svg viewBox="0 0 120 120">
+        <circle class="score-ring-bg" cx="60" cy="60" r="54"></circle>
+        <circle class="score-ring-fg" id="score-ring-fg" cx="60" cy="60" r="54" style="stroke:${tierColor}"></circle>
+      </svg>
+      <div class="score-ring-center">
+        <span class="score-ring-percent">${percent}%</span>
+        <span class="score-ring-frac">${total}/${questions.length}</span>
+      </div>
+    </div>
+    <div>
+      <span class="tier-badge" style="background:${tierColor}20; color:${tierColor}">${tierEmoji} ${tier}</span>
+    </div>
+    ${isNewRecord ? `<div><span class="record-badge">🏅 Nouveau record sur cette catégorie !</span></div>` : ""}
+    ${isNewComboRecord && sessionBestCombo >= 2 ? `<div><span class="record-badge">🔥 Nouveau record de combo : ${sessionBestCombo} !</span></div>` : ""}
+
+    <div class="gamif-stats">
+      <div class="g-stat"><div class="g-num">🔥 ${streak}</div><div class="g-label">Jours d'affilée</div></div>
+      <div class="g-stat"><div class="g-num">${sessionBestCombo}</div><div class="g-label">Meilleur combo</div></div>
+      <div class="g-stat"><div class="g-num">${totalAnswered}</div><div class="g-label">Questions au total</div></div>
+    </div>
+
+    <div style="text-align:left;">
+      <p style="font-size:14px;color:var(--text-secondary);margin:14px 0 6px 0;">Répartition par thème</p>
+      ${rows}
+    </div>
+    <div class="summary-actions">
+      <button class="btn-primary" id="restart">Recommencer</button>
+      ${NO_SHUFFLE_TOPICS.includes(currentCategoryKey) ? "" : `<button class="btn-secondary" id="shuffle">Mélanger et recommencer</button>`}
+      <button class="btn-secondary" id="change-cat">Changer de catégorie</button>
+    </div>
+    <p class="replay-hook">🔥 Reviens à la prochaine séance pour garder ta série, ou choisis un autre chapitre pour décrocher un nouveau record !</p>
+  `;
+  summaryEl.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  requestAnimationFrame(() => {
+    const circumference = 339.3;
+    const offset = circumference * (1 - percent / 100);
+    document.getElementById("score-ring-fg").style.strokeDashoffset = offset;
+  });
+
+  document.getElementById("restart").addEventListener("click", () => {
+    renderAll();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+  document.getElementById("shuffle")?.addEventListener("click", () => {
+    questions = shuffleArray(questions);
+    renderAll();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+  document.getElementById("change-cat").addEventListener("click", () => {
+    screenQuiz.style.display = "none";
+    screenCategory.style.display = "block";
+    buildCategoryScreen();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+}
+
+// Initialize
+buildCategoryScreen();
+</script>
+</body>
+</html>
